@@ -1,0 +1,20 @@
+image: docker:latest
+services:
+  - docker:dind
+
+
+stages:
+  - lint
+  - build
+
+flake8:
+  stage: lint
+  image: python:3.10
+  script:
+    - python3 -m pip install flake8
+    - flake8 .
+
+build-container-job:
+  stage: build
+  script:
+    - docker build -t lattice-api ./services/

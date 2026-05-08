@@ -1,0 +1,39 @@
+global:
+  ASTRAsettings:
+    High_res: False
+    EmitS: True
+    PhaseS: True
+    TrackS: True
+    RefS: True
+    Track_All: True
+    Phase_Scan: False
+    Auto_Phase: False
+    check_ref_part: False
+    Zemit: 1050
+    H_max: 0.02
+    H_min: 0.001
+    title: 'trial'
+    run_no: 1
+    Lmagnetized: False
+generators:
+  combine_distributions: False
+  number_of_particles: 2000
+  species: 'hydrogen'
+  initial_energy: 35e3
+  charge: -0.4e-3
+  thermal_emittance: 0
+files:
+  LEBT:
+    code: GPT
+    starting_rotation: 0
+    charge:
+      cathode: False
+      space_charge_mode: 2D
+      mirror_charge: False
+    input:
+      particle_definition: '$master_lattice_location$LEBT_in'
+    output:
+      start_element: ISIS-LEBT-SIM-AP-01
+      end_element: ISIS-LEBT-DIA-SCR-03
+elements:
+  filename: ['YAML/ISIS_LEBT.yaml']

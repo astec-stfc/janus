@@ -1,0 +1,8 @@
+pyepics
+p4p
+pydantic
+numpy
+ruamel.yaml
+scipy
+matplotlib
+jupyterlab

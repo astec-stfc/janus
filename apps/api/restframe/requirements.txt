@@ -1,0 +1,9 @@
+requests
+pyyaml
+h5py 
+pillow 
+pyepics 
+munch 
+attrs
+toml
+kafka-python
