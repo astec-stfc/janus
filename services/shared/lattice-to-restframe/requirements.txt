@@ -1,0 +1,5 @@
+requests
+pyepics
+numpy
+pydantic>=2.0
+kafka-python

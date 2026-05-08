@@ -1,0 +1,30 @@
+include:
+  - compose/core.yml
+  - compose/isis.yml
+
+services:
+ # NOTE we can't use both include and extends - anything that needs to have overrides needs to go into a separate overrides.yml file
+  restframe:
+    extends:
+      file: compose/overrides.yml
+      service: restframe
+    environment:
+      - FACILITY=ISIS
+    volumes:
+      - ./apps/api/restframe/ISIS:/home/web/webapp/Output/ISIS
+  sandbox:
+    extends:
+      file: compose/overrides.yml
+      service: sandbox
+  lattice_api:
+    extends:
+      file: compose/overrides.yml
+      service: lattice_api
+    env_file:
+      - ./apps/api/lattice/.env.dev
+    environment:
+      - FACILITY=ISIS
+  frontend:
+    extends:
+      file: compose/overrides.yml
+      service: frontend

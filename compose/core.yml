@@ -1,0 +1,104 @@
+services:
+  # kafka broker handles messaging between services
+
+  broker:
+    image: docker.redpanda.com/redpandadata/redpanda:latest
+    command:
+      - redpanda
+      - start
+      - --kafka-addr=internal://0.0.0.0:29092,external://0.0.0.0:9092
+      - --advertise-kafka-addr=internal://broker:29092,external://broker:9092
+      - --rpc-addr=broker:33145
+      - --advertise-rpc-addr=broker:33145
+      - --mode=dev-container
+      - --smp=1
+      - --default-log-level=${log_level:-error}
+    ports:
+      - "9092:9092"
+  # Lattice DB stores results of all lattices that have passed through the Lattice API
+  lattice_db:
+    image: postgres:13
+    ports:
+      - "5431:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=janus
+      - log_level=${log_level:-error}
+    healthcheck:
+      test: /usr/bin/pg_isready -U postgres
+      interval: 5s
+      timeout: 10s
+      retries: 120
+
+  # comm to restframe handles requests to restframe from the lattice API
+  lattice_to_restframe:
+    build: ../services/shared/lattice-to-restframe/
+    depends_on:
+      - lattice_api
+      - restframe
+    volumes:
+      - ../common/utils:/usr/src/app/common
+      - ../common/schemas:/usr/src/app/schemas
+    environment:
+      - PYTHONUNBUFFERED=1
+  
+  # restframe to comm handles the return of results of simulation to the lattice API
+  restframe_to_lattice:
+    build: ../services/shared/restframe-to-lattice/
+    depends_on:
+      - lattice_api
+      - restframe
+    volumes:
+      - ../common/utils:/usr/src/app/common
+      - ../common/schemas:/usr/src/app/schemas
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  # service to update the physics IOCs when new results come through from RestFrame
+  lattice_to_epics:
+    build: ../services/shared/lattice-to-epics/
+    depends_on:
+      - lattice_api
+      - physics_iocs
+    environment:
+      - EPICS_PVA_AUTO_ADDR_LIST=YES
+      - EPICS_PVA_BROADCAST_PORT=${PORT:-6090}  # this is required to allow pvget to work in sandbox. It also doesn't have to be different to 
+      - EPICS_PVA_NAME_SERVERS=physics_iocs:6091
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ../common/utils:/usr/src/app/common
+      - ../common/schemas:/usr/src/app/schemas
+
+  # Soft PVA IOCs containing simulation results 
+  physics_iocs:
+    build: 
+      context: ../apps/controls/shared/
+      ssh:
+        - default
+    entrypoint: /src/app/entrypoint.sh
+    depends_on: 
+      - lattice_api
+      - restframe
+    environment:
+      - PYTHONUNBUFFERED=1
+      - EPICS_PVA_SERVER_PORT=${PHYSICS_PORT:-6091}
+      - EPICS_PVAS_SERVER_PORT=${PHYSICS_PORT:-6091}
+      # this is required to allow pvget to work in sandbox. It also doesn't have to be the
+      # same as the server port which HAS to be different to any other IOC's server ports
+      # all IOCs in the stack share the broadcast port (as UDP doesn't care) but have to
+      # have different external server ports to avoid clashes between the containers
+      - EPICS_PVA_BROADCAST_PORT=${PORT:-6090}
+      - EPICS_PVA_AUTO_ADDR_LIST=YES
+      - EPICS_PVAS_INTF_ADDR_LIST=
+      - EPICS_PVA_ADDR_LIST=
+    ports:
+      - ${PHYSICS_PORT:-6091}:${PHYSICS_PORT:-6091}/tcp
+      - ${PHYSICS_PORT:-6091}:${PHYSICS_PORT:-6091}/udp
+    volumes:
+      - ../common/schemas:/src/app/schemas
+
+volumes:
+  postgres_data:

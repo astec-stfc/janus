@@ -1,0 +1,13 @@
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Global makefile
+# The only variables needed are defined and added in the Dockerfile
+# the home directory {{ VA_BUILD }}
+# the architecture   {{ VA_ARCH }}
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# Setup to build for modules
+EPICS_BASE      =$VA_BASE/va/epics-base
+EPICS_HOST_ARCH =$VA_ARCH
+SNCSEQ          =$VA_BASE/va/seq
+PROCPATH        =$VA_BASE/procServ
+
