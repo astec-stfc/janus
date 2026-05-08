@@ -4,7 +4,35 @@ JANUS is a series of Docker containers that allow users to interact with simulat
 *diagram here?*
 
 ## Usage
+
+### Setup
+
+**INSTALL GIT-LFS TO USE RPMs**
+
+Ubuntu / WSL
+------------
+
+```
+apt install git-lfs
+git lfs install
+```
+
+macOS
+-----
+
+```
+brew install git-lfs
+git lfs install
+```
+
+Windows
+-------
+
+Install Git LFS from the official installer, then:
+`git lfs install`
+
 ### Getting Started
+
 Clone this repo including all of the relevant submodules:
 ```bash
 git clone --recursive git@gitlab.stfc.ac.uk:janus/janus.git
