@@ -2,3 +2,4 @@
 * text=auto
 # Declare that bash files will always have LF line endings on checkout.
 *.sh text eol=lf
+*.rpm filter=lfs diff=lfs merge=lfs -text
