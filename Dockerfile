@@ -67,6 +67,13 @@ RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir sqlalchemy && \
     pip install --no-cache-dir psycopg2>=2.9.10 && \
     pip install --no-cache-dir h5py && \
+    pip install --no-cache-dir munch && \
+    pip install --no-cache-dir deepdiff>=8.6 && \
+    pip install --no-cache-dir tqdm>=4 && \
+    pip install --no-cache-dir mpl-axes-aligner>=1.1 && \
+    pip install --no-cache-dir pyfftw && \
+    pip install --no-cache-dir numba && \
+    pip install --no-cache-dir numexpr && \
     pip install --no-cache-dir strawberry-graphql[fastapi]
 
 COPY apps/api/restframe/docker/SDDSPython3-5.2.1-1.ubuntu.22.04.x86_64.rpm /home/web/
