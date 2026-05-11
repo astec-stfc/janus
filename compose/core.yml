@@ -13,6 +13,7 @@ services:
       - --mode=dev-container
       - --smp=1
       - --default-log-level=${log_level:-error}
+    user: ""
     ports:
       - "9092:9092"
   # Lattice DB stores results of all lattices that have passed through the Lattice API

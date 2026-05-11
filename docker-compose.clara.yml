@@ -2,6 +2,22 @@ include:
   - compose/core.yml
   - compose/clara.yml
 
+volumes:
+
+  laura-lattices:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      devices: ${LAURA_LATTICES}
+
+  simcodes:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      devices: ${SIMCODES}
+
 services:
   restframe:
     extends:
@@ -16,6 +32,7 @@ services:
     extends:
       file: compose/overrides.yml
       service: sandbox
+    user: "janus-developer"
     environment:
       - EPICS_CA_SERVER_PORT=6090
       - EPICS_PVA_NAME_SERVERS=physics_iocs:${PHYSICS_PORT:-6091}

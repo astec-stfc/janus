@@ -32,7 +32,8 @@ from schemas.elements import (
     Generator
 )
 
-sys.path.append("../../simframe")
+sys.path.insert(0, "/laura")
+sys.path.insert(0, "/simba")
 sys.path.insert(0, "/simcodes")
 # import SimulationFramework.Framework as fw
 # import SimulationFramework.Modules.constants as cons
