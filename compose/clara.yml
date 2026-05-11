@@ -43,7 +43,7 @@ services:
       - lattice_api
       - ioc
     environment:
-      - EPICS_CA_ADDR_LIST=ioc # 192.168.83.246 (original) # 192.168.83.255 (from ioc service)
+      - EPICS_CA_ADDR_LIST= # 192.168.83.246 (original) # 192.168.83.255 (from ioc service)
       - EPICS_CA_MAX_ARRAY_BYTES=1000000000
       - EPICS_CA_SERVER_PORT=${PORT:-6090} # 6060 (original) # 6090 (from ioc service)
       - EPICS_PVA_AUTO_ADDR_LIST=YES
