@@ -1,20 +1,24 @@
 COMPOSE_FILE ?= docker-compose.clara.yml
-REMOVE_ORPHANS ?= ""
+REMOVE_ORPHANS ?=
+IMAGE ?= ghcr.io/adb-xkc85723/janus-base:latest
+
+ifndef GITLAB_KEY
+ifeq ($(filter build push,$(MAKECMDGOALS)),)
+else
+$(error GITLAB_KEY is required. Usage: make build GITLAB_KEY=/path/to/ssh/key)
+endif
+endif
 
 .PHONY: build push up down
 
 build:
-ifndef GITLAB_KEY
- $(error GITLAB_KEY is required for build. Usage: make build GITLAB_KEY=/path/to/ssh/key)
-endif
- eval "$$(./configure.sh $(GITLAB_KEY))" && \
- docker buildx build --ssh default=$$SSH_AUTH_SOCK -f Dockerfile -t ghcr.io/adb-xkc85723/janus-base:latest .
+	@set -e; eval "$$(./configure.sh $(GITLAB_KEY))"; docker buildx build --ssh default=$$SSH_AUTH_SOCK -f Dockerfile -t $(IMAGE) .
 
 push: build
- docker push ghcr.io/adb-xkc85723/janus-base:latest
+	docker push $(IMAGE)
 
 up:
- docker compose -f $(COMPOSE_FILE) up --build
+	docker compose -f $(COMPOSE_FILE) up --build
 
 down:
- docker compose -f $(COMPOSE_FILE) down --volumes $(REMOVE_ORPHANS)
+	docker compose -f $(COMPOSE_FILE) down --volumes $(REMOVE_ORPHANS)

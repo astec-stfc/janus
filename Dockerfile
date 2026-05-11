@@ -48,7 +48,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir ruamel.yaml && \
     pip install --no-cache-dir scipy && \
     pip install --no-cache-dir kafka-python && \
-    pip install --no-cache-dir fastkde==1.0.30 && \
+    pip install --no-cache-dir fastkde && \
     pip install --no-cache-dir mpi4py>=3.0.0 && \
     pip install --no-cache-dir cython && \
     pip install --no-cache-dir cffi && \
@@ -66,7 +66,21 @@ RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir jupyterlab && \
     pip install --no-cache-dir sqlalchemy && \
     pip install --no-cache-dir psycopg2>=2.9.10 && \
+    pip install --no-cache-dir h5py && \
     pip install --no-cache-dir strawberry-graphql[fastapi]
+
+COPY apps/api/restframe/docker/SDDSPython3-5.2.1-1.ubuntu.22.04.x86_64.rpm /home/web/
+COPY apps/api/restframe/docker/elegant-2025.2.0-1.ubuntu.22.04.mpich.x86_64.rpm /home/web/
+
+ENV VIRTUAL_ENV=/home/web/.venv
+RUN /usr/bin/python3 -m venv $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
+RUN alien -i /home/web/SDDSPython3-5.2.1-1.ubuntu.22.04.x86_64.rpm && \
+    cp -r /usr/local/lib/python3.10/dist-packages/* /home/web/.venv/lib/python3.10/site-packages/ && \
+    rm /home/web/SDDSPython3-5.2.1-1.ubuntu.22.04.x86_64.rpm && \
+    alien -i /home/web/elegant-2025.2.0-1.ubuntu.22.04.mpich.x86_64.rpm && \
+    rm /home/web/elegant-2025.2.0-1.ubuntu.22.04.mpich.x86_64.rpm
 
 # Consolidate all git clones into single RUN block + remove .git to save space
 RUN --mount=type=ssh bash -lc ' \

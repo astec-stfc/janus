@@ -8,7 +8,7 @@ import copy
 from typing import Union
 import concurrent.futures
 import base64
-from .screen_image import ScreenImage
+# from .screen_image import ScreenImage
 from .uuids import create_uuid
 from . import data
 from schemas.elements import (
@@ -142,7 +142,7 @@ class SimFrame_Interface:
         latdict = {k: v for k, v in lat.sections.items()}
         latdict.update({"generator": lat.generator})
         self.latticeclass = data.LatticeClass.model_validate(latdict)
-        self.screenimage = ScreenImage(lattice_location=screen_directory)
+        # self.screenimage = ScreenImage(lattice_location=screen_directory)
         self.load_data_structures()
 
         self.changes = self.get_changes_dict()
