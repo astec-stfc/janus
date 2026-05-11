@@ -37,7 +37,7 @@ RUN git clone --branch add_twiss_tables https://ujo48515:glpat-TaqZcrGgE5RKxMSiY
 
 ###################
 # Install and Make support modules
-RUN cd ./va/interface_magnets && make clean; make || true \
+RUN cd ./va/interface_magnets && make clean; make
     #RUN cd ./va/interface_screens    ; make clean; make
 RUN cd ./va/interface_CLARA_VELA ; make clean; make
 RUN #cd ./va/magnets_converter    ; make clean; make
