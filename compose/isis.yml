@@ -16,8 +16,7 @@ services:
 
   # Virtual ISIS IOCs
   isis_iocs:
-    build:
-      dockerfile: ../apps/controls/isis/
+    build: ../apps/controls/isis/
     environment:
       - PYTHONUNBUFFERED=1
       - EPICS_PVA_SERVER_PORT=${PORT:-6090}

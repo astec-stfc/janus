@@ -50,8 +50,9 @@ services:
     stdin_open: true
     tty: true
     volumes:
-      - ../common/schemas:/usr/src/app/schemas
-      - ../common/utils:/usr/src/app/common
+      # Add shared code, but read-only
+      - ../common/schemas:/usr/src/app/schemas:ro
+      - ../common/utils:/usr/src/app/common:ro
     expose:
       - 5000
     ports:
