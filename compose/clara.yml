@@ -15,20 +15,10 @@ services:
       - EPICS_CA_ADDR_LIST=ioc
       - EPICS_CA_SERVER_PORT=6090
 
-  epics_base:
-    # This service is designed to have no ENTRYPOINT
-    # so it will exit straight away on compose up!
-    # Essentially using it as a workaround to build
-    # the dependency for ioc service.
-    image: epics_base
-    build: ../apps/controls/clara/epics_base/
-
   # 'soft' versions of all CLARA IOCs
   ioc:
     build: ../apps/controls/clara/ioc/
     tty: true
-    depends_on:
-      - epics_base
     ports:
       - ${PORT:-6090}:${PORT:-6090}/tcp
       - ${PORT:-6090}:${PORT:-6090}/udp
