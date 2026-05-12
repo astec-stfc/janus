@@ -43,5 +43,5 @@ services:
       - EPICS_PVA_BROADCAST_PORT=${PORT:-6090}  # this is required to allow pvget to work in sandbox. It also doesn't have to be different to 
       - PYTHONUNBUFFERED=1
     volumes:
-      - ../common/utils:/usr/src/app/common
-      - ../common/schemas:/usr/src/app/schemas
+      - ../janus_common/utils:/usr/src/app/common
+      - ../janus_common/schemas:/usr/src/app/schemas

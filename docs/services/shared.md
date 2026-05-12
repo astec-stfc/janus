@@ -1,7 +1,7 @@
 JANUS - Shared Services
 ========================
 
-The following services pass [schema](../../common/schemas/) information between JANUS [APIs](../../apps/api) and [Control Systems](../../apps/controls/).
+The following services pass [schema](../../janus_common/schemas/) information between JANUS [APIs](../../apps/api) and [Control Systems](../../apps/controls/).
 They are designed to be facility agnostic and do not require any conversion between simulation and controls information.
 
 These services are:

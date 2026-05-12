@@ -1,7 +1,7 @@
 JANUS - CLARA to Lattice
 ========================
 
-The `clara` service is responsible for sending changes in the EPICS control system to the [Lattice API](../../apps/api/lattice/) using the [schema](../../common/schemas/) classes.
+The `clara` service is responsible for sending changes in the EPICS control system to the [Lattice API](../../apps/api/lattice/) using the [schema](../../janus_common/schemas/) classes.
 
 The EPICS settings are checked against entries in the [Lattice API](../../apps/api/lattice/) database. If there are no matching lattices, the settings are sent for tracking.
 
