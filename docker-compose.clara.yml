@@ -2,23 +2,8 @@ include:
   - compose/core.yml
   - compose/clara.yml
 
-volumes:
-
-  laura-lattices:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      devices: ${LAURA_LATTICES}
-
-  simcodes:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      devices: ${SIMCODES}
-
 services:
+
   restframe:
     extends:
       file: compose/overrides.yml

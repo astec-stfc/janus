@@ -1,13 +1,13 @@
 FROM ubuntu:22.04
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3.10 \
-    python3.10-dev \
+    python3.12 \
+    python3.12-dev \
     python3-pip \
     && rm -rf /var/lib/apt/lists/*
 
-# Make python3.10 the default
-RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.10 1 \
+# Make python3.12 the default
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.12 1 \
  && update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
 
 RUN useradd -m -d /home/web web && mkdir /home/web/.venv && \
@@ -37,7 +37,6 @@ RUN useradd -m -d /home/web web && mkdir /home/web/.venv && \
     apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/*
 
-# Create User
 WORKDIR /
 
 RUN pip install --no-cache-dir --upgrade pip && \
@@ -100,7 +99,7 @@ RUN /usr/bin/python3 -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 RUN alien -i /home/web/SDDSPython3-5.2.1-1.ubuntu.22.04.x86_64.rpm && \
-    cp -r /usr/local/lib/python3.10/dist-packages/* /home/web/.venv/lib/python3.10/site-packages/ && \
+    cp -r /usr/local/lib/python3.12/dist-packages/* /home/web/.venv/lib/python3.12/site-packages/ && \
     rm /home/web/SDDSPython3-5.2.1-1.ubuntu.22.04.x86_64.rpm && \
     alien -i /home/web/elegant-2025.2.0-1.ubuntu.22.04.mpich.x86_64.rpm && \
     rm /home/web/elegant-2025.2.0-1.ubuntu.22.04.mpich.x86_64.rpm

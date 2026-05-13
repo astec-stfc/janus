@@ -3,7 +3,7 @@ include:
   - compose/isis.yml
 
 services:
- # NOTE we can't use both include and extends - anything that needs to have overrides needs to go into a separate overrides.yml file
+
   restframe:
     extends:
       file: compose/overrides.yml
@@ -12,10 +12,16 @@ services:
       - FACILITY=ISIS
     volumes:
       - ./apps/api/restframe/ISIS:/home/web/webapp/Output/ISIS
+      -
   sandbox:
     extends:
       file: compose/overrides.yml
       service: sandbox
+    user: "janus-developer"
+    environment:
+      - EPICS_CA_SERVER_PORT=6090
+      - EPICS_PVA_NAME_SERVERS=physics_iocs:${PHYSICS_PORT:-6091}
+
   lattice_api:
     extends:
       file: compose/overrides.yml
@@ -24,6 +30,7 @@ services:
       - ./apps/api/lattice/.env.dev
     environment:
       - FACILITY=ISIS
+
   frontend:
     extends:
       file: compose/overrides.yml

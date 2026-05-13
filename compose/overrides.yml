@@ -17,8 +17,8 @@ services:
       - log_level=${log_level:-error}
       - PYTHONUNBUFFERED=1
     volumes:
-      - ../common/schemas:/home/web/webapp/schemas
-      - ../common/utils:/home/web/webapp/common
+      - ../janus_common/schemas:/home/web/webapp/schemas
+      - ../janus_common/utils:/home/web/webapp/common
 
   sandbox:
     build: 
@@ -50,8 +50,9 @@ services:
     stdin_open: true
     tty: true
     volumes:
-      - ../common/schemas:/usr/src/app/schemas
-      - ../common/utils:/usr/src/app/common
+      # Add shared code, but read-only
+      - ../janus_common/schemas:/usr/src/app/schemas:ro
+      - ../janus_common/utils:/usr/src/app/common:ro
     expose:
       - 5000
     ports:
