@@ -1,0 +1,98 @@
+generator:
+  default: clara_400_3ps
+  number_of_particles: 512
+files:
+  injector:
+    code: ASTRA
+    charge:
+      cathode: True
+      space_charge_mode: 2D
+      mirror_charge: True
+    input:
+      particle_definition: 'initial_distribution'
+    output:
+      zstart: 0
+      end_element: CLA-S02-SIM-APER-01
+  S02:
+    code: elegant
+    output:
+      start_element: CLA-S02-SIM-APER-01
+      end_element: CLA-L02-SIM-APER-01
+    input: {}
+  L02:
+    code: elegant
+    output:
+      start_element: CLA-L02-SIM-APER-01
+      end_element: CLA-S03-SIM-APER-01
+    input: {}
+  S03:
+    code: elegant
+    input: {}
+    output:
+      start_element: CLA-S03-SIM-APER-01
+      end_element: CLA-L03-SIM-APER-01
+  L03:
+    code: elegant
+    input: {}
+    output:
+      start_element: CLA-L03-SIM-APER-01
+      end_element: CLA-S04-SIM-APER-01
+  S04:
+    code: elegant
+    input: {}
+    output:
+      start_element: CLA-S04-SIM-APER-01
+      end_element: CLA-L4H-SIM-APER-01
+  L4H:
+    code: elegant
+    input: {}
+    output:
+      start_element: CLA-L4H-SIM-APER-01
+      end_element: CLA-S05-SIM-APER-01
+  S05:
+    code: elegant
+    input: {}
+    output:
+      start_element: CLA-S05-SIM-APER-01
+      end_element: CLA-S05-SIM-MARK-01
+  VBC:
+    code: elegant
+    charge:
+      cathode: False
+      space_charge_mode: 3D
+    csr:
+      csr_mode: 1D
+    input: {}
+    groups:
+      bunch_compressor:
+        dipoleangle: 0.095
+    output:
+      start_element: CLA-S05-SIM-MARK-01
+      end_element: CLA-S06-SIM-MARK-01
+  S06:
+    code: elegant
+    input: {}
+    output:
+      start_element: CLA-S06-SIM-MARK-01
+      end_element: CLA-L04-SIM-APER-01
+  L04:
+    code: elegant
+    input: {}
+    output:
+      start_element: CLA-L04-SIM-APER-01
+      end_element: CLA-S07-SIM-APER-01
+  S07:
+    code: elegant
+    input: {}
+    output:
+      start_element: CLA-S07-SIM-APER-01
+      end_element: CLA-FEA-SIM-APER-01
+groups:
+  bunch_compressor:
+    type: chicane
+    elements: [CLA-VBC-MAG-DIP-01, CLA-VBC-MAG-DIP-02, CLA-VBC-MAG-DIP-03, CLA-VBC-MAG-DIP-04]
+elements:
+  filename: [YAML/Injector400.yaml, YAML/S02.yaml, YAML/L02.yaml,
+             YAML/S03.yaml, YAML/L03.yaml, YAML/S04.yaml, YAML/L4H.yaml,
+             YAML/S05.yaml, YAML/VBC.yaml, YAML/S06.yaml, YAML/L04.yaml,
+             YAML/S07_FEBE.yaml, YAML/FEBE_ARC.yaml, YAML/FEBE5_Long_Laser_Input.yaml]

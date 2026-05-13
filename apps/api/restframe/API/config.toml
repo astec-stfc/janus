@@ -1,0 +1,17 @@
+[General]
+facility = "ISIS"
+
+[ISIS]
+runs_directory = "./Output/ISIS/"
+settings_file = "./Lattices/ISIS/MEBT/ISIS_MEBT.def"
+master_lattice = '/laura-lattices/ISIS/'
+screen_directory = './Lattices/ISIS/MEBT/screens/'
+particle = "proton"
+
+[CLARA]
+runs_directory = "./Output/CLARA/"
+settings_file = "./Lattices/CLARA/clara400_v13_combined.def"
+master_lattice = '/laura-lattices/CLARA/'
+screen_directory = './Lattices/CLARA/'
+particle = "electron"
+

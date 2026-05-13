@@ -1,0 +1,18 @@
+generator:
+  code: astra
+  default: mebt
+files:
+  MEBT:
+    code: astra
+    #model: mebt-model-1
+    charge:
+      cathode: False
+      space_charge_mode: 3D
+    input:
+      particle_definition: 'initial_distribution'
+    output:
+      zstart: 0
+      end_element: ISIS-MEBT-SIM-AP-06
+layout: "/laura-lattices/ISIS/layouts.yaml"
+section: "/laura-lattices/ISIS/sections.yaml"
+element_list: "/laura-lattices/ISIS/YAML/"
