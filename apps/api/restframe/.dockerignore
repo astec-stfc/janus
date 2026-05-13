@@ -1,0 +1,12 @@
+CLARA/
+Testing/
+.git
+.gitignore
+__pycache__
+*.pyc
+.pytest_cache
+.venv
+*.egg-info
+build/
+dist/
+node_modules/

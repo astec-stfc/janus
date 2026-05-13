@@ -1,0 +1,318 @@
+elements:
+  ISIS-MEBT-SIM-AP-01:
+    centre: [0.0, 0.0, 0]
+    shape: circular
+    type: aperture
+    radius: 0.019
+    negative_extent: 0
+    positive_extent: 2.5
+  ISIS-MEBT-SCR-01:
+    type: screen
+    centre: [0, 0, 0]
+  ISIS-MEBT-SCR-02:
+    type: screen
+    centre: [0, 0, 0.1]
+  ISIS-MEBT-SIM-AP-02:
+    centre: [0.0, 0.0, 0.1165]
+    shape: circular
+    type: aperture
+    radius: 0.015
+    negative_extent: -0.045
+    positive_extent: 0.045
+  ISIS-MEBT-CAV-01:
+    Structure_Type: StandingWave
+    centre: [0.0, 0.0, 0.1165]
+    field_amplitude: 1820000
+    field_definition: '$master_lattice_location$QWR_efielddata.dat'
+    field_reference_position: middle
+    field_type: 1DElectroDynamic
+    frequency: 202500000
+    global_rotation: [0, 0, 0]
+    n_cells: 121
+    phase: -54.4
+    crest: 0
+    type: cavity
+    smooth: 0
+  ISIS-MEBT-SCR-03:
+    type: screen
+    centre: [0, 0, 0.2]
+  ISIS-MEBT-QUAD-01:
+    type: quadrupole
+    centre: [0, 0, 0.235]
+    field_definition: '$master_lattice_location$MEBTquad_bfielddata.dat'
+    field_reference_position: middle
+    field_type: 1DQuadrupole
+    gradient: 12.06
+    smooth: 0
+    length: 0.0782
+    fringe_field_coefficient: 118.137
+  ISIS-MEBT-SCR-04:
+    type: screen
+    centre: [0, 0, 0.3]
+  ISIS-MEBT-QUAD-02:
+    type: quadrupole
+    centre: [0, 0, 0.335]
+    field_definition: '$master_lattice_location$MEBTquad_bfielddata.dat'
+    field_reference_position: middle
+    field_type: 1DQuadrupole
+    gradient: -19.73
+    smooth: 0
+    length: 0.0782
+    fringe_field_coefficient: 118.137
+  ISIS-MEBT-SCR-05:
+    type: screen
+    centre: [0, 0, 0.4]
+  ISIS-MEBT-QUAD-03:
+    type: quadrupole
+    centre: [0, 0, 0.435]
+    field_definition: '$master_lattice_location$MEBTquad_bfielddata.dat'
+    field_reference_position: middle
+    field_type: 1DQuadrupole
+    gradient: 12.97
+    smooth: 0
+    length: 0.0782
+    fringe_field_coefficient: 118.137
+  ISIS-MEBT-SCR-06:
+    type: screen
+    centre: [0, 0, 0.5]
+  ISIS-MEBT-SCR-07:
+    type: screen
+    centre: [0, 0, 0.6]
+  ISIS-MEBT-CAV-02:
+    Structure_Type: StandingWave
+    centre: [0.0, 0.0, 0.6585]
+    field_amplitude: 1180000
+    field_definition: '$master_lattice_location$QWR_efielddata.dat'
+    field_reference_position: middle
+    field_type: 1DElectroDynamic
+    frequency: 202500000
+    global_rotation: [0, 0, 0]
+    n_cells: 121
+    phase: -148.7
+    crest: 0
+    type: cavity
+    smooth: 0
+  ISIS-MEBT-SIM-AP-03:
+    centre: [0.0, 0.0, 0.6585]
+    shape: circular
+    type: aperture
+    radius: 0.015
+    negative_extent: -0.045
+    positive_extent: 0.045
+  ISIS-MEBT-SCR-08:
+    type: screen
+    centre: [0, 0, 0.7]
+  ISIS-MEBT-QUAD-04:
+    type: quadrupole
+    centre: [0, 0, 0.777]
+    field_definition: '$master_lattice_location$MEBTquad_bfielddata.dat'
+    field_reference_position: middle
+    field_type: 1DQuadrupole
+    gradient: -6.69
+    smooth: 0
+    length: 0.0782
+    fringe_field_coefficient: 118.137
+  ISIS-MEBT-SCR-09:
+    type: screen
+    centre: [0, 0, 0.8]
+  ISIS-MEBT-SCR-10:
+    type: screen
+    centre: [0, 0, 0.9]
+  ISIS-MEBT-SIM-COL-01:
+    centre: [0.0, 0.0, 0.9425]
+    shape: planar
+    type: aperture
+    horizontal_size: 0.010
+    negative_extent: -0.08
+    positive_extent: 0.08
+    vertical_size: 0
+  ISIS-MEBT-SCR-11:
+    type: screen
+    centre: [0, 0, 1.0]
+  ISIS-MEBT-SIM-SCX-01:
+    centre: [0.0, 0.0, 1.033]
+    shape: scraper
+    type: aperture
+    horizontal_size: 0.014
+    negative_extent: -0.0005
+    positive_extent: 0.0005
+    vertical_size: 0
+  ISIS-MEBT-SIM-SCX-02:
+    centre: [0.0, 0.0, 1.034]
+    shape: scraper
+    type: aperture
+    horizontal_size: 0.013
+    negative_extent: -0.0005
+    positive_extent: 0.0005
+    vertical_size: 0
+  ISIS-MEBT-SIM-SCX-03:
+    centre: [0.0, 0.0, 1.035]
+    shape: scraper
+    type: aperture
+    horizontal_size: 0.012
+    negative_extent: -0.0005
+    positive_extent: 0.0005
+    vertical_size: 0
+  ISIS-MEBT-SIM-SCX-04:
+    centre: [0.0, 0.0, 1.036]
+    shape: scraper
+    type: aperture
+    horizontal_size: 0.011
+    negative_extent: -0.0005
+    positive_extent: 0.0005
+    vertical_size: 0
+  ISIS-MEBT-SIM-SCX-05:
+    centre: [0.0, 0.0, 1.037]
+    shape: scraper
+    type: aperture
+    horizontal_size: 0.010
+    negative_extent: -0.0005
+    positive_extent: 0.0005
+    vertical_size: 0
+  ISIS-MEBT-SIM-SCX-06:
+    centre: [0.0, 0.0, 1.038]
+    shape: scraper
+    type: aperture
+    horizontal_size: 0.009
+    negative_extent: -0.0005
+    positive_extent: 0.0005
+    vertical_size: 0
+  ISIS-MEBT-SIM-SCX-07:
+    centre: [0.0, 0.0, 1.039]
+    shape: scraper
+    type: aperture
+    horizontal_size: 0.008
+    negative_extent: -0.0005
+    positive_extent: 0.0005
+    vertical_size: 0
+  ISIS-MEBT-SIM-SCX-08:
+    centre: [0.0, 0.0, 1.040]
+    shape: scraper
+    type: aperture
+    horizontal_size: 0.007
+    negative_extent: -0.0005
+    positive_extent: 0.0005
+    vertical_size: 0
+  ISIS-MEBT-SIM-SCX-09:
+    centre: [0.0, 0.0, 1.041]
+    shape: scraper
+    type: aperture
+    horizontal_size: 0.006
+    negative_extent: -0.0005
+    positive_extent: 0.0005
+    vertical_size: 0
+  ISIS-MEBT-SCR-12:
+    type: screen
+    centre: [0, 0, 1.1]
+  ISIS-MEBT-QUAD-05:
+    type: quadrupole
+    centre: [0, 0, 1.1128]
+    field_definition: '$master_lattice_location$MEBTquad_bfielddata.dat'
+    field_reference_position: middle
+    field_type: 1DQuadrupole
+    gradient: 5.58
+    smooth: 0
+    length: 0.0782
+    fringe_field_coefficient: 118.137
+  ISIS-MEBT-SCR-13:
+    type: screen
+    centre: [0, 0, 1.2]
+  ISIS-MEBT-CAV-03:
+    Structure_Type: StandingWave
+    centre: [0.0, 0.0, 1.2465]
+    field_amplitude: 650000
+    field_definition: '$master_lattice_location$QWR_efielddata.dat'
+    field_reference_position: middle
+    field_type: 1DElectroDynamic
+    frequency: 202500000
+    global_rotation: [0, 0, 0]
+    n_cells: 121
+    phase: 53.9
+    crest: 0
+    type: cavity
+    smooth: 0
+  ISIS-MEBT-SIM-AP-04:
+    centre: [0.0, 0.0, 1.2465]
+    shape: circular
+    type: aperture
+    radius: 0.015
+    negative_extent: -0.045
+    positive_extent: 0.045
+  ISIS-MEBT-SCR-14:
+    type: screen
+    centre: [0, 0, 1.3]
+  ISIS-MEBT-SCR-15:
+    type: screen
+    centre: [0, 0, 1.4]
+  ISIS-MEBT-QUAD-06:
+    type: quadrupole
+    centre: [0, 0, 1.43]
+    field_definition: '$master_lattice_location$MEBTquad_bfielddata.dat'
+    field_reference_position: middle
+    field_type: 1DQuadrupole
+    gradient: -13.78
+    smooth: 0
+    length: 0.0782
+    fringe_field_coefficient: 118.137
+  ISIS-MEBT-SCR-16:
+    type: screen
+    centre: [0, 0, 1.5]
+  ISIS-MEBT-QUAD-07:
+    type: quadrupole
+    centre: [0, 0, 1.53]
+    field_definition: '$master_lattice_location$MEBTquad_bfielddata.dat'
+    field_reference_position: middle
+    field_type: 1DQuadrupole
+    gradient: 17.45
+    smooth: 0
+    length: 0.0782
+    fringe_field_coefficient: 118.137
+  ISIS-MEBT-SCR-17:
+    type: screen
+    centre: [0, 0, 1.6]
+  ISIS-MEBT-QUAD-08:
+    type: quadrupole
+    centre: [0, 0, 1.63]
+    field_definition: '$master_lattice_location$MEBTquad_bfielddata.dat'
+    field_reference_position: middle
+    field_type: 1DQuadrupole
+    gradient: -10.74
+    smooth: 0
+    length: 0.0782
+    fringe_field_coefficient: 118.137
+  ISIS-MEBT-SCR-18:
+    type: screen
+    centre: [0, 0, 1.7]
+  ISIS-MEBT-CAV-04:
+    Structure_Type: StandingWave
+    centre: [0.0, 0.0, 1.7485]
+    field_amplitude: 1610000
+    field_definition: '$master_lattice_location$QWR_efielddata.dat'
+    field_reference_position: middle
+    field_type: 1DElectroDynamic
+    frequency: 202500000
+    global_rotation: [0, 0, 0]
+    n_cells: 121
+    phase: 60.9
+    crest: 0
+    type: cavity
+    smooth: 0
+  ISIS-MEBT-SIM-AP-05:
+    centre: [0.0, 0.0, 1.7485]
+    shape: circular
+    type: aperture
+    radius: 0.015
+    negative_extent: -0.045
+    positive_extent: 0.045
+  ISIS-MEBT-SCR-19:
+    type: screen
+    centre: [0, 0, 1.8]
+  ISIS-MEBT-SCR-20:
+    type: screen
+    centre: [0, 0, 1.9]
+  ISIS-MEBT-SCR-21:
+    type: screen
+    centre: [0, 0, 2.0]
+  ISIS-MEBT-SCR-22:
+    type: screen
+    centre: [0, 0, 2.04]

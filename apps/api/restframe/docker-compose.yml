@@ -1,0 +1,10 @@
+services:
+  web_restframe:
+#    image: cssi-repository.dl.ac.uk:1443/repository/docker_store/restframe:1.6
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./API:/home/web/webapp
+      - ./CLARA:/home/web/webapp/CLARA
+      - ./ISIS:/home/web/webapp/ISIS

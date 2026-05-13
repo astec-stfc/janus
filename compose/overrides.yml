@@ -1,0 +1,80 @@
+services:
+  # RESTFRAME handles the distribution of simulations to SimFrame instances
+  restframe:    
+    build: 
+      context: ../apps/api/restframe/
+      ssh:
+        - default
+    ports:
+      - 8000:8000
+    expose:
+      - 8000
+    healthcheck:
+      test: wget --no-verbose -O /dev/null --tries=1 http://restframe:8000/lattice/ || exit 1
+      interval: 1s
+      timeout: 5s
+    environment:
+      - log_level=${log_level:-error}
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ../janus_common/schemas:/home/web/webapp/schemas
+      - ../janus_common/utils:/home/web/webapp/common
+
+  sandbox:
+    build: 
+      context: ../sandbox/
+      ssh:
+        - default
+    tty: true
+    environment:
+      - EPICS_CA_AUTO_ADDR_LIST=NO
+      - EPICS_CA_ADDR_LIST=ioc # 192.168.83.255 (from ioc service)
+      - EPICS_CA_MAX_ARRAY_BYTES=1000000000
+      - EPICS_CA_SERVER_PORT=${PORT:-6090} # 6090 (from ioc service)
+      - EPICS_PVA_BROADCAST_PORT=${PORT:-6090} # to allow udp coms inside the stack
+      - EPICS_PVA_AUTO_ADDR_LIST=YES
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ../sandbox/workspace:/home/janus-developer/workspace
+    stdin_open: true
+    user: "janus-developer" 
+    command: -c "jupyter lab --ip=0.0.0.0 --port=8889 --no-browser --allow-root --NotebookApp.token='' --NotebookApp.password=''"
+    ports:
+      - "8889:8889"  # Expose port 8889 for Jupyter Lab inside the container
+
+
+
+  # lattice API handles the storage and transport of the Lattice objects
+  lattice_api:
+    build: ../apps/api/lattice/
+    stdin_open: true
+    tty: true
+    volumes:
+      # Add shared code, but read-only
+      - ../janus_common/schemas:/usr/src/app/schemas:ro
+      - ../janus_common/utils:/usr/src/app/common:ro
+    expose:
+      - 5000
+    ports:
+      - 1337:5000
+    environment:
+      - log_level=${log_level:-error}
+    depends_on:
+      - lattice_db
+      - restframe
+    healthcheck:
+      test: wget --no-verbose -O /dev/null --tries=1 http://lattice_api:5000/v1/ || exit 1
+      interval: 1s
+      timeout: 5s
+
+  frontend:
+    build: ../apps/web/frontend/
+    ports:
+      - 5173:5173
+    volumes:
+      - ../apps/web/frontend:/app # allows for hot reload
+      # override: use node_modules from image that we copied over, not from host pc
+      # so changes to node_modules not hot reloadable.
+      - /app/node_modules
+    depends_on:
+      - lattice_api

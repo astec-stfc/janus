@@ -1,0 +1,16 @@
+services:
+
+  isis_ioc:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/src/app
+    # NOTE ports aren't needed when accessing the PVs from within the same stack
+    # ports are only needed when accessing the PVs from outside the container 
+    # e.g. using badger
+    # ports:
+    #   - 5075:5075  # host:container
+
+  epics:
+    image: harbor.stfc.ac.uk/isis-accelerator-controls/epics-base:latest

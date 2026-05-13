@@ -1,0 +1,14 @@
+PCO:
+  pix_size_x: 13.0e-6
+  pix_size_y: 13.0e-6
+  central_pix_x: 1280
+  central_pix_y: 1080
+  n_pix_x: 2560
+  n_pix_y: 2160
+MANTA:
+  pix_size_x: 30.0e-6
+  pix_size_y: 30.0e-6
+  central_pix_x: 968
+  central_pix_y: 608
+  n_pix_x: 1936
+  n_pix_y: 1216

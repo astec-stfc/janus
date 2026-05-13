@@ -1,0 +1,12 @@
+pix_size_x:
+  catap_name: ARRAY_DATA_X_PIX_2_MM
+  scale: 1e-3
+pix_size_y:
+  catap_name: ARRAY_DATA_Y_PIX_2_MM
+  scale: 1e-3
+central_pix_x:
+  catap_name: OPERATING_CENTER_X
+  scale: 1
+central_pix_y:
+  catap_name: OPERATING_CENTER_Y
+  scale: 1
