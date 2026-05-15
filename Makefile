@@ -1,4 +1,5 @@
 COMPOSE_FILE ?= docker-compose.clara.yml
+FACILITY ?= CLARA
 REMOVE_ORPHANS ?=
 IMAGE ?= ghcr.io/adb-xkc85723/janus-base:latest
 
@@ -18,7 +19,7 @@ push: build
 	docker push $(IMAGE)
 
 up:
-	docker compose -f $(COMPOSE_FILE) up --build
+	FACILITY=$(FACILITY) docker compose -f $(COMPOSE_FILE) up --build
 
 down:
 	docker compose -f $(COMPOSE_FILE) down --volumes $(REMOVE_ORPHANS)

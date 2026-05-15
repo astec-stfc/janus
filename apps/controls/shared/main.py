@@ -466,6 +466,10 @@ def main():
         ],
     )
     lattice_instance: elements.Lattice = lattice.lattice
+    pvs[f"{lattice_instance.facility}:SIM:SEED"] = make_shared_pv_from_type(
+        py_type=int,
+        initial_value=0,
+    )
     sim_code_name = f"SIM-{lattice_instance.facility}:UUID"
     initial_code_value = ""
     sim_code_pv = make_shared_pv_from_type(

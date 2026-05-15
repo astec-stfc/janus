@@ -73,10 +73,35 @@ services:
       - ../janus_common/utils:/usr/src/app/common
       - ../janus_common/schemas:/usr/src/app/schemas
 
+  # 'soft' versions of all CLARA IOCs
+  ioc:
+    build:
+      context: ../apps/controls/shared/
+      dockerfile: Dockerfile-soft-ioc
+      ssh:
+        - default
+      args:
+        FACILITY: ${FACILITY}
+    tty: true
+    ports:
+      - ${PORT:-6090}:${PORT:-6090}/tcp
+      - ${PORT:-6090}:${PORT:-6090}/udp
+      - 6092:6092/tcp
+    environment:
+      - EPICS_CA_SERVER_PORT=${PORT:-6090}
+      - EPICS_CAS_SERVER_PORT=${PORT:-6090}
+      - EPICS_CA_AUTO_ADDR_LIST=NO
+      - EPICS_CA_ADDR_LIST=localhost
+      - EPICS_PVA_AUTO_ADDR_LIST=YES
+      - EPICS_PVA_ADDR_LIST=""
+      - EPICS_PVAS_SERVER_PORT=6092
+      - EPICS_PVA_SERVER_PORT=6092
+
   # Soft PVA IOCs containing simulation results 
   physics_iocs:
     build: 
       context: ../apps/controls/shared/
+      dockerfile: Dockerfile
       ssh:
         - default
     entrypoint: /src/app/entrypoint.sh

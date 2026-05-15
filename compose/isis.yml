@@ -6,7 +6,6 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - isis_iocs
       - physics_iocs
     environment:
       # See https://github.com/ornl-epics/pvws
@@ -14,30 +13,12 @@ services:
       - PV_WRITE_SUPPORT=true
       - EPICS_PVA_NAME_SERVERS=physics_iocs:6091 isis_iocs:6090
 
-  # Virtual ISIS IOCs
-  isis_iocs:
-    build:
-      dockerfile: ../apps/controls/isis/
-    environment:
-      - PYTHONUNBUFFERED=1
-      - EPICS_PVA_SERVER_PORT=${PORT:-6090}
-      - EPICS_PVAS_SERVER_PORT=${PORT:-6090}
-      - EPICS_PVA_BROADCAST_PORT=${PORT:-6090}  # this is required to allow pvget to work in sandbox
-      - EPICS_PVA_AUTO_ADDR_LIST=YES
-      - EPICS_PVAS_INTF_ADDR_LIST=
-      - EPICS_PVA_ADDR_LIST=
-    ports:
-      - ${PORT:-6090}:${PORT:-6090}/tcp
-      - ${PORT:-6090}:${PORT:-6090}/udp
-    volumes:
-      - ../apps/controls/isis:/src/app
-
   # Managing connection between changes to Virtual PVs and the rest of the services
   isis_to_lattice:
     build: ../services/isis/
     depends_on:
       - lattice_api
-      - isis_iocs
+      - physics_iocs
     environment:
       - EPICS_PVA_AUTO_ADDR_LIST=YES
       # - EPICS_PVA_NAME_SERVERS=isis_iocs:${PORT:-6090} #
