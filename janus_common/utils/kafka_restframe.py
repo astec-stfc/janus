@@ -17,17 +17,16 @@ class API(KafkaAPI):
         port: int = constants.KAFKA_PORT,
         rest_frame_host: str = f"http://{constants.HOST_WEB_RESTFRAME}",
         rest_frame_port: int = constants.PORT_RESTFRAME,
-        group_id='group_api'
-        
+        group_id="group_api",
     ):
-        super().__init__(host=host,port=port,group_id=group_id)
- 
+        super().__init__(host=host, port=port, group_id=group_id)
+
         self.baseurl = f"{rest_frame_host}:{rest_frame_port}/"
         self.headers = {"accept": "application/json"}
 
-    def add_lattice(self,lattice: Lattice):
+    def add_lattice(self, lattice: Lattice):
         add_lattice(lattice)
-        self.send_over_lattice("v1_lattice",lattice)
+        self.send_over_lattice("v1_lattice", lattice)
 
     def initialise(self, **kwargs):
         url = self.baseurl + "new"

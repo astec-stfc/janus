@@ -1,6 +1,6 @@
 fastapi[all]
 sqlalchemy
-psycopg2==2.9.10
+psycopg2-binary==2.9.10
 requests
 numpy
 strawberry-graphql[fastapi]

@@ -1,5 +1,5 @@
 # pull python base image
-FROM python:3.10
+FROM python:3.12-bookworm
 
 # set work directory
 WORKDIR /usr/src/app
@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y netcat-traditional
 
 # install python deps
 RUN pip install --upgrade pip
-RUN pip install --upgrade wheel 
+RUN pip install --upgrade wheel
 RUN pip install --upgrade setuptools
 COPY ./requirements.txt /usr/src/app/requirements.txt
 RUN pip install -r requirements.txt

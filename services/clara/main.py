@@ -12,6 +12,7 @@ from common.kafka_restframe import API
 from set_lattice_from_epics import EPICSToLattice
 from set_epics_from_lattice import LatticeToEPICS
 
+
 class Sender(API):
     def __init__(self):
         super().__init__(group_id="epics-to-lattice")
@@ -20,7 +21,6 @@ class Sender(API):
         self.e2l = EPICSToLattice()
         self.l2e = LatticeToEPICS()
 
-    
     def get_current_lattice(self) -> Lattice:
         return get_lattice()
 
@@ -44,7 +44,7 @@ class Sender(API):
             section_filters = self.e2l.build_section_filters()
             initial_condition_sections = self.e2l.initial_condition_sections
             generator_filter = self.e2l.build_generator_filters()
-            
+
             # Make GraphQL query to find_lattices
             query = """
             query FindLattices($facility: String!, $setInitialConditions: String!,  $magnetFilter: [MagnetInput!]!, $cavityFilter: [CavityInput!]!, $sectionFilter: [SectionInput!]!, $generatorFilter: GeneratorInput!) {
@@ -95,7 +95,6 @@ class Sender(API):
             print(f"Error checking lattice: {e}")
             return False, None
 
-
     def on_msg(self, uuid, message):
         handlers = {
             "lattice_added": self._handle_lattice_added,
@@ -112,7 +111,7 @@ class Sender(API):
 
     def _handle_lattice_sent(self, uuid, message):
         self.lattice_sent = True
-    
+
     def initialise(self, lattice: Lattice) -> None:
         self.l2e.initialise_all_magnets(lattice=current_lattice)
         print("initialised magnets")
@@ -142,8 +141,7 @@ class Sender(API):
             existing_lattice = self.get_lattice(uuid)
             if current_lattice.uuid != existing_lattice.uuid:
                 print(f"Found previous run: {existing_lattice.uuid}")
-                send_prior_settings(existing_lattice) 
-
+                send_prior_settings(existing_lattice)
 
     def loop(self) -> None:
         if not self.e2l.is_tracking:

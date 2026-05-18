@@ -29,10 +29,11 @@ from schemas.elements import (
     Beam,
     Element,
     InitialConditions,
-    Generator
+    Generator,
 )
 
-sys.path.append("../../simframe")
+sys.path.insert(0, "/laura")
+sys.path.insert(0, "/simba")
 sys.path.insert(0, "/simcodes")
 # import SimulationFramework.Framework as fw
 # import SimulationFramework.Modules.constants as cons
@@ -128,7 +129,9 @@ class SimFrame_Interface:
                         self.framework[e.name].aperture.horizontal_size = 1.0
                         self.framework[e.name].aperture.vertical_size = 1.0
         self.framework.original_elementObjects = deepcopy(self.framework.elementObjects)
-        self.framework.original_elementObjects["generator"] = deepcopy(self.framework.generator)
+        self.framework.original_elementObjects["generator"] = deepcopy(
+            self.framework.generator
+        )
         data.RESTData(list(self.framework.latticeObjects.keys()))
         self.changeclass = data.ChangesClass(os.path.abspath(self.runs_directory))
         self.prefixesclass = data.PrefixesClass(os.path.abspath(self.runs_directory))
@@ -230,15 +233,15 @@ class SimFrame_Interface:
             }
             elemcentroid.update({"t": twiss["t"]})
             elemcentroid.update({"cp": twiss["cp"]})
-            elemcentroid.update(
-                {"gamma": twiss["cp"] / 1e6 / self.rest_mass_mev}
-            )
+            elemcentroid.update({"gamma": twiss["cp"] / 1e6 / self.rest_mass_mev})
             # self.elemcentroid.update({'q': self.elembeam.total_charge.val})
             elem.centroid = Centroid(**elemcentroid)
 
             if hasattr(elem, "beam") and os.path.isfile(self.basename):
                 elem.beam = self.get_beam(name, force=True)
-            if hasattr(elem, "camera") and isinstance(self.framework[name], laura_screen):
+            if hasattr(elem, "camera") and isinstance(
+                self.framework[name], laura_screen
+            ):
                 elem.camera.sigma = elem.sigma
                 elem.camera.centroid = elem.centroid
                 elem.camera.analysis.sigma = elem.sigma
@@ -276,15 +279,21 @@ class SimFrame_Interface:
 
     def check_section_success(self, section: Section) -> bool:
         """
-           check if the tracking for a section was successful by checking if
-           all of the screen hdf files were generated for that section
+        check if the tracking for a section was successful by checking if
+        all of the screen hdf files were generated for that section
         """
         all_screens_exist = True
         for screen in section.screens:
             if not os.path.exists(
-                    self.runs_directory + str(section.uuid) + "/" + screen.name + ".openpmd.hdf5"
+                self.runs_directory
+                + str(section.uuid)
+                + "/"
+                + screen.name
+                + ".openpmd.hdf5"
             ):
-                print(f"Screen file not found for {screen.name} in section {section.name}")
+                print(
+                    f"Screen file not found for {screen.name} in section {section.name}"
+                )
                 all_screens_exist = False
         return all_screens_exist
 
@@ -303,7 +312,9 @@ class SimFrame_Interface:
             section.model = self.framework[section.name].code
             try:
                 fw_tw = {}
-                tw_set = self.framework.settings["files"][section.name]["input"]["twiss"]
+                tw_set = self.framework.settings["files"][section.name]["input"][
+                    "twiss"
+                ]
                 for tw in ["beta", "alpha", "nemit"]:
                     for plane in ["x", "y"]:
                         fw_tw.update({f"{tw}_{plane}": tw_set[f"{tw}_{plane}"]})
@@ -368,8 +379,18 @@ class SimFrame_Interface:
                 )
             )
             if lattice in self.set_initial_conditions:
-                params = ["beta_x", "beta_y", "alpha_x", "alpha_y", "nemit_x", "nemit_y"]
-                init_tw = {p: self.framework.settings["files"][lattice]["input"]["twiss"][p] for p in params}
+                params = [
+                    "beta_x",
+                    "beta_y",
+                    "alpha_x",
+                    "alpha_y",
+                    "nemit_x",
+                    "nemit_y",
+                ]
+                init_tw = {
+                    p: self.framework.settings["files"][lattice]["input"]["twiss"][p]
+                    for p in params
+                }
                 lattice_changes.update({"initial_conditions": init_tw})
             if len(lattice_changes) > 0 and self.verbose:
                 print(f"lattice_changes \t {lattice_changes}")
@@ -414,34 +435,63 @@ class SimFrame_Interface:
                         continue
                     if fw_obj.name not in groupelems:
                         if fw_obj.__class__.__name__.lower() in data.sf_mapping.keys():
-                            for req, par in data.sf_mapping[fw_obj.__class__.__name__.lower()].items():
+                            for req, par in data.sf_mapping[
+                                fw_obj.__class__.__name__.lower()
+                            ].items():
                                 if req == "KnL":
                                     for i, val in enumerate(lat_elem.KnL):
                                         # if i == 0 and (v.objecttype in ["dipole"]):
                                         #     setattr(v, "angle", val)
-                                        if i == 1 and (fw_obj.__class__.__name__.lower() == "quadrupole"):
-                                            setattr(fw_obj, "k1l", data.round_it(val * fw_obj.magnetic.length, data.sigfig))
-                                if fw_obj.__class__.__name__.lower() == "quadrupole" and hasattr(lat_elem, "gradient"):
-                                    setattr(fw_obj.magnetic, "gradient", lat_elem.gradient)
+                                        if i == 1 and (
+                                            fw_obj.__class__.__name__.lower()
+                                            == "quadrupole"
+                                        ):
+                                            setattr(
+                                                fw_obj,
+                                                "k1l",
+                                                data.round_it(
+                                                    val * fw_obj.magnetic.length,
+                                                    data.sigfig,
+                                                ),
+                                            )
+                                if (
+                                    fw_obj.__class__.__name__.lower() == "quadrupole"
+                                    and hasattr(lat_elem, "gradient")
+                                ):
+                                    setattr(
+                                        fw_obj.magnetic, "gradient", lat_elem.gradient
+                                    )
                                 if fw_obj.__class__.__name__.lower() == "rfcavity":
                                     if req == "field_amplitude":
                                         factor = 1
-                                        if fw_obj.structure_Type == "TravellingWave" and fw_obj.n_cells > 2:
+                                        if (
+                                            fw_obj.structure_Type == "TravellingWave"
+                                            and fw_obj.n_cells > 2
+                                        ):
                                             factor = 1 / float(
                                                 (self.get_cells(fw_obj) + 3.8)
                                                 * fw_obj.cavity.cell_length
                                                 * (1 / sqrt(2))
                                             )
-                                        setattr(fw_obj, req, data.round_it(getattr(lat_elem, req) * factor, data.sigfig))
+                                        setattr(
+                                            fw_obj,
+                                            req,
+                                            data.round_it(
+                                                getattr(lat_elem, req) * factor,
+                                                data.sigfig,
+                                            ),
+                                        )
                                 if req == "phase":
                                     setattr(fw_obj, req, getattr(lat_elem, req))
-                if sec.name in lattice.set_initial_conditions.split(','):
+                if sec.name in lattice.set_initial_conditions.split(","):
                     fw_tw = {}
                     for tw in ["beta", "alpha", "nemit"]:
                         for plane in ["x", "y"]:
                             nam = f"{tw}_{plane}"
                             fw_tw.update({nam: getattr(sec.initial_conditions, nam)})
-                    self.framework.settings["files"][sec.name]["input"].update({"twiss": fw_tw})
+                    self.framework.settings["files"][sec.name]["input"].update(
+                        {"twiss": fw_tw}
+                    )
                 self.framework.settings["files"][sec.name]["code"] = sec.model
                 self.framework[sec.name].code = sec.model
                 self.framework.change_Lattice_Code(sec.name, sec.model)
@@ -497,7 +547,9 @@ class SimFrame_Interface:
                                 magnets=lattice_elements["magnets"],
                                 cavities=lattice_elements["cavities"],
                                 model=self.framework[lat].code,
-                                initial_conditions=lattice_elements["initial_conditions"],
+                                initial_conditions=lattice_elements[
+                                    "initial_conditions"
+                                ],
                             )
                         }
                     )
@@ -508,7 +560,10 @@ class SimFrame_Interface:
             # try:
             schemalattice = Section()
             latelems = []
-            if isinstance(self.framework[lattice], frameworkLattice) and self.framework[lattice].elements:
+            if (
+                isinstance(self.framework[lattice], frameworkLattice)
+                and self.framework[lattice].elements
+            ):
                 keys = self.framework[lattice].elements.keys()
                 for k, v in self.framework[lattice].elements.items():
                     if v.__class__.__name__.lower() in data.sf_mapping.keys():
@@ -530,10 +585,20 @@ class SimFrame_Interface:
                                 for nam in sfmap["KnL"]:
                                     if nam is not None:
                                         if v.__class__.__name__.lower() == "quadrupole":
-                                            strengths.append(data.round_it(getattr(v, nam) / v.magnetic.length, data.sigfig))
+                                            strengths.append(
+                                                data.round_it(
+                                                    getattr(v, nam) / v.magnetic.length,
+                                                    data.sigfig,
+                                                )
+                                            )
                                             continue
                                         elif v.__class__.__name__.lower() == "dipole":
-                                            strengths.append(data.round_it(degrees(getattr(v, nam)), data.sigfig))
+                                            strengths.append(
+                                                data.round_it(
+                                                    degrees(getattr(v, nam)),
+                                                    data.sigfig,
+                                                )
+                                            )
                                         else:
                                             strengths.append(getattr(v, nam))
                                     else:
@@ -546,19 +611,24 @@ class SimFrame_Interface:
                                     params.update({req: getattr(v, req)})
                                 except AttributeError:
                                     params.update({req: getattr(v.magnetic, req)})
-                                if (
-                                    sfmap["type"] == Cavity
-                                ) and (req == "field_amplitude"):
+                                if (sfmap["type"] == Cavity) and (
+                                    req == "field_amplitude"
+                                ):
                                     if v.__class__.__name__.lower() == "rfcavity":
                                         if v.cavity.structure_Type == "TravellingWave":
-                                            params["field_amplitude"] = data.round_it(float(
-                                            (self.get_cells(v) + 3.8)
-                                            * v.cavity.cell_length
-                                            * (1 / sqrt(2))
-                                            * v.simulation.field_amplitude
-                                        ), data.sigfig)
+                                            params["field_amplitude"] = data.round_it(
+                                                float(
+                                                    (self.get_cells(v) + 3.8)
+                                                    * v.cavity.cell_length
+                                                    * (1 / sqrt(2))
+                                                    * v.simulation.field_amplitude
+                                                ),
+                                                data.sigfig,
+                                            )
                                     else:
-                                        params["field_amplitude"] = data.round_it(float(v.field_amplitude), data.sigfig)
+                                        params["field_amplitude"] = data.round_it(
+                                            float(v.field_amplitude), data.sigfig
+                                        )
                         for pk, pv in params.items():
                             if isinstance(pv, float):
                                 if abs(pv) > 0.0:
@@ -590,15 +660,19 @@ class SimFrame_Interface:
                 schemalattice.model = self.framework[lattice].code
                 schemalattice.initial_conditions = None
                 if (
-                        "input" in self.framework[lattice]
-                        and "twiss" in self.framework[lattice]["input"]
-                        and self.framework[lattice]["input"]["twiss"]
+                    "input" in self.framework[lattice]
+                    and "twiss" in self.framework[lattice]["input"]
+                    and self.framework[lattice]["input"]["twiss"]
                 ):
                     schemalattice.initial_conditions = InitialConditions()
                     for tw in ["beta", "alpha", "nemit"]:
                         for plane in ["x", "y"]:
                             nam = f"{tw}_{plane}"
-                            setattr(schemalattice.initial_conditions, nam, self.framework[lattice]["input"]["twiss"][nam])
+                            setattr(
+                                schemalattice.initial_conditions,
+                                nam,
+                                self.framework[lattice]["input"]["twiss"][nam],
+                            )
                 return {
                     "screens": schemalattice.screens,
                     "markers": schemalattice.markers,
@@ -734,10 +808,14 @@ class SimFrame_Interface:
                 try:
                     self._current_start_section = startfile
                     for f in frameworkcopy.latticeObjects.keys():
-                        frameworkcopy[f].global_parameters["master_subdir"] = self.runs_directory + str(uuid)
+                        frameworkcopy[f].global_parameters["master_subdir"] = (
+                            self.runs_directory + str(uuid)
+                        )
                         if hasattr(frameworkcopy[f], "headers"):
                             for h in frameworkcopy[f].headers:
-                                frameworkcopy[f].headers[h].global_parameters["master_subdir"] = self.runs_directory + str(uuid)
+                                frameworkcopy[f].headers[h].global_parameters[
+                                    "master_subdir"
+                                ] = self.runs_directory + str(uuid)
                     frameworkcopy.track(startfile=startfile, endfile=endfile)
                 except Exception as e:
                     print("TRACKING: Problem during tracking!")
@@ -970,8 +1048,7 @@ class SimFrame_Interface:
             cav.cavity.n_cells == 0 or cav.cavity.n_cells is None
         ) and cav.cavity.cell_length > 0:
             cells = round(
-                (cav.physical.length - cav.cavity.cell_length)
-                / cav.cavity.cell_length
+                (cav.physical.length - cav.cavity.cell_length) / cav.cavity.cell_length
             )
             cells = int(cells - (cells % 3))
         elif cav.cavity.n_cells:

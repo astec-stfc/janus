@@ -16,7 +16,9 @@ class Handler:
         # Note that timestamps are not automatically handled so we may need to set them ourselves
         if not op.value().raw.changed("timeStamp"):
             timestamp = time.time()
-            pv.post(op.value(), timestamp=timestamp)  # just store and update subscribers
+            pv.post(
+                op.value(), timestamp=timestamp
+            )  # just store and update subscribers
         else:
             pv.post(op.value())
         op.done()

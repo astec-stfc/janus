@@ -1,6 +1,5 @@
-FROM python:3.11
-
-RUN apt-get update && apt-get install -y iputils-ping
+FROM python:3.12-slim
+RUN apt-get update && apt-get install -y curl iputils-ping
 
 # set work directory
 WORKDIR /usr/src/app

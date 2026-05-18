@@ -8,6 +8,7 @@ import requests
 from common.kafka_restframe import API
 from common.comms_handler import get_lattice
 
+
 class Sender(API):
 
     def __init__(self):
@@ -36,12 +37,16 @@ class Sender(API):
                         for section in lattice.sections.values()
                     ]
                     [
-                        updates.extend(self.get_section_simulation_codes(section=section))
+                        updates.extend(
+                            self.get_section_simulation_codes(section=section)
+                        )
                         for section in lattice.sections.values()
                     ]
                     for section in lattice.sections.values():
                         if section.name in lattice.set_initial_conditions:
-                            updates.extend(self.get_section_initial_conditions(section=section))
+                            updates.extend(
+                                self.get_section_initial_conditions(section=section)
+                            )
                     updates.extend(self.get_lattice_beam_summary(lattice=lattice))
                     # updates.extend(self.get_lattice_set_initial_conditions(lattice=lattice))
                     updates.extend(self.get_lattice_generator(lattice=lattice))
@@ -236,7 +241,7 @@ class Sender(API):
             "lattice_added": self._handle_lattice_added,
             "lattice_updated": self._handle_lattice_updated,
         }
-        
+
         handler = handlers.get(message.topic)
         if handler:
             handler(uuid, message)
@@ -249,20 +254,21 @@ class Sender(API):
 
     def _handle_lattice_added(self, uuid, message):
         """Handle the lattice added message by setting the results for the new lattice"""
-        uuid = uuid['uuid']
+        uuid = uuid["uuid"]
         self.set_results(uuid=uuid)
 
     def _handle_lattice_updated(self, uuid, message):
         """Handle the lattice updated message by setting the results for the lattice"""
         print("Lattice updated message received, updating results")
         print("Message UUID: ", uuid)
-        uuid=uuid['uuid']
+        uuid = uuid["uuid"]
         self.set_results(uuid=uuid)
 
     def initialise(self):
         while not self.epics_helper.is_epics_alive:
             time.sleep(0.5)
         print("Simulation PVs are available.")
+
 
 if __name__ == "__main__":
     sender = Sender()
