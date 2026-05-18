@@ -1,4 +1,6 @@
-FROM python:3.11
+FROM python:3.12-bookworm
+
+RUN apt-get update && apt-get install -y curl
 
 RUN apt-get update && apt-get install -y iputils-ping
 # set work directory

@@ -281,48 +281,52 @@ def make_shared_pv_from_type(
     elif get_origin(py_type) is Literal:
         # Handle typing.Literal types
         literal_values = get_args(py_type)
-        
+
         if not literal_values:
             raise ValueError("Literal type must have at least one value")
-        
+
         # Determine the base type from the literal values
         value_types = set(type(val) for val in literal_values)
-        
+
         if not all(isinstance(val, (str, int, float)) for val in literal_values):
             raise ValueError(
                 f"Literal types only support str, int, or float values. "
                 f"Got types: {value_types}"
             )
-        
+
         # If all values are strings
         if all(isinstance(val, str) for val in literal_values):
             # Use the same approach as EnumBuilder for NTEnum
             builder = EnumBuilder()
             enum_choices = [value for value in literal_values]
             return builder.make_pv(choices=enum_choices)
-        
+
         # If all values are integers
         elif all(isinstance(val, int) for val in literal_values):
             nt = NTScalar("i", display=True)
             initial = {
-                "value": initial_value if initial_value is not None else literal_values[0],
+                "value": (
+                    initial_value if initial_value is not None else literal_values[0]
+                ),
                 "display.description": "",
                 "timeStamp.secondsPastEpoch": seconds,
                 "timeStamp.nanoseconds": nanoseconds,
             }
             return SharedPV(nt=nt, initial=initial, handler=handler)
-        
+
         # If all values are floats
         elif all(isinstance(val, float) for val in literal_values):
             nt = NTScalar("d", display=True)
             initial = {
-                "value": initial_value if initial_value is not None else literal_values[0],
+                "value": (
+                    initial_value if initial_value is not None else literal_values[0]
+                ),
                 "display.description": "",
                 "timeStamp.secondsPastEpoch": seconds,
                 "timeStamp.nanoseconds": nanoseconds,
             }
             return SharedPV(nt=nt, initial=initial, handler=handler)
-        
+
         else:
             raise ValueError(
                 f"Literal contains mixed types: {value_types}. "
@@ -511,7 +515,7 @@ def main():
             except KeyboardInterrupt:
                 print("Server stopped by user.")
                 server.stop()
-                
+
                 break
 
 

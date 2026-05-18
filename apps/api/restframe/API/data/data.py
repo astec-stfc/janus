@@ -154,7 +154,7 @@ def RESTData(latticeObjects_names):
         uuid=(str, ...),
         prefix=(str | None, None),
         **lattices,
-        hash=(str | None, None)
+        hash=(str | None, None),
     )
 
     class ChangesData(ChangesDataBase):
@@ -426,7 +426,7 @@ def RESTData(latticeObjects_names):
                             lattice: {
                                 "uuid": self.get_lattice_prefix(lattice),
                                 "model": lat.model,
-                                "initial_conditions": lat.initial_conditions
+                                "initial_conditions": lat.initial_conditions,
                             }
                         }
                     )

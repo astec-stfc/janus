@@ -11,4 +11,4 @@ done
 echo "Lattice Sections Populated...";
 
 
-/usr/local/bin/python main.py
+python3 main.py

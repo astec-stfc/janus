@@ -4,12 +4,13 @@ from pydantic import (
     Field,
     field_serializer,
     field_validator,
-    model_validator
+    model_validator,
 )
 
 from typing import List, Dict, Union, Type, Optional, Literal
 from enum import Enum
 from math import log10, floor
+
 
 def round_it(x, sig):
     if x is None:
@@ -22,6 +23,7 @@ def round_it(x, sig):
 ########################################################################
 #                              Data Classes                            #
 ########################################################################
+
 
 class InitialConditions(BaseModel):
     model_config = ConfigDict(
@@ -74,7 +76,6 @@ class Twiss(BaseModel):
             else:
                 field_names.append(k)
         return field_names
-
 
 
 class Sigma(BaseModel):
@@ -149,6 +150,7 @@ class CameraAnalysis(BaseModel):
 #                             Element Classes                          #
 ########################################################################
 
+
 class Generator(BaseModel):
 
     model_config = ConfigDict(
@@ -166,12 +168,24 @@ class Generator(BaseModel):
     charge: float
     # reference_position: float = 0.0
     initial_momentum: float = 0.0
-    distribution_type_x: Literal["p", "plateau", "flattop", "g", "gaussian", "i", "r", "radial"] = "g"
-    distribution_type_px: Literal["p", "plateau", "flattop", "g", "gaussian", "i", "r", "radial"] = "g"
-    distribution_type_y: Literal["p", "plateau", "flattop", "g", "gaussian", "i", "r", "radial"] = "g"
-    distribution_type_py: Literal["p", "plateau", "flattop", "g", "gaussian", "i", "r", "radial"] = "g"
-    distribution_type_z: Literal["p", "plateau", "flattop", "g", "gaussian", "i", "r", "radial"] = "g"
-    distribution_type_pz: Literal["p", "plateau", "flattop", "g", "gaussian", "i", "r", "radial"] = "g"
+    distribution_type_x: Literal[
+        "p", "plateau", "flattop", "g", "gaussian", "i", "r", "radial"
+    ] = "g"
+    distribution_type_px: Literal[
+        "p", "plateau", "flattop", "g", "gaussian", "i", "r", "radial"
+    ] = "g"
+    distribution_type_y: Literal[
+        "p", "plateau", "flattop", "g", "gaussian", "i", "r", "radial"
+    ] = "g"
+    distribution_type_py: Literal[
+        "p", "plateau", "flattop", "g", "gaussian", "i", "r", "radial"
+    ] = "g"
+    distribution_type_z: Literal[
+        "p", "plateau", "flattop", "g", "gaussian", "i", "r", "radial"
+    ] = "g"
+    distribution_type_pz: Literal[
+        "p", "plateau", "flattop", "g", "gaussian", "i", "r", "radial"
+    ] = "g"
     sigma_x: float = Field(gt=0.0)
     sigma_px: float = Field(ge=0.0, default=0.0)
     sigma_y: float = Field(gt=0.0)
@@ -208,7 +222,6 @@ class Generator(BaseModel):
                     "sigma_z must be > 0 for gaussian longitudinal profiles"
                 )
         return self
-
 
     @staticmethod
     def get_elements() -> List:
@@ -306,7 +319,7 @@ class Magnet(Element):  # RESTFrame <--> EPICS
 
     class Config:
         from_attributes = True
-    
+
     @field_validator("KnL", mode="before")
     def validate_knl(cls, knl):
         if knl is None:
@@ -325,21 +338,34 @@ class Magnet(Element):  # RESTFrame <--> EPICS
 
     @property
     def angle(self) -> float | None:
-        if self.subtype == MagnetEnum.dipole and self.KnL is not None and len(self.KnL) > 0:
+        if (
+            self.subtype == MagnetEnum.dipole
+            and self.KnL is not None
+            and len(self.KnL) > 0
+        ):
             return self.KnL[0]  # Assuming K0L for dipole
         return None
 
     @property
     def k1l(self) -> float | None:
-        if self.subtype == MagnetEnum.quadrupole and self.KnL is not None and len(self.KnL) > 1:
+        if (
+            self.subtype == MagnetEnum.quadrupole
+            and self.KnL is not None
+            and len(self.KnL) > 1
+        ):
             return self.KnL[1]  # Assuming K1L for quadrupole
         return None
 
     @property
     def k2l(self) -> float | None:
-        if self.subtype == MagnetEnum.sextupole and self.KnL is not None and len(self.KnL) > 2:
+        if (
+            self.subtype == MagnetEnum.sextupole
+            and self.KnL is not None
+            and len(self.KnL) > 2
+        ):
             return self.KnL[2]  # Assuming K2L for sextupole
         return None
+
 
 class CollimatorEnum(str, Enum):
     horizontal = "horizontal"
@@ -458,7 +484,7 @@ class Section(BaseModel):
             if typ is not None:
                 elems += typ
         return elems
-    
+
     def get_element(self, name: str) -> Optional[Element]:
         for elem in self.get_elements():
             if elem.name == name:
@@ -530,9 +556,10 @@ class PartialLattice(BaseModel):
     Partial Lattice schema for matching queries.
     All fields are optional to allow flexible filtering.
     """
+
     facility: Optional[str] = None
     set_initial_conditions: Optional[bool] = None
     sections: Optional[List[Section]] = None
-    
+
     class Config:
         from_attributes = True

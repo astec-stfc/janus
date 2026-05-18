@@ -13,6 +13,7 @@ def add_lattice(lattice: Lattice):
     )
     requests.post(url, json=lattice.model_dump())
 
+
 def refresh_lattice():
     url = (
         f"http://{constants.HOST_LATTICE_API}:"
@@ -48,6 +49,7 @@ def get_lattice(uuid: str = None) -> Lattice:
         )
     else:
         return None
+
 
 def get_lattice_uuids() -> List[str]:
     url = (
@@ -121,6 +123,7 @@ def get_all_cavity_names() -> List[str]:
     [names.append(cavity) for cavity in data]
     return names
 
+
 def get_all_section_names() -> List[str]:
     url = (
         f"http://{constants.HOST_LATTICE_API}:"
@@ -146,6 +149,7 @@ def patch_lattice(lattice: Lattice) -> dict:
     data = lattice.model_dump()
     response = requests.patch(url, json=data)
     return response.json()
+
 
 def send_prior_settings(lattice: Lattice):
     url = (

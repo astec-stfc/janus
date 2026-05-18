@@ -19,6 +19,7 @@ from scipy.optimize import newton
 
 SIGFIG = 5
 
+
 def round_it(x, sig):
     if x is None:
         return 0.0
@@ -70,22 +71,22 @@ class LatticeToEPICS:
         self.epics_helper = EPICSHelper(ctx=self._ctx)
 
     def initialise_all_magnets(self, lattice: Lattice) -> None:
-            elements: Dict[str, Magnet] = lattice.get_elements_dict(Magnet)
-            for magnet_name, epics_magnet in self.quads.items():
-                magnet = elements.get(magnet_name)
-                if magnet is None:
-                    print(f"Could not find {magnet_name} in elements.")
+        elements: Dict[str, Magnet] = lattice.get_elements_dict(Magnet)
+        for magnet_name, epics_magnet in self.quads.items():
+            magnet = elements.get(magnet_name)
+            if magnet is None:
+                print(f"Could not find {magnet_name} in elements.")
 
-                else:
-                    epics_magnet.k = round_it(magnet.KnL[1], SIGFIG)
-            for magnet_name, epics_magnet in self.dipoles.items():
-                if "dipoles" in self.lattice_params:
-                    if magnet_name in self.lattice_params["dipoles"]:
-                        magnet = elements.get(magnet_name)
-                        epics_magnet.k = round_it(magnet.KnL[0], SIGFIG)
-                if magnet is None:
-                    print(f"Could not find {magnet_name} in elements.")
-            print("Magnets initialised")
+            else:
+                epics_magnet.k = round_it(magnet.KnL[1], SIGFIG)
+        for magnet_name, epics_magnet in self.dipoles.items():
+            if "dipoles" in self.lattice_params:
+                if magnet_name in self.lattice_params["dipoles"]:
+                    magnet = elements.get(magnet_name)
+                    epics_magnet.k = round_it(magnet.KnL[0], SIGFIG)
+            if magnet is None:
+                print(f"Could not find {magnet_name} in elements.")
+        print("Magnets initialised")
 
     def initialise_all_sim_codes(self, lattice: Lattice) -> None:
         for section in lattice.sections.values():

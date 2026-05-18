@@ -5,6 +5,7 @@ from p4p.client.thread import Context, TimeoutError
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from p4p.wrapper import Value
 
+
 def countdown(filename, seconds):
     while seconds > 0:
         print(f"{filename}: {seconds} sec")
@@ -14,6 +15,7 @@ def countdown(filename, seconds):
         else:
             sleep(1)
             seconds -= 1
+
 
 class EPICSHelper:
     """Helper class for interacting with EPICS PVs using p4p"""

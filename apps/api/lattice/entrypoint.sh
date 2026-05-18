@@ -11,4 +11,4 @@ until $(curl -X GET --output /dev/null --silent --head --fail http://restframe:8
 echo "RESTFrame started...";
 fi
 
-/usr/local/bin/python -m uvicorn main:app --log-level=${log_level} --host 0.0.0.0 --port 5000
+python3 -m uvicorn main:app --log-level=${log_level} --host 0.0.0.0 --port 5000
