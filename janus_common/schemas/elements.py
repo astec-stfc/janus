@@ -7,16 +7,10 @@ from pydantic import (
     model_validator
 )
 
-from typing import List, Dict, Union, Type, Optional, Literal
+from typing import List, Dict, Type, Optional, Literal
 from enum import Enum
-from math import log10, floor
-
-def round_it(x, sig):
-    if x is None:
-        return 0.0
-    if float(x) == 0.0:
-        return 0.0
-    return round(x, sig - int(floor(log10(abs(x)))) - 1)
+from janus_common.utils.numeric import round_it
+from janus_common.utils.constants import SIGFIG
 
 
 ########################################################################
@@ -74,7 +68,6 @@ class Twiss(BaseModel):
             else:
                 field_names.append(k)
         return field_names
-
 
 
 class Sigma(BaseModel):
@@ -209,7 +202,6 @@ class Generator(BaseModel):
                 )
         return self
 
-
     @staticmethod
     def get_elements() -> List:
         return []
@@ -313,14 +305,22 @@ class Magnet(Element):  # RESTFrame <--> EPICS
             return knl
         if not isinstance(knl, list):
             raise TypeError("KnL must be a list")
-        return [round_it(float(k), 5) for k in knl]
+        return [round_it(float(k), SIGFIG) for k in knl]
+
+    @field_validator("field_amplitude", mode="before")
+    @classmethod
+    def round_field_amplitude(cls, v):
+        """Round field_amplitude to SIGFIG precision for consistency with DB storage."""
+        if v is None:
+            return v
+        return round_it(float(v), SIGFIG)
 
     @field_serializer("KnL", return_type=list)
     def serialise_subtype(self, KnL: list[float] | None):
         if KnL is None:
             return KnL
         if isinstance(KnL, list):
-            return [round_it(float(k), 5) for k in KnL]
+            return [round_it(float(k), SIGFIG) for k in KnL]
         raise TypeError("KnL must be a list")
 
     @property
@@ -381,6 +381,14 @@ class Cavity(Element):  # RESTFrame <-- EPICS
 
     class Config:
         from_attributes = True
+
+    @field_validator("crest", "phase", "field_amplitude", "gradient", mode="before")
+    @classmethod
+    def round_cavity_fields(cls, v):
+        """Round cavity fields to SIGFIG precision for consistency with DB storage."""
+        if v is None:
+            return v
+        return round_it(float(v), SIGFIG)
 
 
 class Laser(Element):  # RESTFrame <-- EPICS
@@ -525,14 +533,15 @@ class Lattice(BaseModel):
         return [section for _, section in self.sections.items()]
 
 
-class PartialLattice(BaseModel):
-    """
-    Partial Lattice schema for matching queries.
-    All fields are optional to allow flexible filtering.
-    """
-    facility: Optional[str] = None
-    set_initial_conditions: Optional[bool] = None
-    sections: Optional[List[Section]] = None
-    
-    class Config:
-        from_attributes = True
+class SimulationState(Enum):
+    COMPLETE = 0
+    TRACKING = 1
+    ERROR = 2
+
+class SimulationMode(Enum):
+    AUTO = 0
+    TRIGGER = 1
+
+class SimulationTrigger(Enum):
+    BYPASS = 0
+    ACTIVATE = 1

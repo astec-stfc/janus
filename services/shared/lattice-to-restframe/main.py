@@ -1,5 +1,5 @@
-from common.kafka_restframe import API
-from common.comms_handler import get_lattice
+from janus_common.utils.kafka_restframe import API
+from janus_common.utils.comms_handler import get_lattice
 
 
 class Sender(API):
@@ -20,8 +20,6 @@ class Sender(API):
     def tracking_complete(self) -> bool:
         return self.finished_tracking
 
-    
-    
     def on_msg(self, uuid, message):
         self.lattice = get_lattice()
         self.modify_lattice(self.lattice)

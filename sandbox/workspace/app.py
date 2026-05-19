@@ -2,29 +2,40 @@ import sys
 import time
 from typing import Callable, Optional, Tuple, List
 
-from PyQt6.QtCore import (
-    QObject, pyqtSignal, pyqtSlot, QThread, Qt
-)
+from PyQt6.QtCore import QObject, pyqtSignal, pyqtSlot, QThread, Qt
 from PyQt6.QtWidgets import (
-    QApplication, QMainWindow, QWidget, QHBoxLayout, QVBoxLayout, QFormLayout,
-    QGroupBox, QPushButton, QDoubleSpinBox, QSpinBox, QLabel, QCheckBox, QFrame,
-    QStatusBar
+    QApplication,
+    QMainWindow,
+    QWidget,
+    QHBoxLayout,
+    QVBoxLayout,
+    QFormLayout,
+    QGroupBox,
+    QPushButton,
+    QDoubleSpinBox,
+    QSpinBox,
+    QLabel,
+    QCheckBox,
+    QFrame,
+    QStatusBar,
 )
 from matplotlib.backends.backend_qt5agg import (
-    FigureCanvasQTAgg as FigureCanvas, NavigationToolbar2QT as NavigationToolbar
+    FigureCanvasQTAgg as FigureCanvas,
+    NavigationToolbar2QT as NavigationToolbar,
 )
 from matplotlib.figure import Figure
 import os
+
 # os.environ["EPICS_CA_AUTO_ADDR_LIST"] = "NO"
 # os.environ["EPICS_CA_ADDR_LIST"] = "localhost"
 # os.environ["EPICS_CA_SERVER_PORT"] = "6090"
-#os.environ["EPICS_CA_SERVER_PORT"] = "6090"
-#os.environ["EPICS_CA_ADDR_LIST"] = ""
-#os.environ["EPICS_CA_AUTO_ADDR_LIST"] = ""
-#os.environ["EPICS_PVA_SERVER_PORT"] = ""
-#os.environ["EPICS_PVA_BROADCAST_PORT"] = "6090"
-#os.environ["EPICS_PVA_AUTO_ADDR_LIST"] = "NO"
-#os.environ["EPICS_PVA_INTERFACE"] = "172.18.0.3"
+# os.environ["EPICS_CA_SERVER_PORT"] = "6090"
+# os.environ["EPICS_CA_ADDR_LIST"] = ""
+# os.environ["EPICS_CA_AUTO_ADDR_LIST"] = ""
+# os.environ["EPICS_PVA_SERVER_PORT"] = ""
+# os.environ["EPICS_PVA_BROADCAST_PORT"] = "6090"
+# os.environ["EPICS_PVA_AUTO_ADDR_LIST"] = "NO"
+# os.environ["EPICS_PVA_INTERFACE"] = "172.18.0.3"
 qname = "VM-INJ-Q0H07.1:CalcK"
 sname = "SIM-INJ-Q0H08.2:SIGMA:X"
 
@@ -79,7 +90,7 @@ class ScanWorker(QObject):
         initial_value: float,
         final_value: float,
         data_fn: Optional[Callable[[int, float], Tuple[float, float]]] = None,
-        parent=None
+        parent=None,
     ):
         super().__init__(parent)
         # Only store pure Python state here
@@ -162,7 +173,7 @@ class ScanWorker(QObject):
             x_new, y = fn(self._point_index, self._x)
 
             # Send to GUI
-            self.data_ready.emit(x_new, y*1e6)
+            self.data_ready.emit(x_new, y * 1e6)
 
             # Prepare next step
             self._point_index += 1
@@ -179,7 +190,6 @@ class ScanWorker(QObject):
     @pyqtSlot()
     def request_stop(self):
         self._running = False
-
 
 
 # -------------------------------
@@ -320,7 +330,7 @@ class MainWindow(QMainWindow):
             step=step,
             initial_value=initial_value,
             final_value=final_value,
-            data_fn=None  # <-- Provide your model function here if desired
+            data_fn=None,  # <-- Provide your model function here if desired
         )
         self._worker.moveToThread(self._thread)
 
@@ -369,7 +379,9 @@ class MainWindow(QMainWindow):
         self._ys.append(y)
 
         # Update plot
-        self.canvas.update_line(self._xs, self._ys, autoscale=self.autoscale_chk.isChecked())
+        self.canvas.update_line(
+            self._xs, self._ys, autoscale=self.autoscale_chk.isChecked()
+        )
 
     # ------------- Lifecycle -------------
     def closeEvent(self, event):

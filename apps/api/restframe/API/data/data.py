@@ -6,10 +6,9 @@ import hashlib
 import json
 import yaml
 import sys
-from math import log10, floor
 
 sys.path.append("../../")
-from schemas.elements import (
+from janus_common.schemas.elements import (
     Element,
     Screen,
     Camera,
@@ -50,15 +49,6 @@ def load_data_yaml(filename, dataclass):
 
 def hash_function(data):
     return hashlib.md5(json.dumps(data, sort_keys=True).encode("utf-8")).hexdigest()
-
-
-def round_it(x, sig):
-    if x is None:
-        return 0.0
-    if float(x) == 0.0:
-        return 0.0
-    return round(x, sig - int(floor(log10(abs(x)))) - 1)
-
 
 sf_mapping = {
     "beam_position_monitor": {"type": BPM},
@@ -154,7 +144,7 @@ def RESTData(latticeObjects_names):
         uuid=(str, ...),
         prefix=(str | None, None),
         **lattices,
-        hash=(str | None, None)
+        hash=(str | None, None),
     )
 
     class ChangesData(ChangesDataBase):
@@ -426,7 +416,7 @@ def RESTData(latticeObjects_names):
                             lattice: {
                                 "uuid": self.get_lattice_prefix(lattice),
                                 "model": lat.model,
-                                "initial_conditions": lat.initial_conditions
+                                "initial_conditions": lat.initial_conditions,
                             }
                         }
                     )

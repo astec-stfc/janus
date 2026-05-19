@@ -1,11 +1,10 @@
 import time
 import requests
 from typing import Any, Union, Tuple, Dict
-from common import constants
-from schemas.elements import Lattice
+from janus_common.utils import constants
+from janus_common.schemas.elements import Lattice
 from .kafka_api_simple import KafkaAPI
-
-from common.comms_handler import add_lattice
+from janus_common.utils.comms_handler import add_lattice
 
 
 class API(KafkaAPI):

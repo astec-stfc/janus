@@ -1,12 +1,11 @@
-import time
 import asyncio
-from datetime import datetime
-from schemas import elements
-from schemas.elements import Lattice, Magnet, MagnetEnum, Cavity
+from janus_common.schemas import elements
+from janus_common.schemas.elements import Lattice, Magnet, MagnetEnum, Cavity
+from janus_common.pv.translate import SectionToPV
 from random import random
 from p4p.client.asyncio import Context
-from common.kafka_restframe import API
-from common.comms_handler import patch_lattice,get_lattice
+from janus_common.utils.kafka_restframe import API
+from janus_common.utils.comms_handler import patch_lattice,get_lattice
 
         
 
@@ -33,15 +32,6 @@ class Sender(API):
         for cavity in lattice.get_elements_dict(Cavity).values():
             cavity.phase = randint(-90, 90)
 
-    # def has_lattice_changed(self) -> bool:
-    #     """This is where you would compare the current lattice with the epics settings"""
-   
-    #     _changed = self._ctx.get(self._pv_to_check) != self._current_value
-  
-    #     if _changed:
-    #         self._current_value = self._ctx.get(self._pv_to_check)
-    #     return _changed
-
     async def has_sim_seed_updated(self) -> bool:
         """This is where you would compare the current lattice with the epics settings"""
         try:
@@ -53,44 +43,43 @@ class Sender(API):
             _changed = _value != self._current_value
             if _changed:
                 self._current_value = _value
-                # value = self._ctx.get(self._pv_to_check, throw=False)
             return _changed
 
     async def initialise_all_sim_codes(self, lattice: Lattice) -> None:
         for section in lattice.sections.values():
-            if section.model:
-                try:
-                    await asyncio.wait_for(
-                        self._ctx.put(
-                            f"VM-{section.name}-SIMULATION:CODE",
-                            section.model,
-                        ),
-                        timeout=10
-                    )
-                except TimeoutError as e:
-                    print(f"Timeout while setting SIMULATION:CODE for {section.name}: {str(e)}")
-                    continue
+            translator = SectionToPV(section)
+            for m in translator.section_pv_metadata:
+                value = m.get_schema_value(section)
+                if value is not None:
+                    try:
+                        await asyncio.wait_for(
+                            self._ctx.put(m.name, value),
+                            timeout=10
+                        )
+                    except TimeoutError as e:
+                        print(f"Timeout while setting SIMULATION:CODE for {section.name}: {str(e)}")
+                        continue
 
-    async def set_sim_codes_from_epics(self, lattice: Lattice):
+    async def set_section_from_epics(self, lattice: Lattice) -> None:
         for section in lattice.sections.values():
-            # get the sim code from epics
-            try:
-                epics_sim_code = await asyncio.wait_for(
-                    self._ctx.get(f"VM-{section.name}-SIMULATION:CODE"),
-                    timeout=10
-                )
-            except TimeoutError as e:
-                print(f"Timeout while getting SIMULATION:CODE for {section.name}: {str(e)}")
-                continue
-            if epics_sim_code != "undefined":
-                # once we know it has a real value, check if it has changed
-                if section.model != epics_sim_code:
-                    # set the model for the section to the new code
-                    section.model = epics_sim_code
-        return lattice
+            translator = SectionToPV(section)
+            pv_metadata = translator.section_pv_metadata
+            for m in pv_metadata:
+                try:
+                    epics_result = await asyncio.wait_for(self._ctx.get(m.name), timeout=10)
+                except TimeoutError as e:
+                    print(f"Timeout while getting {m.name} for {section.name}: {str(e)}")
+                    continue
+                if (
+                    not isinstance(epics_result, TimeoutError)
+                    and epics_result != "undefined"
+                ):
+                    current_value = m.get_schema_value(section)
+                    if current_value != epics_result:
+                        m.set_schema_value(section, epics_result)
 
     async def has_lattice_changed(self, lattice: elements.Lattice) -> bool:
-        lattice_with_changes_from_epics = await self.set_sim_codes_from_epics(lattice)
+        lattice_with_changes_from_epics = await self.set_section_from_epics(lattice)
         return get_lattice() != lattice_with_changes_from_epics
 
 
@@ -103,8 +92,6 @@ class Sender(API):
     async def on_epics_update(self,value):
         print(f"Received update for {self._pv_to_check}: {value}")
         current_lattice = get_lattice()# This gets you the latest lattice available, I think dunno, if you use self.get_lattice it uses the restframe API and you get screwed, that is on me, I could change it but I am a simple man
-
-        # new_val = await self._ctx.get(self._pv_to_check) 
         if self.counter:
             print("FIRST RUN, JUST SENDING LATTICE TO COMMS WITHOUT CHECKING FOR CHANGES")
             self.counter = False
@@ -135,5 +122,3 @@ if __name__ == "__main__":
         asyncio.run(main())
     except KeyboardInterrupt:
         print("Stopped by user")
-
-

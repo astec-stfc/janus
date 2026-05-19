@@ -1,5 +1,5 @@
 import os
-from schemas import elements
+from janus_common.schemas import elements
 from core.models import (
     Lasers,
     Magnets,
@@ -260,7 +260,6 @@ def make_db_cavity(cavity: elements.Cavity):
         gradient=cavity.gradient,
         updated=cavity.updated,
     )
-
 
 def make_db_magnet(magnet: elements.Magnet):
     twiss, sigma, centroid = fetch_generic_element_properties(magnet)

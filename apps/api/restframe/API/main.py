@@ -13,8 +13,8 @@ from kafka import KafkaProducer
 from pydantic import BaseModel
 
 from data.SimFrame import SimFrame_Interface
-from schemas.elements import Lattice
-from common import constants
+from janus_common.schemas.elements import Lattice
+from janus_common.utils import constants
 
 import logging
 

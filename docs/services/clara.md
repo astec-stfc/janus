@@ -3,6 +3,8 @@ JANUS - CLARA to Lattice
 
 The `clara` service is responsible for sending changes in the EPICS control system to the [Lattice API](../../apps/api/lattice/) using the [schema](../../janus_common/schemas/) classes.
 
+The [clara](../../services/clara/) service utilises the `pyCATAP` middle-layer to easily retrieve the values of PVs for the systems listed below and compare with the [Lattice API](../../apps/api/lattice/) entries.
+
 The EPICS settings are checked against entries in the [Lattice API](../../apps/api/lattice/) database. If there are no matching lattices, the settings are sent for tracking.
 
 However, if a matching lattice is found, the uuid is sent via the kafka topic `lattice_updated` which is received by the `lattice-to-epics` message (see [shared services](../services/shared.md) for more details).
@@ -13,6 +15,7 @@ However, if a matching lattice is found, the uuid is sent via the kafka topic `l
 flowchart LR
     API[Lattice API]
     Kafka["Kafka Broker"]
+    CATAP["pyCATAP"]
     clara-to-lattice["clara-to-lattice"]
     Magnet["Quads/Dipoles"]
     Cavity["Cavities"]
@@ -21,10 +24,11 @@ flowchart LR
     RESTFrame["RESTFrame API"]
     L2E["lattice-to-epics"]
 
-    Magnet --> |Update| clara-to-lattice
-    Cavity --> |Update| clara-to-lattice
-    Twiss --> |Update| clara-to-lattice
-    Generator --> |Update| clara-to-lattice
+    Magnet --> |Update| CATAP
+    Cavity --> |Update| CATAP
+    CATAP --> |Set Parameters| clara-to-lattice
+    Twiss --> |Set Parameters| clara-to-lattice
+    Generator --> |Set Parameters| clara-to-lattice
     clara-to-lattice --> |Check Settings| API
     API --> |New Settings| Kafka
     API --> |Settings Exist| Kafka
@@ -33,7 +37,6 @@ flowchart LR
 
 
 ```
-
 ### Control Parameters
 
 The parameters that are checked for changes are:

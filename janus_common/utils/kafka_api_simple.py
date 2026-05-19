@@ -1,5 +1,5 @@
-from typing import Any, Union, Tuple, Dict
-from schemas.elements import Lattice
+from typing import Union
+from janus_common.schemas.elements import Lattice
 from kafka import KafkaProducer, KafkaConsumer
 import json
 import time
@@ -57,9 +57,6 @@ class KafkaAPI(KafkaConsumer):
 
     # def modify_lattice(self, lattice: Lattice):
     #     self.producer.send("lattice", value=self.transform_data_output(lattice))
-
-
-        
 
     def modify_object(
         self, name: str, parameter: str, value: Union[str, float, int, bool]
