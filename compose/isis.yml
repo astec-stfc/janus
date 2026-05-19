@@ -30,6 +30,7 @@ services:
       - ${PORT:-6090}:${PORT:-6090}/udp
     volumes:
       - ../apps/controls/isis:/src/app
+      - ../janus_common:/src/app/janus_common
 
   # Managing connection between changes to Virtual PVs and the rest of the services
   isis_to_lattice:
@@ -43,5 +44,4 @@ services:
       - EPICS_PVA_BROADCAST_PORT=${PORT:-6090}  # this is required to allow pvget to work in sandbox. It also doesn't have to be different to 
       - PYTHONUNBUFFERED=1
     volumes:
-      - ../janus_common/utils:/usr/src/app/common
-      - ../janus_common/schemas:/usr/src/app/schemas
+      - ../janus_common:/usr/src/app/janus_common

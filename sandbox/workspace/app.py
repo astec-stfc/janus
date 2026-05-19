@@ -79,7 +79,6 @@ class ScanWorker(QObject):
       - CA (pyepics) for setting qname
       - PVA (p4p) for reading sname
     """
-
     data_ready = pyqtSignal(float, float)
     status = pyqtSignal(str)
     finished = pyqtSignal()
@@ -149,7 +148,6 @@ class ScanWorker(QObject):
         All EPICS objects are created here.
         """
         from epics import ca, PV
-
         ca.create_context()
         self.ca = ca
 
@@ -326,7 +324,6 @@ class MainWindow(QMainWindow):
         # Create thread and worker
         self._thread = QThread()
         from p4p.client.thread import Context
-
         self.pva_ctx = Context("pva")
         self._worker = ScanWorker(
             ctx=self.pva_ctx,

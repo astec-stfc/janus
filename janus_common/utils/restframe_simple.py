@@ -1,8 +1,8 @@
 import time
 import requests
 from typing import Any, Union, Tuple, Dict
-from common import constants
-from schemas.elements import Lattice
+from janus_common.utils import constants
+from janus_common.schemas.elements import Lattice
 
 
 class API:

@@ -3,7 +3,6 @@ include:
   - compose/clara.yml
 
 services:
-
   restframe:
     extends:
       file: compose/overrides.yml

@@ -1,7 +1,7 @@
 from p4p.client.thread import Context
 import os
-from schemas.elements import Lattice, Magnet, Generator
-from schemas.elements import Cavity as CavityElement
+from janus_common.schemas.elements import Lattice, Magnet, Generator
+from janus_common.schemas.elements import Cavity as CavityElement
 import CATAP.config as cfg
 
 cfg.EPICS_TIMEOUT = 0.5
@@ -10,22 +10,13 @@ cfg.set_config_format(
 )
 from CATAP.magnet import MagnetFactory
 from CATAP.cavity import CavityFactory, Cavity
-from typing import Dict, Literal, get_origin
-from math import floor, log10
-from common.helpers import EPICSHelper
+from typing import Dict
+from janus_common.utils.helpers import EPICSHelper 
+from janus_common.utils.constants import SIGFIG
+from janus_common.utils.numeric import round_it
+from janus_common.pv.translate import SectionToPV, GeneratorToPV
 from scipy.interpolate import interp1d
 from scipy.optimize import newton
-
-
-SIGFIG = 5
-
-
-def round_it(x, sig):
-    if x is None:
-        return 0.0
-    if float(x) == 0.0:
-        return 0.0
-    return round(x, sig - int(floor(log10(abs(x)))) - 1)
 
 
 class LatticeToEPICS:
@@ -71,39 +62,38 @@ class LatticeToEPICS:
         self.epics_helper = EPICSHelper(ctx=self._ctx)
 
     def initialise_all_magnets(self, lattice: Lattice) -> None:
-        elements: Dict[str, Magnet] = lattice.get_elements_dict(Magnet)
-        for magnet_name, epics_magnet in self.quads.items():
-            magnet = elements.get(magnet_name)
-            if magnet is None:
-                print(f"Could not find {magnet_name} in elements.")
+            elements: Dict[str, Magnet] = lattice.get_elements_dict(Magnet)
+            for magnet_name, epics_magnet in self.quads.items():
+                magnet = elements.get(magnet_name)
+                if magnet is None:
+                    print(f"Could not find {magnet_name} in elements.")
 
-            else:
-                epics_magnet.k = round_it(magnet.KnL[1], SIGFIG)
-        for magnet_name, epics_magnet in self.dipoles.items():
-            if "dipoles" in self.lattice_params:
-                if magnet_name in self.lattice_params["dipoles"]:
-                    magnet = elements.get(magnet_name)
-                    epics_magnet.k = round_it(magnet.KnL[0], SIGFIG)
-            if magnet is None:
-                print(f"Could not find {magnet_name} in elements.")
-        print("Magnets initialised")
+                else:
+                    epics_magnet.k = round_it(magnet.KnL[1], SIGFIG)
+            for magnet_name, epics_magnet in self.dipoles.items():
+                if "dipoles" in self.lattice_params:
+                    if magnet_name in self.lattice_params["dipoles"]:
+                        magnet = elements.get(magnet_name)
+                        epics_magnet.k = round_it(magnet.KnL[0], SIGFIG)
+                if magnet is None:
+                    print(f"Could not find {magnet_name} in elements.")
+            print("Magnets initialised")
 
     def initialise_all_sim_codes(self, lattice: Lattice) -> None:
         for section in lattice.sections.values():
-            if section.model:
-                self._ctx.put(
-                    f"VM-{section.name}-SIMULATION:CODE",
-                    section.model,
-                    throw=False,
-                )
-        print("Simcodes initialised")
+            translator = SectionToPV(section)
+            for m in translator.section_pv_metadata:
+                value = m.get_schema_value(section)
+                if value is not None:
+                    self._ctx.put(m.name, value, throw=False)
 
     def initialise_generator(self, lattice: Lattice) -> None:
         if isinstance(lattice.generator, Generator):
-            for k, v in lattice.generator.model_dump().items():
-                if k not in ["uuid", "enable"]:
-                    pvname = f"SIM-GENERATOR:{k.upper().replace('_', '-')}"
-                    self._ctx.put(pvname, v, throw=False)
+            translator = GeneratorToPV(lattice.generator)
+            for m in translator.generator_pv_metadata:
+                value = m.get_schema_value(lattice.generator)
+                if value is not None:
+                    self._ctx.put(m.name, value, throw=False)
 
     def _convert_field_amplitude_to_power(
         self, epics_cavity: Cavity, accelerating_voltage: float
