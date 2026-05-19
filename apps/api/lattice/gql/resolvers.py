@@ -344,9 +344,9 @@ def find_lattices(
                     conditions.append(DBMagnet.name == magnet_input.name)
                 if magnet_input.type:
                     conditions.append(DBMagnet.type == magnet_input.type)
-                if magnet_input.field_amplitude is not None:
+                if isinstance(magnet_input.field_amplitude, (int, float)):
                     conditions.append(
-                        abs(DBMagnet.field_amplitude)
+                        func.abs(DBMagnet.field_amplitude)
                         - abs(magnet_input.field_amplitude)
                         < FLOAT_TOLERANCE
                     )
@@ -376,7 +376,6 @@ def find_lattices(
                 else:
                     magnet_uuids = magnet_uuids.intersection(filter_uuids)
             combined_matching_uuids = magnet_uuids
-
         # Process cavity filters
         if cavity_filter:
             # Check all settings for all cavities in filter
@@ -389,12 +388,12 @@ def find_lattices(
                     conditions.append(DBCavity.name == cavity_input.name)
                 if cavity_input.type:
                     conditions.append(DBCavity.type == cavity_input.type)
-                if cavity_input.field_amplitude is not None:
+                if isinstance(cavity_input.field_amplitude, (int, float)):
                     conditions.append(
-                        abs(DBCavity.field_amplitude - cavity_input.field_amplitude)
+                        func.abs(DBCavity.field_amplitude - cavity_input.field_amplitude)
                         < FLOAT_TOLERANCE
                     )
-                if cavity_input.phase is not None:
+                if isinstance(cavity_input.phase, (int, float)):
                     conditions.append(DBCavity.phase == cavity_input.phase)
                 if cavity_input.crest is not None:
                     conditions.append(DBCavity.crest == cavity_input.crest)
@@ -416,7 +415,6 @@ def find_lattices(
                 else:
                     cavity_uuids = cavity_uuids.intersection(filter_uuids)
             combined_matching_uuids = cavity_uuids
-
         # Process section filters
         if section_filter:
             # Precompute once

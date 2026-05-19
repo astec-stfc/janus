@@ -11,7 +11,7 @@ import base64
 from .screen_image import ScreenImage
 from .uuids import create_uuid
 from . import data
-from schemas.elements import (
+from janus_common.schemas.elements import (
     Screen,
     Camera,
     CameraAnalysis,
@@ -31,6 +31,8 @@ from schemas.elements import (
     InitialConditions,
     Generator,
 )
+from janus_common.utils.numeric import round_it
+from janus_common.utils.constants import SIGFIG
 
 sys.path.insert(0, "/laura")
 sys.path.insert(0, "/simba")
@@ -425,7 +427,7 @@ class SimFrame_Interface:
                             and isinstance(group, chicane)
                             and name not in groupset
                         ):
-                            knl = data.round_it(radians(lat_elem.KnL[0]), data.sigfig)
+                            knl = round_it(radians(lat_elem.KnL[0]), SIGFIG)
                             self.framework.groupObjects[name].set_angle(knl)
                             groupset.append(name)
                             groupelems += self.framework[name].elements
@@ -449,9 +451,9 @@ class SimFrame_Interface:
                                             setattr(
                                                 fw_obj,
                                                 "k1l",
-                                                data.round_it(
+                                                round_it(
                                                     val * fw_obj.magnetic.length,
-                                                    data.sigfig,
+                                                    SIGFIG,
                                                 ),
                                             )
                                 if (
@@ -476,9 +478,9 @@ class SimFrame_Interface:
                                         setattr(
                                             fw_obj,
                                             req,
-                                            data.round_it(
+                                            round_it(
                                                 getattr(lat_elem, req) * factor,
-                                                data.sigfig,
+                                                SIGFIG,
                                             ),
                                         )
                                 if req == "phase":
@@ -586,17 +588,17 @@ class SimFrame_Interface:
                                     if nam is not None:
                                         if v.__class__.__name__.lower() == "quadrupole":
                                             strengths.append(
-                                                data.round_it(
+                                                round_it(
                                                     getattr(v, nam) / v.magnetic.length,
-                                                    data.sigfig,
+                                                    SIGFIG,
                                                 )
                                             )
                                             continue
                                         elif v.__class__.__name__.lower() == "dipole":
                                             strengths.append(
-                                                data.round_it(
+                                                round_it(
                                                     degrees(getattr(v, nam)),
-                                                    data.sigfig,
+                                                    SIGFIG,
                                                 )
                                             )
                                         else:
@@ -616,30 +618,30 @@ class SimFrame_Interface:
                                 ):
                                     if v.__class__.__name__.lower() == "rfcavity":
                                         if v.cavity.structure_Type == "TravellingWave":
-                                            params["field_amplitude"] = data.round_it(
+                                            params["field_amplitude"] = round_it(
                                                 float(
                                                     (self.get_cells(v) + 3.8)
                                                     * v.cavity.cell_length
                                                     * (1 / sqrt(2))
                                                     * v.simulation.field_amplitude
                                                 ),
-                                                data.sigfig,
+                                                SIGFIG,
                                             )
                                     else:
-                                        params["field_amplitude"] = data.round_it(
-                                            float(v.field_amplitude), data.sigfig
+                                        params["field_amplitude"] = round_it(
+                                            float(v.field_amplitude), SIGFIG
                                         )
                         for pk, pv in params.items():
                             if isinstance(pv, float):
                                 if abs(pv) > 0.0:
-                                    params.update({pk: data.round_it(pv, data.sigfig)})
+                                    params.update({pk: round_it(pv, SIGFIG)})
                             elif isinstance(pv, list) and all(
                                 isinstance(item, float) for item in pv
                             ):
                                 newlist = []
                                 for p in pv:
                                     if abs(p) > 0.0:
-                                        newlist.append(data.round_it(p, data.sigfig))
+                                        newlist.append(round_it(p, SIGFIG))
                                     else:
                                         newlist.append(0.0)
                         latelems.append(sfmap["type"](**params))

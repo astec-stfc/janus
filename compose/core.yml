@@ -41,8 +41,7 @@ services:
       - lattice_api
       - restframe
     volumes:
-      - ../janus_common/utils:/usr/src/app/common
-      - ../janus_common/schemas:/usr/src/app/schemas
+      - ../janus_common:/usr/src/app/janus_common
     environment:
       - PYTHONUNBUFFERED=1
   
@@ -53,8 +52,7 @@ services:
       - lattice_api
       - restframe
     volumes:
-      - ../janus_common/utils:/usr/src/app/common
-      - ../janus_common/schemas:/usr/src/app/schemas
+      - ../janus_common:/usr/src/app/janus_common
     environment:
       - PYTHONUNBUFFERED=1
 
@@ -70,8 +68,7 @@ services:
       - EPICS_PVA_NAME_SERVERS=physics_iocs:6091
       - PYTHONUNBUFFERED=1
     volumes:
-      - ../janus_common/utils:/usr/src/app/common
-      - ../janus_common/schemas:/usr/src/app/schemas
+      - ../janus_common:/usr/src/app/janus_common
 
   # Soft PVA IOCs containing simulation results 
   physics_iocs:
@@ -99,7 +96,8 @@ services:
       - ${PHYSICS_PORT:-6091}:${PHYSICS_PORT:-6091}/tcp
       - ${PHYSICS_PORT:-6091}:${PHYSICS_PORT:-6091}/udp
     volumes:
-      - ../janus_common/schemas:/src/app/schemas
+      - ../janus_common:/src/app/janus_common
+      - ../apps/controls/shared/output:/src/app/output
 
 volumes:
   postgres_data:

@@ -19,7 +19,7 @@ from core.utilities import (
     convert_db_schema_to_lattice,
     lattice_manager,
 )
-from schemas.elements import Lattice, Beam
+from janus_common.schemas.elements import Lattice, Beam
 
 router = APIRouter(prefix="/lattice", tags=["Lattice"])
 

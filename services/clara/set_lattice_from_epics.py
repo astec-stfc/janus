@@ -1,7 +1,13 @@
 from p4p.client.thread import Context
 import os
-from schemas.elements import Lattice, Magnet, InitialConditions, Generator
-from schemas.elements import Cavity as CavityElement
+from janus_common.schemas.elements import (
+    Lattice,
+    Magnet,
+    SimulationState,
+    SimulationMode,
+    SimulationTrigger,
+)
+from janus_common.schemas.elements import Cavity as CavityElement
 import CATAP.config as cfg
 
 cfg.EPICS_TIMEOUT = 0.5
@@ -10,27 +16,11 @@ cfg.set_config_format(
 )
 from CATAP.magnet import MagnetFactory
 from CATAP.cavity import CavityFactory, Cavity
-from typing import Any, Dict, List, Literal, Tuple, get_origin
-from math import floor, log10
-from common.helpers import EPICSHelper
-from common.comms_handler import (
-    get_all_section_names,
-)
-
-SIGFIG = 5
-
-
-def round_it(x, sig):
-    if x is None:
-        return 0.0
-    if float(x) == 0.0:
-        return 0.0
-    return round(x, sig - int(floor(log10(abs(x)))) - 1)
-
-
-def to_camel_case(s):
-    parts = s.split("_")
-    return parts[0].lower() + "".join(word.capitalize() for word in parts[1:])
+from typing import Any, Dict, List
+from janus_common.utils.helpers import EPICSHelper, to_camel_case
+from janus_common.utils.numeric import round_it
+from janus_common.pv.translate import SectionToPV, GeneratorToPV, SimulationToPV, LatticeToPV
+from janus_common.utils.constants import SIGFIG
 
 
 class EPICSToLattice:
@@ -74,142 +64,93 @@ class EPICSToLattice:
             "TDC1": "CLA-S07-DIA-TDC-01",
         }
         self._ctx = Context("pva")
+        self.simulation_translator = SimulationToPV()
+        self.lattice_translator = LatticeToPV()
         self.epics_helper = EPICSHelper(ctx=self._ctx)
 
     @property
     def tracking_status(self) -> str:
-        return self.epics_helper.get_simulation_status()
+        return self.epics_helper.get_pv(self.simulation_translator.status_pv.name)
 
     @property
     def is_tracking(self) -> bool:
-        return self.tracking_status == "TRACKING"
+        return self.tracking_status == SimulationState.TRACKING.value
 
     @property
     def tracking_mode(self) -> str:
-        return self.epics_helper.get_simulation_mode()
+        return self.epics_helper.get_pv(self.simulation_translator.mode_pv.name)
 
     @property
     def is_tracking_triggered(self) -> bool:
-        return self.tracking_mode == "TRIGGER"
+        return self.tracking_mode == SimulationMode.TRIGGER.value
 
     @property
     def is_tracking_auto(self) -> bool:
-        return self.tracking_mode == "AUTO"
+        return self.tracking_mode == SimulationMode.AUTO.value
 
     @property
     def tracking_start_state(self) -> str:
-        return self.epics_helper.get_simulation_start_state()
+        return self.epics_helper.get_pv(self.simulation_translator.start_pv.name)
 
     @property
     def is_tracking_started(self) -> bool:
-        return self.tracking_start_state == "ACTIVATE"
+        return self.tracking_start_state == SimulationTrigger.ACTIVATE.value
 
     @property
     def is_tracking_bypassed(self) -> bool:
-        return self.tracking_start_state == "BYPASS"
+        return self.tracking_start_state == SimulationTrigger.BYPASS.value
 
     @tracking_start_state.setter
     def tracking_start_state(self, value: int | str) -> None:
-        states = {"BYPASS": 0, "ACTIVATE": 1}
-        if value in states or value in states.values():
-            self.epics_helper.set_simulation_start_state(value)
-        else:
-            raise ValueError(
-                f'Cannot set start tracking to {value}, only 0, 1, "BYPASS", or "ACTIVATE"',
-            )
+        enum_names = {name: member for name, member in SimulationTrigger.__members__.items()}
+        enum_values = {member.value for member in SimulationTrigger}
 
-    def set_sim_codes_from_epics(self, lattice: Lattice) -> None:
+        if value in enum_values:
+            self.epics_helper.put_pv(self.simulation_translator.start_pv.name, value)
+            return
+
+        if isinstance(value, str) and value.upper() in enum_names:
+            self.epics_helper.put_pv(self.simulation_translator.start_pv.name, enum_names[value.upper()].value)
+            return
+
+        valid_names = ", ".join(enum_names)
+        valid_values = ", ".join(str(v) for v in sorted(enum_values))
+        raise ValueError(
+            f'Cannot set start tracking to {value}. Valid names are {valid_names} or values {valid_values}.',
+        )
+
+    def set_section_from_epics(self, lattice: Lattice) -> None:
         for section in lattice.sections.values():
-            epics_sim_code = self._ctx.get(
-                f"VM-{section.name}-SIMULATION:CODE", throw=False
-            )
-            if (
-                not isinstance(epics_sim_code, TimeoutError)
-                and epics_sim_code != "undefined"
-            ):
-                if section.model != epics_sim_code:
-                    section.model = epics_sim_code
+            translator = SectionToPV(section)
+            pv_metadata = translator.section_pv_metadata
+            for m in pv_metadata:
+                epics_result = self.epics_helper.epics_scalar(
+                    self._ctx.get(m.name, throw=False)
+                )
+                if (
+                    not isinstance(epics_result, TimeoutError)
+                    and epics_result != "undefined"
+                ):
+                    current_value = m.get_schema_value(section)
+                    if current_value != epics_result:
+                        m.set_schema_value(section, epics_result)
 
     def set_generator_from_epics(self, lattice: Lattice) -> None:
-        enable_name = f"SIM-GENERATOR:ENABLE"
-        epics_set_gen = self._ctx.get(enable_name, throw=False)
-        if epics_set_gen:
-            gen_to_set = {}
-            for key, value in lattice.generator.model_dump().items():
-                if key not in ["uuid", "enable"]:
-                    name = f"SIM-GENERATOR:{key.upper().replace('_', '-')}"
-                    epics_val = self._ctx.get(name, throw=False)
-                    if isinstance(epics_val, TimeoutError):
-                        print(
-                            f"Could not get generator {name} from EPICS, skipping update."
-                        )
-                    else:
-                        epics_value = self.epics_helper.epics_scalar(epics_val)
-                        if (
-                            get_origin(Generator.model_fields[key].annotation)
-                            is Literal
-                        ):
-                            typ = str
-                            setattr(
-                                lattice.generator, key, typ(epics_value.split(" ")[-1])
-                            )
-                        else:
-                            typ = Generator.model_fields[key].annotation
-                            gen_to_set.update({key: typ(epics_value)})
-                            setattr(lattice.generator, key, typ(epics_value))
-            lattice.generator.enable = True
-
-    def set_initial_conditions_from_epics(self, lattice: Lattice) -> None:
-        name = f"SIM-{lattice.facility}-INITIAL-CONDITIONS:ENABLE"
-        epics_init_tw = self._ctx.get(name, throw=False)
-        if (
-            epics_init_tw is None
-            or isinstance(epics_init_tw, TimeoutError)
-            or epics_init_tw == ""
-        ):
-            """Null conditions for initial conditions, do not update"""
-            lattice.set_initial_conditions = ""
-            for section in lattice.sections.values():
-                section.initial_conditions = InitialConditions()
+        generator = lattice.generator
+        if generator is None:
             return
-        lattice.set_initial_conditions = ""
-        for section in lattice.sections.values():
-            if isinstance(epics_init_tw, TimeoutError):
-                print(
-                    f"Could not get lattice initial twiss enable from EPICS, skipping update."
-                )
-                continue
-            if section.name in epics_init_tw.split(","):
-                epics_tw = {}
-                for tw in ["beta", "alpha", "nemit"]:
-                    for plane in ["x", "y"]:
-                        suffix = f"{tw.upper()}_{plane.upper()}"
-                        name = f"SIM-{section.name}-INITIAL-CONDITIONS:{suffix}"
-                        epics_tw.update(
-                            {f"{tw}_{plane}": self._ctx.get(name, throw=False)}
-                        )
-                section.initial_conditions = None
-                if len(epics_tw) != 6:
-                    print(
-                        f"Could not get all initial twiss for {section.name}, skipping update."
-                    )
-                    continue
-                if any(
-                    v <= 0 and k in ["beta_x", "beta_y", "nemit_x", "nemit_y"]
-                    for k, v in epics_tw.items()
-                ):
-                    print(
-                        f"{section.name} beta or nemit has non-positive value, skipping update."
-                    )
-                elif [isinstance(v, float) for v in epics_tw.values()]:
-                    section.initial_conditions = InitialConditions(**epics_tw)
-                    lattice.set_initial_conditions += f"{section.name},"
-                else:
-                    print(f"Could not update initial conditions for {section.name}.")
-            else:
-                section.initial_conditions = InitialConditions()
-        if len(lattice.set_initial_conditions) > 0:
-            lattice.set_initial_conditions = lattice.set_initial_conditions[:-1]
+        translator = GeneratorToPV()
+        for m in translator.generator_pv_metadata:
+            epics_result = self.epics_helper.epics_scalar(
+                self._ctx.get(m.name, throw=False)
+            )
+            if (
+                not isinstance(epics_result, TimeoutError)
+                and epics_result != "undefined"
+            ):
+                current_value = m.get_schema_value(generator)
+                if current_value != epics_result:
+                    m.set_schema_value(generator, epics_result)
 
     def set_magnets_from_epics(self, elems: Dict[str, Magnet]) -> None:
         for magnet_name, epics_magnet in self.quads.items():
@@ -265,7 +206,11 @@ class EPICSToLattice:
                         print(f"Old: {cavity.field_amplitude}, New: {accvol}")
                         cavity.field_amplitude = accvol
 
+    def set_apply_initial_condtions_from_epics(self, lattice: Lattice) -> None:
+        lattice.set_initial_conditions = self.initial_condition_sections
+
     def set_lattice_from_epics(self, lattice: Lattice) -> Lattice:
+        self.set_apply_initial_condtions_from_epics(lattice)
         self.set_magnets_from_epics(
             lattice.get_elements_dict(Magnet),
         )
@@ -273,15 +218,15 @@ class EPICSToLattice:
             lattice.get_elements_dict(CavityElement),
             self.cavity_factory,
         )
-        self.set_sim_codes_from_epics(lattice)
-        self.set_initial_conditions_from_epics(lattice)
+        self.set_section_from_epics(lattice)
+        # self.set_initial_conditions_from_epics(lattice)
         self.set_generator_from_epics(lattice)
         return lattice
 
     @property
     def initial_condition_sections(self) -> str:
         sections_to_apply_initial_conditions = self._ctx.get(
-            f"SIM-{self.facility}-INITIAL-CONDITIONS:ENABLE",
+            self.lattice_translator.apply_initial_conditions_pv_metadata.name,
             throw=False,
         )
         if sections_to_apply_initial_conditions is not None and not isinstance(
@@ -291,108 +236,76 @@ class EPICSToLattice:
         else:
             return ""
 
-    def build_magnet_filters(self) -> List[Dict[str, List[float]]]:
+    def build_magnet_filters(self, lattice: Lattice) -> List[Dict[str, List[float]]]:
         _filter = []
-        for name, quad in self.quads.items():
-            if quad.k is not None:
-                _filter.append(
-                    {"name": name, "KnL": [0.0, round_it(quad.k, SIGFIG), 0.0, 0.0]}
-                )
-        for name, dipole in self.dipoles.items():
-            if "dipoles" in self.lattice_params:
-                if name in self.lattice_params["dipoles"]:
-                    if dipole.k is not None:
-                        _filter.append(
-                            {
-                                "name": name,
-                                "KnL": [round_it(dipole.k, SIGFIG), 0.0, 0.0, 0.0],
-                            }
-                        )
+        for name, magnet in lattice.get_elements_dict(Magnet).items():
+            if isinstance(magnet, Magnet) and (
+                name in self.quads or name in self.lattice_params.get("dipoles", [])
+            ):
+                if magnet.KnL is not None:
+                    _filter.append(
+                        {
+                            "name": name,
+                            "KnL": [
+                                round_it(magnet.KnL[0], SIGFIG),
+                                round_it(magnet.KnL[1], SIGFIG),
+                                round_it(magnet.KnL[2], SIGFIG),
+                                round_it(magnet.KnL[3], SIGFIG),
+                            ],
+                        }
+                    )
         return _filter
 
-    def build_cavity_filters(self) -> List[Dict[str, float]]:
+    def build_cavity_filters(self, lattice: Lattice) -> List[Dict[str, float]]:
         _filter = []
-        for name, cavity in self.cavity_factory.hardware.items():
-            if cavity.set_off_crest_phase is not None:
-                _filter.append(
-                    {
-                        "name": self.cavity_aliases.get(name, name),
-                        "phase": round_it(cavity.set_off_crest_phase, SIGFIG),
-                    }
-                )
+        _keywords = ["phase", "field_amplitude"]
+        for name, cavity in lattice.get_elements_dict(CavityElement).items():
+            _cavity_filter = {"name": name}
+            _cavity_filter.update(
+                {
+                    to_camel_case(k): round_it(getattr(cavity, k), SIGFIG)
+                    for k in _keywords
+                }
+            )
+            _filter.append(_cavity_filter)
         return _filter
 
-    def build_section_filters(self) -> List[Dict[str, Any]]:
+    def build_section_filters(self, lattice: Lattice) -> List[Dict[str, Any]]:
         _filter = []
         sim_code = None
-        set_initial_conditions = self.initial_condition_sections
-        for section in get_all_section_names():
-            epics_sim_code = self._ctx.get(f"VM-{section}-SIMULATION:CODE", throw=False)
-            if (
-                not isinstance(epics_sim_code, TimeoutError)
-                and epics_sim_code != "undefined"
-            ):
-                sim_code = epics_sim_code
-            initial_conditions = {}
-            if set_initial_conditions:
-                if section in set_initial_conditions.split(","):
-                    epics_tw = {}
-                    for tw in ["beta", "alpha", "nemit"]:
-                        for plane in ["x", "y"]:
-                            suffix = f"{tw.upper()}_{plane.upper()}"
-                            name = f"SIM-{section}-INITIAL-CONDITIONS:{suffix}"
-                            epics_tw.update(
-                                {f"{tw}_{plane}": self._ctx.get(name, throw=False)}
-                            )
-                    if (
-                        len(epics_tw) == 6
-                        and all(isinstance(v, float) for v in epics_tw.values())
-                        and not any(
-                            v <= 0
-                            for k, v in epics_tw.items()
-                            if k in ["beta_x", "beta_y", "nemit_x", "nemit_y"]
-                        )
-                    ):
-                        initial_conditions = {
-                            to_camel_case(k): v for k, v in epics_tw.items()
-                        }
+        set_initial_conditions = (
+            lattice.set_initial_conditions if lattice.set_initial_conditions else ""
+        )
+        for section in lattice.get_sections():
             _filter.append(
                 {
-                    "name": section,
-                    "model": sim_code,
-                    "initialConditions": initial_conditions,
+                    "name": section.name,
+                    "model": section.model,
+                    "initialConditions": (
+                        {
+                            to_camel_case(k): v
+                            for k, v in section.initial_conditions.model_dump().items()
+                        }
+                        if section.initial_conditions and section.name in set_initial_conditions
+                        else None
+                    ),
                 }
             )
         return _filter
 
-    def build_generator_filters(self) -> Dict[str, float | str | bool]:
-        is_generator_enabled = bool(self._ctx.get("SIM-GENERATOR:ENABLE", throw=False))
-        _filter = {
-            "enable": (
-                is_generator_enabled
-                if not isinstance(
-                    is_generator_enabled,
-                    TimeoutError,
-                )
-                else False
-            )
-        }
-        if is_generator_enabled:
-            for (
-                field_name,
-                field_properties,
-            ) in Generator.__pydantic_fields__.items():
-                if field_name == "enable":
-                    continue
-                pv = f"SIM-GENERATOR:{field_name.upper().replace('_', '-')}"
-                filter_name = to_camel_case(field_name)
-                response = self._ctx.get(pv, throw=False)
-                if not isinstance(response, TimeoutError):
-                    value = self.epics_helper.epics_scalar(response)
-                    if field_properties.annotation in [int, bool, float]:
-                        _filter.update(
-                            {filter_name: field_properties.annotation(value)}
-                        )
-                    else:
-                        _filter.update({filter_name: value})
+    def build_generator_filters(
+        self, lattice: Lattice
+    ) -> Dict[str, float | str | bool]:
+        _filter = {}
+        if lattice.generator is None:
+            return None
+        if not lattice.generator.enable:
+            return None
+        _filter.update(
+            {
+                to_camel_case(k): v
+                for k, v in lattice.generator.model_dump().items()
+                if k not in ["uuid"]
+            }
+        )
         return _filter

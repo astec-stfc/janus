@@ -1,7 +1,7 @@
-from typing import List, Dict
+from typing import Any, List, Dict
 import requests
-from common import constants
-from schemas.elements import Lattice
+from janus_common.utils import constants
+from janus_common.schemas.elements import Lattice
 
 
 # -------------- SEED/POST requests --------------
@@ -28,6 +28,64 @@ def refresh_lattice():
         )
     else:
         return None
+
+
+def lattice_exists(
+    facility: str,
+    set_initial_conditions: str,
+    magnet_filter: List[Dict[str, Any]],
+    cavity_filter: List[Dict[str, Any]],
+    section_filter: List[Dict[str, Any]],
+    generator_filter: Dict[str, Any],
+) -> bool:
+    # Make GraphQL query to find_lattices
+    query = """
+    query FindLattices($facility: String!, $setInitialConditions: String!,  $magnetFilter: [MagnetInput!], $cavityFilter: [CavityInput!], $sectionFilter: [SectionInput!], $generatorFilter: GeneratorInput) {
+        findLattices(facility: $facility, setInitialConditions: $setInitialConditions, magnetFilter: $magnetFilter, cavityFilter: $cavityFilter, sectionFilter: $sectionFilter, generatorFilter: $generatorFilter) {
+            uuid
+            facility
+            sectionCount
+        }
+    }
+    """
+    variables = {
+        "facility": facility,
+        "setInitialConditions": set_initial_conditions,
+        "magnetFilter": magnet_filter,
+        "cavityFilter": cavity_filter,
+        "sectionFilter": section_filter,
+        "generatorFilter": generator_filter,
+    }
+    url = (
+        f"http://{constants.HOST_LATTICE_API}:"
+        + f"{constants.PORT_COMMS}"
+        + "/graphql"
+    )
+    try:
+        response = requests.post(
+            url,
+            json={"query": query, "variables": variables},
+            timeout=10,
+        )
+
+        response.raise_for_status()
+        data = response.json()
+
+        if "errors" in data:
+            print(f"GraphQL error: {data['errors']}")
+            return False, None
+
+        # Check if any matching lattices found
+        matching_lattices = data.get("data", {}).get("findLattices", [])
+        if matching_lattices:
+            # return first found lattice uuid
+            return True, matching_lattices[0]["uuid"]
+        else:
+            print("No matching lattices found in database")
+            return False, None
+    except requests.exceptions.RequestException as e:
+        print(f"Error connecting to lattice API: {e}")
+        return False, None
 
 
 # ----------------- GET requests -----------------

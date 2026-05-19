@@ -13,8 +13,8 @@ from kafka import KafkaProducer
 from pydantic import BaseModel
 
 from data.SimFrame import SimFrame_Interface
-from schemas.elements import Lattice
-from common import constants
+from janus_common.schemas.elements import Lattice
+from janus_common.utils import constants
 
 import logging
 
@@ -45,14 +45,14 @@ print(f"Configuration loaded from {config_path}")
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global master_framework, kafka_producer, tracking_finished_state
-
+    
     # Initialize Kafka producer
     kafka_producer = KafkaProducer(
         bootstrap_servers=f"{constants.BOOTSTRAP_SERVERS}:{constants.KAFKA_PORT}",
-        value_serializer=lambda v: json.dumps(v).encode("utf-8"),
+        value_serializer=lambda v: json.dumps(v).encode('utf-8')
     )
     tracking_finished_state = False
-
+    
     # load facility from environment variable
     facility = os.getenv("FACILITY", "CLARA")
     # facility = config['General'].get("facility")
@@ -87,7 +87,7 @@ async def lifespan(app: FastAPI):
         master_framework.track_uuid, master_framework.track_startfile, force=True
     )
     yield
-
+    
     # Cleanup
     if kafka_producer:
         kafka_producer.close()
@@ -107,7 +107,6 @@ def create_simframe_instance(clean: bool = False) -> dict:
     if clean:
         master_framework.reset_lattice()
     return {"clean": clean}
-
 
 @app.get("/lattice")
 def get_lattice() -> dict:
@@ -239,18 +238,25 @@ def start_tracking(end_lattice: Union[str, None] = "S07", rerun: bool = False) -
     """Starts tracking and returns tracking_status as a dict."""
     global tracking_finished_state
     tracking_finished_state = False
-
+    
     # Publish tracking started event
     uuid = master_framework.get_track_uuid()
     kafka_producer.send(
         "tracking_started",
-        value={"uuid": uuid, "end_lattice": end_lattice, "rerun": rerun},
+        value={
+            "uuid": uuid,
+            "end_lattice": end_lattice,
+            "rerun": rerun
+        }
     )
-
+    
     d = {}
     d.update(master_framework.start_tracking(endfile=end_lattice, rerun=rerun))
     uuid = master_framework.get_track_uuid()
-    kafka_producer.send("tracking_finished", value={"uuid": uuid, "status": "success"})
+    kafka_producer.send(
+        "tracking_finished",
+        value={"uuid": uuid, "status": "success"}
+    )
     print(f"Published tracking_finished message for uuid: {uuid}")
     return d
 

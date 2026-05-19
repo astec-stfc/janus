@@ -4,26 +4,18 @@ from pydantic import (
     Field,
     field_serializer,
     field_validator,
-    model_validator,
+    model_validator
 )
 
-from typing import List, Dict, Union, Type, Optional, Literal
+from typing import List, Dict, Type, Optional, Literal
 from enum import Enum
-from math import log10, floor
-
-
-def round_it(x, sig):
-    if x is None:
-        return 0.0
-    if float(x) == 0.0:
-        return 0.0
-    return round(x, sig - int(floor(log10(abs(x)))) - 1)
+from janus_common.utils.numeric import round_it
+from janus_common.utils.constants import SIGFIG
 
 
 ########################################################################
 #                              Data Classes                            #
 ########################################################################
-
 
 class InitialConditions(BaseModel):
     model_config = ConfigDict(
@@ -150,7 +142,6 @@ class CameraAnalysis(BaseModel):
 #                             Element Classes                          #
 ########################################################################
 
-
 class Generator(BaseModel):
 
     model_config = ConfigDict(
@@ -168,24 +159,12 @@ class Generator(BaseModel):
     charge: float
     # reference_position: float = 0.0
     initial_momentum: float = 0.0
-    distribution_type_x: Literal[
-        "p", "plateau", "flattop", "g", "gaussian", "i", "r", "radial"
-    ] = "g"
-    distribution_type_px: Literal[
-        "p", "plateau", "flattop", "g", "gaussian", "i", "r", "radial"
-    ] = "g"
-    distribution_type_y: Literal[
-        "p", "plateau", "flattop", "g", "gaussian", "i", "r", "radial"
-    ] = "g"
-    distribution_type_py: Literal[
-        "p", "plateau", "flattop", "g", "gaussian", "i", "r", "radial"
-    ] = "g"
-    distribution_type_z: Literal[
-        "p", "plateau", "flattop", "g", "gaussian", "i", "r", "radial"
-    ] = "g"
-    distribution_type_pz: Literal[
-        "p", "plateau", "flattop", "g", "gaussian", "i", "r", "radial"
-    ] = "g"
+    distribution_type_x: Literal["p", "plateau", "flattop", "g", "gaussian", "i", "r", "radial"] = "g"
+    distribution_type_px: Literal["p", "plateau", "flattop", "g", "gaussian", "i", "r", "radial"] = "g"
+    distribution_type_y: Literal["p", "plateau", "flattop", "g", "gaussian", "i", "r", "radial"] = "g"
+    distribution_type_py: Literal["p", "plateau", "flattop", "g", "gaussian", "i", "r", "radial"] = "g"
+    distribution_type_z: Literal["p", "plateau", "flattop", "g", "gaussian", "i", "r", "radial"] = "g"
+    distribution_type_pz: Literal["p", "plateau", "flattop", "g", "gaussian", "i", "r", "radial"] = "g"
     sigma_x: float = Field(gt=0.0)
     sigma_px: float = Field(ge=0.0, default=0.0)
     sigma_y: float = Field(gt=0.0)
@@ -319,53 +298,48 @@ class Magnet(Element):  # RESTFrame <--> EPICS
 
     class Config:
         from_attributes = True
-
+    
     @field_validator("KnL", mode="before")
     def validate_knl(cls, knl):
         if knl is None:
             return knl
         if not isinstance(knl, list):
             raise TypeError("KnL must be a list")
-        return [round_it(float(k), 5) for k in knl]
+        return [round_it(float(k), SIGFIG) for k in knl]
+
+    @field_validator("field_amplitude", mode="before")
+    @classmethod
+    def round_field_amplitude(cls, v):
+        """Round field_amplitude to SIGFIG precision for consistency with DB storage."""
+        if v is None:
+            return v
+        return round_it(float(v), SIGFIG)
 
     @field_serializer("KnL", return_type=list)
     def serialise_subtype(self, KnL: list[float] | None):
         if KnL is None:
             return KnL
         if isinstance(KnL, list):
-            return [round_it(float(k), 5) for k in KnL]
+            return [round_it(float(k), SIGFIG) for k in KnL]
         raise TypeError("KnL must be a list")
 
     @property
     def angle(self) -> float | None:
-        if (
-            self.subtype == MagnetEnum.dipole
-            and self.KnL is not None
-            and len(self.KnL) > 0
-        ):
+        if self.subtype == MagnetEnum.dipole and self.KnL is not None and len(self.KnL) > 0:
             return self.KnL[0]  # Assuming K0L for dipole
         return None
 
     @property
     def k1l(self) -> float | None:
-        if (
-            self.subtype == MagnetEnum.quadrupole
-            and self.KnL is not None
-            and len(self.KnL) > 1
-        ):
+        if self.subtype == MagnetEnum.quadrupole and self.KnL is not None and len(self.KnL) > 1:
             return self.KnL[1]  # Assuming K1L for quadrupole
         return None
 
     @property
     def k2l(self) -> float | None:
-        if (
-            self.subtype == MagnetEnum.sextupole
-            and self.KnL is not None
-            and len(self.KnL) > 2
-        ):
+        if self.subtype == MagnetEnum.sextupole and self.KnL is not None and len(self.KnL) > 2:
             return self.KnL[2]  # Assuming K2L for sextupole
         return None
-
 
 class CollimatorEnum(str, Enum):
     horizontal = "horizontal"
@@ -407,6 +381,14 @@ class Cavity(Element):  # RESTFrame <-- EPICS
 
     class Config:
         from_attributes = True
+
+    @field_validator("crest", "phase", "field_amplitude", "gradient", mode="before")
+    @classmethod
+    def round_cavity_fields(cls, v):
+        """Round cavity fields to SIGFIG precision for consistency with DB storage."""
+        if v is None:
+            return v
+        return round_it(float(v), SIGFIG)
 
 
 class Laser(Element):  # RESTFrame <-- EPICS
@@ -484,7 +466,7 @@ class Section(BaseModel):
             if typ is not None:
                 elems += typ
         return elems
-
+    
     def get_element(self, name: str) -> Optional[Element]:
         for elem in self.get_elements():
             if elem.name == name:
@@ -551,15 +533,15 @@ class Lattice(BaseModel):
         return [section for _, section in self.sections.items()]
 
 
-class PartialLattice(BaseModel):
-    """
-    Partial Lattice schema for matching queries.
-    All fields are optional to allow flexible filtering.
-    """
+class SimulationState(Enum):
+    COMPLETE = 0
+    TRACKING = 1
+    ERROR = 2
 
-    facility: Optional[str] = None
-    set_initial_conditions: Optional[bool] = None
-    sections: Optional[List[Section]] = None
+class SimulationMode(Enum):
+    AUTO = 0
+    TRIGGER = 1
 
-    class Config:
-        from_attributes = True
+class SimulationTrigger(Enum):
+    BYPASS = 0
+    ACTIVATE = 1

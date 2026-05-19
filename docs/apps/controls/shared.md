@@ -3,7 +3,7 @@ JANUS - Shared Control System
 
 The shared control system consists of EPICS PVAccess IOCs that serve PVs directly related to the output and control of simulations.
 
-The `PVAccess` PVs are generated from the classes in [schemas](../../../janus_common/schemas/) and hosted using the [p4p](https://epics-base.github.io/p4p/index.html) python library.
+The `PVAccess` PVs are generated from the classes in [schemas](../../../janus_common/schemas/) using the [translator](../../../janus_common/pv/translate.py) code and hosted using the [p4p](https://epics-base.github.io/p4p/index.html) python library.
 
 ----------
 
@@ -23,5 +23,7 @@ There are also some high-level PVs that are created:
 - `SIMULATION:START` - When in trigger mode, starts the simulation
   - `BYPASS (0)`
   - `ACTIVATE (1)` 
+
+- `SIMULATION:UUID` - The latest tracking uuid
 
 -----------------

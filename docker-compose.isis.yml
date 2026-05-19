@@ -3,7 +3,6 @@ include:
   - compose/isis.yml
 
 services:
-
   restframe:
     extends:
       file: compose/overrides.yml
@@ -29,7 +28,6 @@ services:
       - ./apps/api/lattice/.env.dev
     environment:
       - FACILITY=ISIS
-
   frontend:
     extends:
       file: compose/overrides.yml

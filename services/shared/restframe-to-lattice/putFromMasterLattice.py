@@ -1,5 +1,5 @@
-from common.restframe_simple import API
-from common import comms_handler
+from janus_common.utils.restframe_simple import API
+from janus_common.utils import comms_handler
 
 restframe = API()
 lattice = restframe.get_lattice()

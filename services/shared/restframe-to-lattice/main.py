@@ -1,5 +1,5 @@
-from common.kafka_restframe import API
-from common.comms_handler import get_lattice_uuids, add_lattice
+from janus_common.utils.kafka_restframe import API
+from janus_common.utils.comms_handler import get_lattice_uuids, add_lattice
 
 
 class Sender(API):
