@@ -29,4 +29,4 @@ WORKDIR src/app
 
 ADD entrypoint.sh /usr/src/app/ioc_entrypoint.sh
 RUN chmod a+x /usr/src/app/ioc_entrypoint.sh
-ENTRYPOINT ["./ioc_entrypoint.sh"]
+ENTRYPOINT ["./entrypoint.sh"]
