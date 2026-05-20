@@ -101,6 +101,11 @@ def construct_pvs_from_lattice(lattice: elements.Lattice) -> Dict[
             for pv, pv_type in simulation_translator.simulation_pv_types.items()
         }
     )
+    shared_pvs.update(
+        {
+            f"{lattice.facility}:SIM:SEED": pv_builder.make_shared_pv_from_type(int),
+        }
+    )
     return shared_pvs
 
 

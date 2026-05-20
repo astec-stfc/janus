@@ -15,15 +15,21 @@ services:
 
   # Managing connection between changes to Virtual PVs and the rest of the services
   isis_to_lattice:
-    build: ../services/isis/
+    build:
+      context: ../services/isis/
+      ssh:
+        - default
     depends_on:
       - lattice_api
       - physics_iocs
+      - ioc
     environment:
       - EPICS_PVA_AUTO_ADDR_LIST=YES
       # - EPICS_PVA_NAME_SERVERS=isis_iocs:${PORT:-6090} #
-      - EPICS_PVA_BROADCAST_PORT=${PORT:-6090}  # this is required to allow pvget to work in sandbox. It also doesn't have to be different to 
+      - EPICS_CA_SERVER_PORT=${PORT:-6090} # 6060 (original) # 6090 (from ioc service)
+      - EPICS_PVA_BROADCAST_PORT=${PORT:-6090}  # this is required to allow pvget to work in sandbox. It also doesn't have to be different to
       - PYTHONUNBUFFERED=1
+      - FACILITY=ISIS
     volumes:
-      - ../janus_common:/src/app/janus_common
+      - ../janus_common:/usr/src/app/janus_common
 
