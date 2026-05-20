@@ -1,0 +1,4221 @@
+magnet:
+  EBT-HRG1-MAG-SOL-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.659467
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.659446
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S01-MAG-HCOR-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.614917
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.614886
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S01-MAG-VCOR-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.387652
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.387632
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S01-MAG-HCOR-02:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.555138
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.555119
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-L01-MAG-SOL-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.661371
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.661351
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S01-MAG-VCOR-02:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.36724
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.367218
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-L01-MAG-SOL-02:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.66283
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.662803
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S02-MAG-QUAD-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 13.91100025177002
+      buffer:
+      - 13.91100025177002
+      timestamps:
+      - 1779283825.594511
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 13.91100025177002
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.568448
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S02-MAG-VCOR-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.348758
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.348737
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S02-MAG-HCOR-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.626906
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.626888
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S02-MAG-VCOR-02:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.459165
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.459143
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S02-MAG-HCOR-02:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.570023
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.570002
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S02-MAG-QUAD-02:
+    SETI:
+      value: 0.0
+    READK:
+      value: -12.937999725341797
+      buffer:
+      - -12.937999725341797
+      timestamps:
+      - 1779283825.639956
+    SPOWER:
+      value: OFF
+    SETK:
+      value: -12.937999725341797
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.41656
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S02-MAG-HCOR-03:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.528912
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.528887
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S02-MAG-QUAD-03:
+    SETI:
+      value: 0.0
+    READK:
+      value: 17.957000732421875
+      buffer:
+      - 17.957000732421875
+      timestamps:
+      - 1779283825.694121
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 17.957000732421875
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.517213
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S02-MAG-QUAD-04:
+    SETI:
+      value: 0.0
+    READK:
+      value: -10.739999771118164
+      buffer:
+      - -10.739999771118164
+      timestamps:
+      - 1779283825.756545
+    SPOWER:
+      value: OFF
+    SETK:
+      value: -10.739999771118164
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.52427
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S02-MAG-VCOR-03:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.408454
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.408433
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S02-MAG-QUAD-05:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.7380399703979492
+      buffer:
+      - 0.7380399703979492
+      timestamps:
+      - 1779283825.760112
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.7380399703979492
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.496855
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S02-MAG-HCOR-04:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.722201
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.72217
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-C2V-MAG-DIP-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.93674
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.936718
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S02-MAG-VCOR-04:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.370833
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.370812
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-C2V-MAG-HCOR-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.678855
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.678834
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-C2V-MAG-VCOR-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.388627
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.3886
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-C2V-MAG-QUAD-02:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.605415
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.605395
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-C2V-MAG-QUAD-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.59275
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.592487
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-C2V-MAG-QUAD-03:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.52188
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.521861
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-SP1-MAG-VCOR-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.358893
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.358874
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-SP1-MAG-HCOR-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.59432
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.5943
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-SP1-MAG-QUAD-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.412725
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.412708
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S03-MAG-QUAD-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: -0.9720600247383118
+      buffer:
+      - -0.9720600247383118
+      timestamps:
+      - 1779283825.78525
+    SPOWER:
+      value: OFF
+    SETK:
+      value: -0.9720600247383118
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.572531
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-SP1-MAG-QUAD-02:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.525891
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.525865
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S03-MAG-VCOR-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.448327
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.448266
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S03-MAG-HCOR-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.551368
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.551345
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S04-MAG-VCOR-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.379141
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.379121
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S04-MAG-HCOR-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.664347
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.664324
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S04-MAG-QUAD-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.6218000054359436
+      buffer:
+      - 0.6218000054359436
+      timestamps:
+      - 1779283825.828982
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.6218000054359436
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.425071
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S04-MAG-QUAD-04:
+    SETI:
+      value: 0.0
+    READK:
+      value: -0.20837999880313873
+      buffer:
+      - -0.20837999880313873
+      timestamps:
+      - 1779283825.835768
+    SPOWER:
+      value: OFF
+    SETK:
+      value: -0.20837999880313873
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.409535
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S04-MAG-QUAD-02:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.1663299947977066
+      buffer:
+      - 0.1663299947977066
+      timestamps:
+      - 1779283825.830488
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.1663299947977066
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.570528
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S04-MAG-QUAD-03:
+    SETI:
+      value: 0.0
+    READK:
+      value: -0.3877499997615814
+      buffer:
+      - -0.3877499997615814
+      timestamps:
+      - 1779283825.834311
+    SPOWER:
+      value: OFF
+    SETK:
+      value: -0.3877499997615814
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.422228
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S04-MAG-VCOR-02:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.336794
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.336773
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S04-MAG-QUAD-05:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.25363999605178833
+      buffer:
+      - 0.25363999605178833
+      timestamps:
+      - 1779283825.849866
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.25363999605178833
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.560401
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S04-MAG-VCOR-04:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.380116
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.380094
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S04-MAG-VCOR-03:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.382806
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.382775
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S04-MAG-HCOR-03:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.553347
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.553327
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S04-MAG-HCOR-04:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.58249
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.582467
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S04-MAG-HCOR-02:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.646782
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.646703
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S04-MAG-QUAD-06:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.4332500100135803
+      buffer:
+      - 0.4332500100135803
+      timestamps:
+      - 1779283825.856812
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.4332500100135803
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.461571
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S04-MAG-VCOR-05:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.391128
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.39111
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S04-MAG-QUAD-07:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.521809995174408
+      buffer:
+      - 0.521809995174408
+      timestamps:
+      - 1779283825.858572
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.521809995174408
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.418334
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S04-MAG-HCOR-05:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.69105
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.691029
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S05-MAG-QUAD-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: -0.7818199992179871
+      buffer:
+      - -0.7818199992179871
+      timestamps:
+      - 1779283825.861923
+    SPOWER:
+      value: OFF
+    SETK:
+      value: -0.7818199992179871
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.41955
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S04-MAG-QUAD-08:
+    SETI:
+      value: 0.0
+    READK:
+      value: -0.26879000663757324
+      buffer:
+      - -0.26879000663757324
+      timestamps:
+      - 1779283825.860477
+    SPOWER:
+      value: OFF
+    SETK:
+      value: -0.26879000663757324
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.594949
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S05-MAG-HCOR-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.672017
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.671996
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S05-MAG-QUAD-02:
+    SETI:
+      value: 0.0
+    READK:
+      value: 1.2924000024795532
+      buffer:
+      - 1.2924000024795532
+      timestamps:
+      - 1779283825.865832
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 1.2924000024795532
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.581715
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-VBC-MAG-DIP-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283825.921768
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.935069
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S05-MAG-VCOR-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.453264
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.453244
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-VBC-MAG-DIP-02:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.940111
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.940084
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-VBC-MAG-VCOR-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283774.118085
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283774.118062
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-VBC-MAG-DIP-03:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.94345
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.943429
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-VBC-MAG-DIP-04:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.944717
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.94469
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S06-MAG-VCOR-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.337743
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.337725
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S06-MAG-HCOR-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.625778
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.62576
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S06-MAG-QUAD-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 1.0505000352859497
+      buffer:
+      - 1.0505000352859497
+      timestamps:
+      - 1779283825.867196
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 1.0505000352859497
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.472055
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S06-MAG-HCOR-02:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.519253
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.519234
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S06-MAG-QUAD-02:
+    SETI:
+      value: 0.0
+    READK:
+      value: -0.4108400046825409
+      buffer:
+      - -0.4108400046825409
+      timestamps:
+      - 1779283825.868324
+    SPOWER:
+      value: OFF
+    SETK:
+      value: -0.4108400046825409
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.479593
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S06-MAG-VCOR-02:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.350303
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.350282
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-SP2-MAG-DIP-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.948677
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.948658
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-SP2-MAG-HCOR-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.68967
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.689648
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-SP2-MAG-QUAD-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.564753
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.564731
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-SP2-MAG-VCOR-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.360147
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.360124
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-SP2-MAG-QUAD-02:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.45363
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.453563
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-SP2-MAG-HCOR-02:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.604185
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.604162
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-SP2-MAG-VCOR-02:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.435308
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.435287
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S07-MAG-VCOR-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.46021
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.460189
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S07-MAG-QUAD-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 2.4179000854492188
+      buffer:
+      - 2.4179000854492188
+      timestamps:
+      - 1779283825.869407
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 2.4179000854492188
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.578892
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S07-MAG-HCOR-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.531282
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.53126
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S07-MAG-QUAD-02:
+    SETI:
+      value: 0.0
+    READK:
+      value: -0.7735499739646912
+      buffer:
+      - -0.7735499739646912
+      timestamps:
+      - 1779283825.882155
+    SPOWER:
+      value: OFF
+    SETK:
+      value: -0.7735499739646912
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.420407
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S07-MAG-HCOR-02:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.592445
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.592426
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S07-MAG-VCOR-03:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.356704
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.356685
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S07-MAG-VCOR-02:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.401268
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.401249
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S07-MAG-HCOR-03:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.606756
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.606731
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S07-MAG-QUAD-05:
+    SETI:
+      value: 0.0
+    READK:
+      value: 1.029099941253662
+      buffer:
+      - 1.029099941253662
+      timestamps:
+      - 1779283825.89726
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 1.029099941253662
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.417495
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S07-MAG-HCOR-04:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.613202
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.613178
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S07-MAG-QUAD-03:
+    SETI:
+      value: 0.0
+    READK:
+      value: -1.2697999477386475
+      buffer:
+      - -1.2697999477386475
+      timestamps:
+      - 1779283825.889095
+    SPOWER:
+      value: OFF
+    SETK:
+      value: -1.2697999477386475
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.390205
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S07-MAG-QUAD-04:
+    SETI:
+      value: 0.0
+    READK:
+      value: -1.1297999620437622
+      buffer:
+      - -1.1297999620437622
+      timestamps:
+      - 1779283825.893979
+    SPOWER:
+      value: OFF
+    SETK:
+      value: -1.1297999620437622
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.557136
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S07-MAG-VCOR-04:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.399365
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.399308
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S07-MAG-QUAD-06:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.13219000399112701
+      buffer:
+      - 0.13219000399112701
+      timestamps:
+      - 1779283825.898376
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.13219000399112701
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.398721
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S07-MAG-QUAD-07:
+    SETI:
+      value: 0.0
+    READK:
+      value: -1.5017999410629272
+      buffer:
+      - -1.5017999410629272
+      timestamps:
+      - 1779283825.899487
+    SPOWER:
+      value: OFF
+    SETK:
+      value: -1.5017999410629272
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.408503
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S07-MAG-HCOR-05:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.59153
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.591509
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S07-MAG-VCOR-05:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.41744
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.41742
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S07-MAG-HCOR-06:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.590411
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.590391
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S07-MAG-QUAD-08:
+    SETI:
+      value: 0.0
+    READK:
+      value: 5.287899971008301
+      buffer:
+      - 5.287899971008301
+      timestamps:
+      - 1779283825.906146
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 5.287899971008301
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.426706
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S07-MAG-VCOR-06:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.431652
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.431629
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S07-MAG-QUAD-09:
+    SETI:
+      value: 0.0
+    READK:
+      value: 2.6214001178741455
+      buffer:
+      - 2.6214001178741455
+      timestamps:
+      - 1779283825.907241
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 2.6214001178741455
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.530357
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S07-MAG-HCOR-07:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.619757
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.619735
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S07-MAG-VCOR-07:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.454794
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.454774
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S07-MAG-QUAD-10:
+    SETI:
+      value: 0.0
+    READK:
+      value: -7.565700054168701
+      buffer:
+      - -7.565700054168701
+      timestamps:
+      - 1779283825.917552
+    SPOWER:
+      value: OFF
+    SETK:
+      value: -7.565700054168701
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.511139
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S07-MAG-QUAD-11:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.55528
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.555249
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-SP3-MAG-DIP-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.939131
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.939112
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-SP3-MAG-HCOR-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.517135
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.517094
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-SP3-MAG-VCOR-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.369453
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.369431
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-SP3-MAG-QUAD-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.509455
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.509425
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-SP3-MAG-QUAD-02:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.584088
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.58407
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEA-MAG-VCOR-02:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.35573
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.35571
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEA-MAG-VCOR-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.37265
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.372629
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEA-MAG-VCOR-05:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.353276
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.353256
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEA-MAG-HCOR-05:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.623861
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.623842
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEA-MAG-HCOR-02:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.617531
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.617508
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEA-MAG-HCOR-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.653191
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.653156
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEA-MAG-HCOR-06:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.667077
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.667056
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEA-MAG-VCOR-04:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.397467
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.397447
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEA-MAG-HCOR-04:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.673934
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.673767
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEA-MAG-HCOR-03:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.713815
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.713786
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEA-MAG-VCOR-06:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.461007
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.460987
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEA-MAG-QUAD-12:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.401592
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.40157
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEA-MAG-VCOR-03:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.46586
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.465837
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEA-MAG-QUAD-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.395771
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.395747
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEA-MAG-QUAD-04:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.403754
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.403714
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEA-MAG-QUAD-06:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.404973
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.404952
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEA-MAG-QUAD-10:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.411072
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.411052
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEA-MAG-QUAD-13:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.413743
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.413706
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEA-MAG-QUAD-02:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.414826
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.414558
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEA-MAG-QUAD-09:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.4287
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.428679
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEA-MAG-QUAD-16:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.437755
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.437735
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEA-MAG-QUAD-14:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.442084
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.442056
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEA-MAG-QUAD-07:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.499166
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.499141
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEA-MAG-QUAD-05:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.501589
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.501568
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEA-MAG-QUAD-08:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.577195
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.577177
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEA-MAG-QUAD-11:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.586349
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.586327
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEA-MAG-QUAD-03:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.603173
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.603142
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEA-MAG-DIP-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.94109
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.941072
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEA-MAG-QUAD-15:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.607152
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.607135
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEH-MAG-HCOR-08:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.52132
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.521208
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEH-MAG-VCOR-02:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.335254
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.335233
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEH-MAG-VCOR-04:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.344783
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.344702
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEH-MAG-HCOR-05:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.538567
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.538548
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEH-MAG-VCOR-06:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.354632
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.354614
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEH-MAG-HCOR-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.593273
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.593253
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEH-MAG-HCOR-04:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.548323
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.548303
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEH-MAG-HCOR-02:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.578672
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.578648
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEH-MAG-VCOR-05:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.378325
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.378303
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEH-MAG-HCOR-06:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.622874
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.622854
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEH-MAG-VCOR-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.390032
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.389999
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEH-MAG-HCOR-03:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.624877
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.624627
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEH-MAG-VCOR-08:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.411006
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.410985
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEH-MAG-HCOR-07:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.677463
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.677441
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEH-MAG-VCOR-03:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.450686
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.450665
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEH-MAG-QUAD-07:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.406495
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.406473
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEH-MAG-VCOR-07:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.463041
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.462919
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEH-MAG-QUAD-04:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.43456
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.434532
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEH-MAG-QUAD-05:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.48938
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.489297
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEH-MAG-QUAD-03:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.528183
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.528166
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEH-MAG-QUAD-06:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.574894
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.574876
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEH-MAG-QUAD-02:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.548512
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.548487
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEH-MAG-QUAD-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.5627
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.562677
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FED-MAG-VCOR-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.365719
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283775.365661
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FEH-MAG-QUAD-08:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.598012
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.597991
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FED-MAG-QUAD-03:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.439813
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.439758
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FED-MAG-HCOR-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.639157
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.639137
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FED-MAG-DIP-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.937787
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283776.937766
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FED-MAG-QUAD-02:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.600886
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.600864
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-FED-MAG-QUAD-01:
+    SETI:
+      value: 0.0
+    READK:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.537558
+    SPOWER:
+      value: OFF
+    SETK:
+      value: 0.0
+    READI:
+      value: 0.0
+      buffer:
+      - 0.0
+      timestamps:
+      - 1779283778.537534
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-VBC-MAG-HCOR-01:
+    SETI:
+      value:
+    READK:
+      value:
+      buffer: []
+      timestamps: []
+    SPOWER:
+      value: OFF
+    SETK:
+      value:
+    READI:
+      value:
+      buffer: []
+      timestamps: []
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-VBC-MAG-HCOR-04:
+    SETI:
+      value:
+    READK:
+      value:
+      buffer: []
+      timestamps: []
+    SPOWER:
+      value: OFF
+    SETK:
+      value:
+    READI:
+      value:
+      buffer: []
+      timestamps: []
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-VBC-MAG-HCOR-02:
+    SETI:
+      value:
+    READK:
+      value:
+      buffer: []
+      timestamps: []
+    SPOWER:
+      value: OFF
+    SETK:
+      value:
+    READI:
+      value:
+      buffer: []
+      timestamps: []
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-VBC-MAG-HCOR-03:
+    SETI:
+      value:
+    READK:
+      value:
+      buffer: []
+      timestamps: []
+    SPOWER:
+      value: OFF
+    SETK:
+      value:
+    READI:
+      value:
+      buffer: []
+      timestamps: []
+    RPOWER:
+      value: OFF
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-GUN-MAG-SOL-02:
+    SETI:
+      value:
+    READK:
+      value:
+      buffer: []
+      timestamps: []
+    SPOWER:
+      value:
+    SETK:
+      value:
+    READI:
+      value:
+      buffer: []
+      timestamps: []
+    RPOWER:
+      value:
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-C2V-MAG-DIP-02:
+    SETI:
+      value:
+    READK:
+      value:
+      buffer: []
+      timestamps: []
+    SPOWER:
+      value:
+    SETK:
+      value:
+    READI:
+      value:
+      buffer: []
+      timestamps: []
+    RPOWER:
+      value:
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S07-MAG-VCOR-08:
+    SETI:
+      value:
+    READK:
+      value:
+      buffer: []
+      timestamps: []
+    SPOWER:
+      value:
+    SETK:
+      value:
+    READI:
+      value:
+      buffer: []
+      timestamps: []
+    RPOWER:
+      value:
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+  CLA-S07-MAG-HCOR-08:
+    SETI:
+      value:
+    READK:
+      value:
+      buffer: []
+      timestamps: []
+    SPOWER:
+      value:
+    SETK:
+      value:
+    READI:
+      value:
+      buffer: []
+      timestamps: []
+    RPOWER:
+      value:
+    DEGAUSSED:
+      value: false
+    LAST_DEGAUSS_SUCCESS:
+      value: false
+comment: ''
+created: '2026-05-20T13:35:54.277913'

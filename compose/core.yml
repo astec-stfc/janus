@@ -74,8 +74,8 @@ services:
   # 'soft' versions of all CLARA IOCs
   ioc:
     build:
-      context: ../apps/controls/shared/
-      dockerfile: Dockerfile-soft-ioc
+      context: ../apps/controls/shared/virtual-accelerator/
+      dockerfile: Dockerfile
       ssh:
         - default
       args:
@@ -100,7 +100,7 @@ services:
   # Soft PVA IOCs containing simulation results 
   physics_iocs:
     build: 
-      context: ../apps/controls/shared/
+      context: ../apps/controls/shared/simulation
       dockerfile: Dockerfile
       ssh:
         - default
