@@ -7,7 +7,7 @@ fi
 
 if [ "$USE_RESTFRAME" = "true" ]; then
 echo "Waiting for RESTFrame...";
-until $(curl -X GET --output /dev/null --silent --head --fail http://restframe:8000/lattice); do sleep 0.1; done
+until $(curl -X GET --output /dev/null --silent --head --fail http://${RESTFRAME_HOST:-restframe}:${RESTFRAME_PORT:-8000}/lattice); do sleep 0.1; done
 echo "RESTFrame started...";
 fi
 

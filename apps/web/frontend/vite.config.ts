@@ -14,7 +14,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/v1": {
-        target: "http://lattice_api:5000",
+        target: process.env.LATTICE_API_URL ?? "http://lattice_api:5000",
         changeOrigin: true,
       },
     },

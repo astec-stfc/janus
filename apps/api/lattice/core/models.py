@@ -628,3 +628,4 @@ class Lattice(Base):
         String(50),
         nullable=False,
     )
+    client_id: Mapped[str] = mapped_column(String(50), nullable=True)

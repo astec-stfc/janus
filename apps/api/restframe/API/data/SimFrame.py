@@ -294,7 +294,7 @@ class SimFrame_Interface:
                 + ".openpmd.hdf5"
             ):
                 print(
-                    f"Screen file not found for {screen.name} in section {section.name}"
+                    f"Screen file not found {self.runs_directory + str(section.uuid) + '/' + screen.name + '.openpmd.hdf5'}"
                 )
                 all_screens_exist = False
         return all_screens_exist
@@ -394,8 +394,8 @@ class SimFrame_Interface:
                     for p in params
                 }
                 lattice_changes.update({"initial_conditions": init_tw})
-            if len(lattice_changes) > 0 and self.verbose:
-                print(f"lattice_changes \t {lattice_changes}")
+            # if len(lattice_changes) > 0 and self.verbose:
+            #     print(f"lattice_changes \t {lattice_changes}")  # very large
             if len(lattice_changes) > 0:
                 changes_lattices[lattice] = data.ChangesLattice(
                     name=lattice, hash=data.hash_function(lattice_changes)
@@ -753,6 +753,7 @@ class SimFrame_Interface:
 
     def track(self, frameworkcopy, uuid, endfile: Union[str, None] = "S07"):
         """perform a SimFrame tracking run"""
+        restframe_uuid_before_tracking = uuid
         self._track_success = None
         if self.verbose:
             print("track")
@@ -763,25 +764,37 @@ class SimFrame_Interface:
         # Check if the settings already exist in a run, if not track else re-load existing directory
         if not changes_dict == self.changeclass.get_uuid(uuid):
             startfile = data.lattice_names[-1]
-            if self.verbose:
-                print("TRACKING: Something has changed")
+            matching_run_exists = self.changeclass.run_exists(changes_dict)
             if self.verbose:
                 print(
-                    "TRACKING: Already exists?",
-                    self.changeclass.run_exists(changes_dict),
+                    "[restframe run]\n"
+                    f"    RestFrame uuid before tracking: {restframe_uuid_before_tracking}\n"
+                    f"    current: settings have changed compared with the current RestFrame state\n"
+                    f"    current: tracking run already exists? {matching_run_exists}"
                 )
-            if not self.changeclass.run_exists(changes_dict):
+            if not matching_run_exists:
                 if self.verbose:
-                    print("TRACKING: Need to track")
+                    print(
+                        "[restframe run]\n"
+                        f"    current: tracking run does not exist yet; need to track"
+                    )
                 uuid = self.uuid = create_uuid(self.runs_directory)
                 if self.verbose:
-                    print("TRACKING: uuid = ", uuid)
+                    print(
+                        "[restframe run]\n"
+                        f"    current: created new tracking run uuid: {uuid}"
+                    )
                 frameworkcopy.setSubDirectory(self.runs_directory + str(uuid))
                 prefix, startfile, startfile_index = self.changeclass.find_prefix_entry(
                     changes_dict
                 )
                 if self.verbose:
-                    print("TRACKING: prefix 1 = ", prefix, startfile)
+                    print(
+                        "[restframe prefix]\n"
+                        f"    tracking run uuid: {uuid}\n"
+                        f"    prefix: {prefix}\n"
+                        f"    start lattice from prefix lookup: {startfile}"
+                    )
                 startfile = startfile if startfile_index > 0 else "generator"
                 if prefix is not None:
                     lattice_prefix = self.prefixesclass.get_prefixes(prefix)[startfile]
@@ -794,15 +807,21 @@ class SimFrame_Interface:
                     )
                     if self.verbose:
                         print(
-                            "TRACKING: prefix = ",
-                            prefix,
-                            lattice_prefix,
-                            startfile,
-                            frameworkcopy[startfile].prefix,
+                            "[restframe prefix]\n"
+                            f"    tracking run uuid: {uuid}\n"
+                            f"    start lattice: {startfile}\n"
+                            f"    prefix: {prefix}\n"
+                            f"    lattice prefix uuid: {lattice_prefix}\n"
+                            f"    prefix path: {frameworkcopy[startfile].prefix}"
                         )
                 else:
                     if self.verbose:
-                        print("TRACKING: prefix is None")
+                        print(
+                            "[restframe prefix]\n"
+                            f"    tracking run uuid: {uuid}\n"
+                            f"    start lattice: {startfile}\n"
+                            f"    prefix: None"
+                        )
                     self.prefixesclass.add_entry(uuid, data.PrefixData(uuid=uuid))
                 frameworkcopy.save_changes_file(
                     filename=frameworkcopy.subdirectory + "/changes.yaml"
@@ -831,7 +850,11 @@ class SimFrame_Interface:
                 uuid, entry = self.changeclass.get_entry(changes_dict)
                 self.uuid = uuid
                 if self.verbose:
-                    print("TRACKING: Tracking run exists!", uuid)
+                    print(
+                        "[restframe run]\n"
+                        f"    current: Tracking run exists! {uuid}\n"
+                        f"    current: reusing existing tracking run instead of tracking again"
+                    )
                 frameworkcopy.setSubDirectory(self.runs_directory + str(uuid))
                 if self.tracking_history.get(uuid) is not None:
                     self._track_success = self.tracking_history[uuid]
@@ -869,7 +892,11 @@ class SimFrame_Interface:
             self.set_lattice_update_flag(uuid, startfile)
         else:
             if self.verbose:
-                print("TRACKING: NOTHING has changed!!")
+                print(
+                    "[restframe run]\n"
+                    f"    RestFrame uuid before tracking: {restframe_uuid_before_tracking}\n"
+                    f"    current: NOTHING has changed; reusing current tracking state"
+                )
             pass
         try:
             start = time.time()
@@ -912,7 +939,9 @@ class SimFrame_Interface:
                 if current_start_lattice == lattice:
                     uuid = trackuuid
                 if self.verbose:
-                    print(lattice, "uuid changed", uuid)
+                    print(
+                        "[restframe lattice]\n" f"    {lattice} uuid changed to {uuid}"
+                    )
                 self.latticeclass.set_lattice_prefix(lattice, uuid)
                 self.latticeclass.set_lattice_update_flag(lattice, True)
             else:

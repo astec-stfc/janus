@@ -216,3 +216,7 @@ apps/api/restframe/Output/
 *.png
 *:Zone.Identifier
 *.ipynb
+
+# Un-ignore frontend src/lib (overrides the generic lib/ rule above)
+!apps/web/frontend/src/lib/
+!apps/web/frontend/src/lib/**

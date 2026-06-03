@@ -22,6 +22,7 @@ from janus_common.utils.numeric import round_it
 from janus_common.pv.translate import SectionToPV, GeneratorToPV, SimulationToPV, LatticeToPV
 from janus_common.utils.constants import SIGFIG
 
+VIRTUAL_MODE = eval(os.getenv("VIRTUAL_MODE"))
 
 class EPICSToLattice:
 
@@ -33,10 +34,10 @@ class EPICSToLattice:
         self.exclude = ["CLA-S07-MAG-QUAD-11"]
         self.facility = "CLARA"
         self.magnet_factory = MagnetFactory(
-            is_virtual=True,
+            is_virtual=VIRTUAL_MODE,
         )
         self.cavity_factory = CavityFactory(
-            is_virtual=True,
+            is_virtual=VIRTUAL_MODE,
         )
         self.quads = {
             k: v
@@ -229,12 +230,12 @@ class EPICSToLattice:
             self.lattice_translator.apply_initial_conditions_pv_metadata.name,
             throw=False,
         )
-        if sections_to_apply_initial_conditions is not None and not isinstance(
+        if sections_to_apply_initial_conditions is None or isinstance(
             sections_to_apply_initial_conditions, TimeoutError
         ):
-            return sections_to_apply_initial_conditions
-        else:
             return ""
+        value = self.epics_helper.epics_scalar(sections_to_apply_initial_conditions)
+        return value if isinstance(value, str) else str(value)
 
     def build_magnet_filters(self, lattice: Lattice) -> List[Dict[str, List[float]]]:
         _filter = []
