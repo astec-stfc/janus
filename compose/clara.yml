@@ -1,20 +1,4 @@
 services:
-
-  # PVWS (PV Web Socket) for accessing PVs directly via frontend
-  pvws:
-    build: ../apps/web/pvws
-    ports:
-      - "8080:8080"
-    depends_on:
-      - ioc
-    environment:
-      # See https://github.com/ornl-epics/pvws
-      - PV_THROTTLE_MS=100
-      - PV_WRITE_SUPPORT=true
-      - EPICS_PVA_NAME_SERVERS=physics_iocs:6091
-      - EPICS_CA_ADDR_LIST=ioc
-      - EPICS_CA_SERVER_PORT=6090
-
   # 'soft' versions of all CLARA IOCs
   ioc:
     build: ../apps/controls/clara/ioc/
@@ -22,7 +6,7 @@ services:
     ports:
       - ${PORT:-6090}:${PORT:-6090}/tcp
       - ${PORT:-6090}:${PORT:-6090}/udp
-      - 6092:6092/tcp
+      - ${PVA_PORT:-6092}:${PVA_PORT:-6092}/tcp
     environment:
       - EPICS_CA_SERVER_PORT=${PORT:-6090}
       - EPICS_CAS_SERVER_PORT=${PORT:-6090}
@@ -30,28 +14,7 @@ services:
       - EPICS_CA_ADDR_LIST=localhost
       - EPICS_PVA_AUTO_ADDR_LIST=YES
       - EPICS_PVA_ADDR_LIST=""
-      - EPICS_PVAS_SERVER_PORT=6092
-      - EPICS_PVA_SERVER_PORT=6092
+      - EPICS_PVAS_SERVER_PORT=${PVA_PORT:-6092}
+      - EPICS_PVA_SERVER_PORT=${PVA_PORT:-6092}
 
-  # managing requests from changes in CLARA IOCs to the lattice API
-  epics_to_lattice:
-    build: 
-      context: ../services/clara/
-      ssh:
-        - default
-    depends_on:
-      - lattice_api
-      - ioc
-    environment:
-      - EPICS_CA_ADDR_LIST=ioc # 192.168.83.246 (original) # 192.168.83.255 (from ioc service)
-      - EPICS_CA_MAX_ARRAY_BYTES=1000000000
-      - EPICS_CA_SERVER_PORT=${PORT:-6090} # 6060 (original) # 6090 (from ioc service)
-      - EPICS_PVA_AUTO_ADDR_LIST=YES
-      # - EPICS_PVA_NAME_SERVERS=physics_iocs:${PHYSICS_PORT:-6091} 
-      - EPICS_PVA_BROADCAST_PORT=${PORT:-6090}  # this is required to allow pvget to work in sandbox. It also doesn't have to be different to
-      - PYTHONUNBUFFERED=1
-      - FACILITY=CLARA
-      #- LATTICE_PARAMS={"dipoles":["CLA-VBC-MAG-DIP-01"],"generator":{"charge":"CLA-S01-DIA-WCM-01"}}
 
-    volumes:
-      - ../janus_common:/usr/src/app/janus_common

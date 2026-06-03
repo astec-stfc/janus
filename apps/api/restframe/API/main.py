@@ -15,6 +15,7 @@ from pydantic import BaseModel
 from data.SimFrame import SimFrame_Interface
 from janus_common.schemas.elements import Lattice
 from janus_common.utils import constants
+from janus_common.utils.flow_log import flow_log
 
 import logging
 
@@ -45,14 +46,14 @@ print(f"Configuration loaded from {config_path}")
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global master_framework, kafka_producer, tracking_finished_state
-    
+
     # Initialize Kafka producer
     kafka_producer = KafkaProducer(
         bootstrap_servers=f"{constants.BOOTSTRAP_SERVERS}:{constants.KAFKA_PORT}",
-        value_serializer=lambda v: json.dumps(v).encode('utf-8')
+        value_serializer=lambda v: json.dumps(v).encode("utf-8"),
     )
     tracking_finished_state = False
-    
+
     # load facility from environment variable
     facility = os.getenv("FACILITY", "CLARA")
     # facility = config['General'].get("facility")
@@ -87,7 +88,7 @@ async def lifespan(app: FastAPI):
         master_framework.track_uuid, master_framework.track_startfile, force=True
     )
     yield
-    
+
     # Cleanup
     if kafka_producer:
         kafka_producer.close()
@@ -107,6 +108,7 @@ def create_simframe_instance(clean: bool = False) -> dict:
     if clean:
         master_framework.reset_lattice()
     return {"clean": clean}
+
 
 @app.get("/lattice")
 def get_lattice() -> dict:
@@ -234,30 +236,52 @@ def set_parallel_cpu_number(cpu: int) -> dict:
 
 
 @app.post("/track")
-def start_tracking(end_lattice: Union[str, None] = "S07", rerun: bool = False) -> dict:
+def start_tracking(
+    end_lattice: Union[str, None] = "S07",
+    rerun: bool = False,
+    client_id: str = None,
+    request_id: str = None,
+) -> dict:
     """Starts tracking and returns tracking_status as a dict."""
     global tracking_finished_state
     tracking_finished_state = False
-    
+    flow_log(
+        "G04 tracking.publish",
+        "S3/6",
+        client_id=client_id,
+        request_id=request_id,
+        current="restframe received tracking request, publishing to topic 'tracking_started' and running simulation",
+        next_step="lattice-to-epics to consume from topic 'tracking_started' and set SIMULATION:STATUS in EPICS",
+    )
+
     # Publish tracking started event
-    uuid = master_framework.get_track_uuid()
     kafka_producer.send(
         "tracking_started",
         value={
-            "uuid": uuid,
-            "end_lattice": end_lattice,
-            "rerun": rerun
-        }
+            "request_id": request_id,
+            "client_id": client_id,
+        },
     )
-    
+
     d = {}
     d.update(master_framework.start_tracking(endfile=end_lattice, rerun=rerun))
     uuid = master_framework.get_track_uuid()
+    flow_log(
+        "G06 tracking.done",
+        "S4/6",
+        client_id=client_id,
+        request_id=request_id,
+        current="simulation complete, publishing to topic 'tracking_finished'",
+        next_step="comm-to-restframe to fetch completed results and POST them to the lattice API",
+    )
     kafka_producer.send(
         "tracking_finished",
-        value={"uuid": uuid, "status": "success"}
+        value={
+            "request_id": request_id,
+            "uuid": uuid,
+            "client_id": client_id,
+        },
     )
-    print(f"Published tracking_finished message for uuid: {uuid}")
     return d
 
 

@@ -5,13 +5,18 @@ from janus_common.schemas.elements import Lattice
 
 
 # -------------- SEED/POST requests --------------
-def add_lattice(lattice: Lattice):
+def add_lattice(lattice: Lattice, request_id: str = None):
     url = (
         f"http://{constants.HOST_LATTICE_API}:"
         + f"{constants.PORT_COMMS}"
         + "/v1/lattice/"
     )
-    requests.post(url, json=lattice.model_dump())
+    params = (
+        {"request_id": request_id} if request_id else None
+    )  # when lattice is added via integrated model loop (client-triggered)
+    response = requests.post(url, json=lattice.model_dump(), params=params)
+    response.raise_for_status()
+
 
 
 def refresh_lattice():
@@ -21,13 +26,12 @@ def refresh_lattice():
         + "/v1/lattice/refresh"
     )
     response = requests.post(url)
-    if response.status_code != 400:
+    if response.ok:
         return Lattice.model_validate(
             response.json(),
             from_attributes=True,
         )
-    else:
-        return None
+    return None
 
 
 def lattice_exists(
@@ -100,13 +104,28 @@ def get_lattice(uuid: str = None) -> Lattice:
     if uuid:
         url += f"?uuid={uuid}"
     response = requests.get(url)
-    if response.status_code != 400:
+    if response.ok:
         return Lattice.model_validate(
             response.json(),
             from_attributes=True,
         )
-    else:
-        return None
+    return None
+
+
+def get_lattice_request(request_id: str) -> Lattice | None:
+    url = (
+        f"http://{constants.HOST_LATTICE_API}:"
+        + f"{constants.PORT_COMMS}"
+        + f"/v1/lattice/request/{request_id}"
+    )
+    response = requests.get(url)
+    if response.ok:
+        return Lattice.model_validate(
+            response.json(),
+            from_attributes=True,
+        )
+    return None
+
 
 
 def get_lattice_uuids() -> List[str]:

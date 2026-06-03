@@ -4,6 +4,15 @@ import PVWS from "@/services/pvws/pvws";
 import type { ServerMessage } from "@/types/pvws";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+function getPVWSUrl() {
+  const configuredUrl = import.meta.env.VITE_PVWS_URL?.trim();
+  if (configuredUrl) return configuredUrl;
+
+  const port = import.meta.env.VITE_PVWS_PORT?.trim() || "8080";
+  const protocol = "ws";
+  return `${protocol}://${window.location.hostname}:${port}/pvws/pv`;
+}
+
 export function PVWSProvider({ children }: { children: React.ReactNode }) {
   const [connected, setConnected] = useState(false);
   // `connectedRef: For internal logic - used inside callbacks/closures without
@@ -18,7 +27,7 @@ export function PVWSProvider({ children }: { children: React.ReactNode }) {
   const pvCacheRef = useRef<Map<string, PVUpdate>>(new Map());
 
   useEffect(() => {
-    const wsUrl = `ws://${window.location.hostname}:8080/pvws/pv`;
+    const wsUrl = getPVWSUrl();
 
     const handleConnection = (isConnected: boolean) => {
       connectedRef.current = isConnected;

@@ -2908,11 +2908,21 @@ CLARA:
   SIM-injector-SIMULATION:CODE:
     type: <class 'str'>
   SIMULATION:MODE:
-    type: <enum 'SimulationMode'>
+    type: <class 'enum'>
+    options: 
+      AUTO: 0
+      TRIGGER: 1
   SIMULATION:START:
-    type: <enum 'SimulationTrigger'>
+    type: <class 'enum'>
+    options: 
+      BYPASS: 0
+      ACTIVATE: 1
   SIMULATION:STATUS:
-    type: <enum 'SimulationState'>
+    type: <class 'enum'>
+    options: 
+      COMPLETE: 0
+      TRACKING: 1
+      ERROR: 2
   SIMULATION:UUID:
     type: <class 'str'>
   VM-GENERATOR:CATHODE:

@@ -1,48 +1,30 @@
 include:
-  - compose/server.yaml
   - compose/client.yaml
   - compose/isis.yml
 
 services:
-  restframe:
-    extends:
-      file: compose/server.yaml
-      service: restframe
-    environment:
-      - FACILITY=ISIS
-    volumes:
-      - ./apps/api/restframe/ISIS:/home/web/webapp/Output/ISIS
-  sandbox:
-    extends:
-      file: compose/client.yaml
-      service: sandbox
-    user: "janus-developer"
-    environment:
-     - EPICS_PVA_BROADCAST_PORT=${PORT:-6090} # to allow udp coms inside the stack
-     - EPICS_PVA_AUTO_ADDR_LIST=YES
-     - EPICS_PVA_NAME_SERVERS=physics_iocs:${PHYSICS_PORT:-6091} isis_iocs:${PORT:-6090}
-
-  lattice_api:
-    extends:
-      file: compose/server.yaml
-      service: lattice_api
-    environment:
-      - FACILITY=ISIS
   pvws:
     extends:
-      file: compose/client.yaml
+      file: ./compose/client.yaml
       service: pvws
     depends_on:
       - isis_iocs
     environment:
       - EPICS_PVA_NAME_SERVERS=physics_iocs:${PHYSICS_PORT:-6091} isis_iocs:${PORT:-6090}
 
+  sandbox:
+    extends:
+      file: ./compose/client.yaml
+      service: sandbox
+    environment:
+      - EPICS_PVA_NAME_SERVERS=physics_iocs:${PHYSICS_PORT:-6091} isis_iocs:${PORT:-6090}
   # Managing connection between changes to Virtual PVs and the rest of the services
   epics_to_lattice:
     build: ./services/isis/
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:
+      - physics_iocs
       - isis_iocs
     environment:
       - EPICS_PVA_AUTO_ADDR_LIST=YES

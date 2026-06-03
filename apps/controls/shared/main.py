@@ -1,6 +1,6 @@
 import time
 import os
-from typing import Dict
+from typing import Any, Dict
 from p4p.server import Server
 from janus_common.schemas import elements
 from p4p.server.thread import SharedPV
@@ -37,21 +37,24 @@ def get_server_conf():
 
 def _write_facility_pv_yaml(
     facility: str,
-    pvs: Dict[str, SharedPV],
+    pvs: Dict[str, Any],
 ):
     """
     Utility function to write the PVs being served to a yaml file.
     """
     import yaml
+
     if not os.path.exists(PV_OUTPUT_DIR):
         os.makedirs(PV_OUTPUT_DIR)
     if not os.path.exists(os.path.join(PV_OUTPUT_DIR, facility)):
         os.makedirs(os.path.join(PV_OUTPUT_DIR, facility))
     with open(
-        f"{os.path.join(PV_OUTPUT_DIR, facility, f'pvs.yaml')}",
+        f"{os.path.join(PV_OUTPUT_DIR, facility, 'pvs.yaml')}",
         "w",
     ) as f:
-        yaml.dump({f"{facility}": list(pvs.keys())}, f)
+        print(f"Writing {os.path.join(PV_OUTPUT_DIR, facility, f'pvs.yaml')}: {len(pvs)}")
+        output = {facility: pvs}
+        yaml.dump(output, f)
 
 
 def construct_pvs_from_lattice(lattice: elements.Lattice) -> Dict[
@@ -64,6 +67,7 @@ def construct_pvs_from_lattice(lattice: elements.Lattice) -> Dict[
     """
     pv_builder = Builder()
     shared_pvs = {}
+    output = {}
     for element in lattice.get_elements():
         element_translator = ElementToPV(element=element)
         shared_pvs.update(
@@ -72,10 +76,22 @@ def construct_pvs_from_lattice(lattice: elements.Lattice) -> Dict[
                 for pv, pv_type in element_translator.element_pv_types.items()
             }
         )
+        output.update(
+            {
+                pv: {"type": str(pv_type)}
+                for pv, pv_type in element_translator.element_pv_types.items()
+            }
+        )
     generator_translator = GeneratorToPV()
     shared_pvs.update(
         {
             pv: pv_builder.make_shared_pv_from_type(pv_type)
+            for pv, pv_type in generator_translator.generator_pv_types.items()
+        }
+    )
+    output.update(
+        {
+            pv: {"type": str(pv_type)}
             for pv, pv_type in generator_translator.generator_pv_types.items()
         }
     )
@@ -87,10 +103,22 @@ def construct_pvs_from_lattice(lattice: elements.Lattice) -> Dict[
                 for pv, pv_type in section_translator.section_pv_types.items()
             }
         )
+        output.update(
+        {
+            pv: {"type": str(pv_type)}
+            for pv, pv_type in section_translator.section_pv_types.items()
+        }
+    )
     lattice_translator = LatticeToPV()
     shared_pvs.update(
         {
             pv: pv_builder.make_shared_pv_from_type(pv_type)
+            for pv, pv_type in lattice_translator.lattice_pv_types.items()
+        }
+    )
+    output.update(
+        {
+            pv: {"type": str(pv_type)}
             for pv, pv_type in lattice_translator.lattice_pv_types.items()
         }
     )
@@ -101,6 +129,13 @@ def construct_pvs_from_lattice(lattice: elements.Lattice) -> Dict[
             for pv, pv_type in simulation_translator.simulation_pv_types.items()
         }
     )
+    output.update(
+        {
+            pv: {"type": str(pv_type)}
+            for pv, pv_type in simulation_translator.simulation_pv_types.items()
+        }
+    )
+    _write_facility_pv_yaml(facility=lattice.facility, pvs=output)
     return shared_pvs
 
 
@@ -108,7 +143,6 @@ def main():
     # query API to get list of sections
     lattice = get_lattice()
     pvs = construct_pvs_from_lattice(lattice)
-    _write_facility_pv_yaml(lattice.facility, pvs)
     conf = get_server_conf()
     with Server(providers=[pvs], conf=conf) as server:
         while True:

@@ -39,7 +39,7 @@ def columns_within_tolerance(
     tolerance: float = FLOAT_TOLERANCE,
 ) -> float:
     """Check whether two values are within a set tolerance."""
-    return func.abs(func.abs(value1) - func.abs(value2)) <= tolerance
+    return func.abs(value1 - value2) <= tolerance
 
 
 def check_range(value: Optional[float], value_range: Optional[List[float]]) -> bool:
@@ -147,7 +147,7 @@ def _arrays_match_with_tolerance(
         return False
 
     return all(
-        abs(abs(db_val) - abs(input_val)) < tolerance
+        abs(db_val - input_val) < tolerance
         for db_val, input_val in zip(db_array, input_array)
     )
 
@@ -547,7 +547,10 @@ def find_lattices(
                 .all()
             )
         else:
-            print("No lattices found.")
+            print(
+                "No prior matching run found for current EPICS settings; "
+                "starting a new simulation."
+            )
             db_lattices = []
 
         return [
