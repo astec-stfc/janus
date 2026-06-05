@@ -321,6 +321,64 @@ CLARA:
     type: <class 'float'>
   SIM-CLA-S01-DIA-BPM-01:TWISS:NEMIT_Y:
     type: <class 'float'>
+  SIM-CLA-S01-DIA-SCR-01:BEAM:CPX:
+    type: <class 'list'>
+  SIM-CLA-S01-DIA-SCR-01:BEAM:CPY:
+    type: <class 'list'>
+  SIM-CLA-S01-DIA-SCR-01:BEAM:CPZ:
+    type: <class 'list'>
+  SIM-CLA-S01-DIA-SCR-01:BEAM:X:
+    type: <class 'list'>
+  SIM-CLA-S01-DIA-SCR-01:BEAM:Y:
+    type: <class 'list'>
+  SIM-CLA-S01-DIA-SCR-01:BEAM:Z:
+    type: <class 'list'>
+  SIM-CLA-S01-DIA-SCR-01:CENTROID:CP:
+    type: <class 'float'>
+  SIM-CLA-S01-DIA-SCR-01:CENTROID:GAMMA:
+    type: <class 'float'>
+  SIM-CLA-S01-DIA-SCR-01:CENTROID:Q:
+    type: <class 'float'>
+  SIM-CLA-S01-DIA-SCR-01:CENTROID:T:
+    type: <class 'float'>
+  SIM-CLA-S01-DIA-SCR-01:CENTROID:X:
+    type: <class 'float'>
+  SIM-CLA-S01-DIA-SCR-01:CENTROID:Y:
+    type: <class 'float'>
+  SIM-CLA-S01-DIA-SCR-01:SIGMA:CP:
+    type: <class 'float'>
+  SIM-CLA-S01-DIA-SCR-01:SIGMA:GAMMA:
+    type: <class 'float'>
+  SIM-CLA-S01-DIA-SCR-01:SIGMA:T:
+    type: <class 'float'>
+  SIM-CLA-S01-DIA-SCR-01:SIGMA:X:
+    type: <class 'float'>
+  SIM-CLA-S01-DIA-SCR-01:SIGMA:Y:
+    type: <class 'float'>
+  SIM-CLA-S01-DIA-SCR-01:TWISS:ALPHA_X:
+    type: <class 'float'>
+  SIM-CLA-S01-DIA-SCR-01:TWISS:ALPHA_Y:
+    type: <class 'float'>
+  SIM-CLA-S01-DIA-SCR-01:TWISS:BETA_X:
+    type: <class 'float'>
+  SIM-CLA-S01-DIA-SCR-01:TWISS:BETA_Y:
+    type: <class 'float'>
+  SIM-CLA-S01-DIA-SCR-01:TWISS:EMIT_X:
+    type: <class 'float'>
+  SIM-CLA-S01-DIA-SCR-01:TWISS:EMIT_Y:
+    type: <class 'float'>
+  SIM-CLA-S01-DIA-SCR-01:TWISS:ETA_X:
+    type: <class 'float'>
+  SIM-CLA-S01-DIA-SCR-01:TWISS:ETA_XP:
+    type: <class 'float'>
+  SIM-CLA-S01-DIA-SCR-01:TWISS:ETA_Y:
+    type: <class 'float'>
+  SIM-CLA-S01-DIA-SCR-01:TWISS:ETA_YP:
+    type: <class 'float'>
+  SIM-CLA-S01-DIA-SCR-01:TWISS:NEMIT_X:
+    type: <class 'float'>
+  SIM-CLA-S01-DIA-SCR-01:TWISS:NEMIT_Y:
+    type: <class 'float'>
   SIM-CLA-S02-DIA-BPM-01:CENTROID:CP:
     type: <class 'float'>
   SIM-CLA-S02-DIA-BPM-01:CENTROID:GAMMA:
@@ -412,6 +470,180 @@ CLARA:
   SIM-CLA-S02-DIA-BPM-02:TWISS:NEMIT_X:
     type: <class 'float'>
   SIM-CLA-S02-DIA-BPM-02:TWISS:NEMIT_Y:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-01:BEAM:CPX:
+    type: <class 'list'>
+  SIM-CLA-S02-DIA-SCR-01:BEAM:CPY:
+    type: <class 'list'>
+  SIM-CLA-S02-DIA-SCR-01:BEAM:CPZ:
+    type: <class 'list'>
+  SIM-CLA-S02-DIA-SCR-01:BEAM:X:
+    type: <class 'list'>
+  SIM-CLA-S02-DIA-SCR-01:BEAM:Y:
+    type: <class 'list'>
+  SIM-CLA-S02-DIA-SCR-01:BEAM:Z:
+    type: <class 'list'>
+  SIM-CLA-S02-DIA-SCR-01:CENTROID:CP:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-01:CENTROID:GAMMA:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-01:CENTROID:Q:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-01:CENTROID:T:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-01:CENTROID:X:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-01:CENTROID:Y:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-01:SIGMA:CP:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-01:SIGMA:GAMMA:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-01:SIGMA:T:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-01:SIGMA:X:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-01:SIGMA:Y:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-01:TWISS:ALPHA_X:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-01:TWISS:ALPHA_Y:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-01:TWISS:BETA_X:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-01:TWISS:BETA_Y:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-01:TWISS:EMIT_X:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-01:TWISS:EMIT_Y:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-01:TWISS:ETA_X:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-01:TWISS:ETA_XP:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-01:TWISS:ETA_Y:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-01:TWISS:ETA_YP:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-01:TWISS:NEMIT_X:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-01:TWISS:NEMIT_Y:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-02:BEAM:CPX:
+    type: <class 'list'>
+  SIM-CLA-S02-DIA-SCR-02:BEAM:CPY:
+    type: <class 'list'>
+  SIM-CLA-S02-DIA-SCR-02:BEAM:CPZ:
+    type: <class 'list'>
+  SIM-CLA-S02-DIA-SCR-02:BEAM:X:
+    type: <class 'list'>
+  SIM-CLA-S02-DIA-SCR-02:BEAM:Y:
+    type: <class 'list'>
+  SIM-CLA-S02-DIA-SCR-02:BEAM:Z:
+    type: <class 'list'>
+  SIM-CLA-S02-DIA-SCR-02:CENTROID:CP:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-02:CENTROID:GAMMA:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-02:CENTROID:Q:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-02:CENTROID:T:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-02:CENTROID:X:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-02:CENTROID:Y:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-02:SIGMA:CP:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-02:SIGMA:GAMMA:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-02:SIGMA:T:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-02:SIGMA:X:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-02:SIGMA:Y:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-02:TWISS:ALPHA_X:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-02:TWISS:ALPHA_Y:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-02:TWISS:BETA_X:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-02:TWISS:BETA_Y:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-02:TWISS:EMIT_X:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-02:TWISS:EMIT_Y:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-02:TWISS:ETA_X:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-02:TWISS:ETA_XP:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-02:TWISS:ETA_Y:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-02:TWISS:ETA_YP:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-02:TWISS:NEMIT_X:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-02:TWISS:NEMIT_Y:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-03:BEAM:CPX:
+    type: <class 'list'>
+  SIM-CLA-S02-DIA-SCR-03:BEAM:CPY:
+    type: <class 'list'>
+  SIM-CLA-S02-DIA-SCR-03:BEAM:CPZ:
+    type: <class 'list'>
+  SIM-CLA-S02-DIA-SCR-03:BEAM:X:
+    type: <class 'list'>
+  SIM-CLA-S02-DIA-SCR-03:BEAM:Y:
+    type: <class 'list'>
+  SIM-CLA-S02-DIA-SCR-03:BEAM:Z:
+    type: <class 'list'>
+  SIM-CLA-S02-DIA-SCR-03:CENTROID:CP:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-03:CENTROID:GAMMA:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-03:CENTROID:Q:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-03:CENTROID:T:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-03:CENTROID:X:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-03:CENTROID:Y:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-03:SIGMA:CP:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-03:SIGMA:GAMMA:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-03:SIGMA:T:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-03:SIGMA:X:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-03:SIGMA:Y:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-03:TWISS:ALPHA_X:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-03:TWISS:ALPHA_Y:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-03:TWISS:BETA_X:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-03:TWISS:BETA_Y:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-03:TWISS:EMIT_X:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-03:TWISS:EMIT_Y:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-03:TWISS:ETA_X:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-03:TWISS:ETA_XP:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-03:TWISS:ETA_Y:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-03:TWISS:ETA_YP:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-03:TWISS:NEMIT_X:
+    type: <class 'float'>
+  SIM-CLA-S02-DIA-SCR-03:TWISS:NEMIT_Y:
     type: <class 'float'>
   SIM-CLA-S02-MAG-QUAD-01:CENTROID:CP:
     type: <class 'float'>
@@ -688,6 +920,64 @@ CLARA:
   SIM-CLA-S03-DIA-BPM-01:TWISS:NEMIT_X:
     type: <class 'float'>
   SIM-CLA-S03-DIA-BPM-01:TWISS:NEMIT_Y:
+    type: <class 'float'>
+  SIM-CLA-S03-DIA-SCR-01:BEAM:CPX:
+    type: <class 'list'>
+  SIM-CLA-S03-DIA-SCR-01:BEAM:CPY:
+    type: <class 'list'>
+  SIM-CLA-S03-DIA-SCR-01:BEAM:CPZ:
+    type: <class 'list'>
+  SIM-CLA-S03-DIA-SCR-01:BEAM:X:
+    type: <class 'list'>
+  SIM-CLA-S03-DIA-SCR-01:BEAM:Y:
+    type: <class 'list'>
+  SIM-CLA-S03-DIA-SCR-01:BEAM:Z:
+    type: <class 'list'>
+  SIM-CLA-S03-DIA-SCR-01:CENTROID:CP:
+    type: <class 'float'>
+  SIM-CLA-S03-DIA-SCR-01:CENTROID:GAMMA:
+    type: <class 'float'>
+  SIM-CLA-S03-DIA-SCR-01:CENTROID:Q:
+    type: <class 'float'>
+  SIM-CLA-S03-DIA-SCR-01:CENTROID:T:
+    type: <class 'float'>
+  SIM-CLA-S03-DIA-SCR-01:CENTROID:X:
+    type: <class 'float'>
+  SIM-CLA-S03-DIA-SCR-01:CENTROID:Y:
+    type: <class 'float'>
+  SIM-CLA-S03-DIA-SCR-01:SIGMA:CP:
+    type: <class 'float'>
+  SIM-CLA-S03-DIA-SCR-01:SIGMA:GAMMA:
+    type: <class 'float'>
+  SIM-CLA-S03-DIA-SCR-01:SIGMA:T:
+    type: <class 'float'>
+  SIM-CLA-S03-DIA-SCR-01:SIGMA:X:
+    type: <class 'float'>
+  SIM-CLA-S03-DIA-SCR-01:SIGMA:Y:
+    type: <class 'float'>
+  SIM-CLA-S03-DIA-SCR-01:TWISS:ALPHA_X:
+    type: <class 'float'>
+  SIM-CLA-S03-DIA-SCR-01:TWISS:ALPHA_Y:
+    type: <class 'float'>
+  SIM-CLA-S03-DIA-SCR-01:TWISS:BETA_X:
+    type: <class 'float'>
+  SIM-CLA-S03-DIA-SCR-01:TWISS:BETA_Y:
+    type: <class 'float'>
+  SIM-CLA-S03-DIA-SCR-01:TWISS:EMIT_X:
+    type: <class 'float'>
+  SIM-CLA-S03-DIA-SCR-01:TWISS:EMIT_Y:
+    type: <class 'float'>
+  SIM-CLA-S03-DIA-SCR-01:TWISS:ETA_X:
+    type: <class 'float'>
+  SIM-CLA-S03-DIA-SCR-01:TWISS:ETA_XP:
+    type: <class 'float'>
+  SIM-CLA-S03-DIA-SCR-01:TWISS:ETA_Y:
+    type: <class 'float'>
+  SIM-CLA-S03-DIA-SCR-01:TWISS:ETA_YP:
+    type: <class 'float'>
+  SIM-CLA-S03-DIA-SCR-01:TWISS:NEMIT_X:
+    type: <class 'float'>
+  SIM-CLA-S03-DIA-SCR-01:TWISS:NEMIT_Y:
     type: <class 'float'>
   SIM-CLA-S03-MAG-QUAD-01:CENTROID:CP:
     type: <class 'float'>
@@ -1010,6 +1300,296 @@ CLARA:
   SIM-CLA-S04-DIA-BPM-06:TWISS:NEMIT_X:
     type: <class 'float'>
   SIM-CLA-S04-DIA-BPM-06:TWISS:NEMIT_Y:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-01:BEAM:CPX:
+    type: <class 'list'>
+  SIM-CLA-S04-DIA-SCR-01:BEAM:CPY:
+    type: <class 'list'>
+  SIM-CLA-S04-DIA-SCR-01:BEAM:CPZ:
+    type: <class 'list'>
+  SIM-CLA-S04-DIA-SCR-01:BEAM:X:
+    type: <class 'list'>
+  SIM-CLA-S04-DIA-SCR-01:BEAM:Y:
+    type: <class 'list'>
+  SIM-CLA-S04-DIA-SCR-01:BEAM:Z:
+    type: <class 'list'>
+  SIM-CLA-S04-DIA-SCR-01:CENTROID:CP:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-01:CENTROID:GAMMA:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-01:CENTROID:Q:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-01:CENTROID:T:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-01:CENTROID:X:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-01:CENTROID:Y:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-01:SIGMA:CP:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-01:SIGMA:GAMMA:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-01:SIGMA:T:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-01:SIGMA:X:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-01:SIGMA:Y:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-01:TWISS:ALPHA_X:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-01:TWISS:ALPHA_Y:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-01:TWISS:BETA_X:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-01:TWISS:BETA_Y:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-01:TWISS:EMIT_X:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-01:TWISS:EMIT_Y:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-01:TWISS:ETA_X:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-01:TWISS:ETA_XP:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-01:TWISS:ETA_Y:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-01:TWISS:ETA_YP:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-01:TWISS:NEMIT_X:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-01:TWISS:NEMIT_Y:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-02:BEAM:CPX:
+    type: <class 'list'>
+  SIM-CLA-S04-DIA-SCR-02:BEAM:CPY:
+    type: <class 'list'>
+  SIM-CLA-S04-DIA-SCR-02:BEAM:CPZ:
+    type: <class 'list'>
+  SIM-CLA-S04-DIA-SCR-02:BEAM:X:
+    type: <class 'list'>
+  SIM-CLA-S04-DIA-SCR-02:BEAM:Y:
+    type: <class 'list'>
+  SIM-CLA-S04-DIA-SCR-02:BEAM:Z:
+    type: <class 'list'>
+  SIM-CLA-S04-DIA-SCR-02:CENTROID:CP:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-02:CENTROID:GAMMA:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-02:CENTROID:Q:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-02:CENTROID:T:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-02:CENTROID:X:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-02:CENTROID:Y:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-02:SIGMA:CP:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-02:SIGMA:GAMMA:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-02:SIGMA:T:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-02:SIGMA:X:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-02:SIGMA:Y:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-02:TWISS:ALPHA_X:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-02:TWISS:ALPHA_Y:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-02:TWISS:BETA_X:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-02:TWISS:BETA_Y:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-02:TWISS:EMIT_X:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-02:TWISS:EMIT_Y:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-02:TWISS:ETA_X:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-02:TWISS:ETA_XP:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-02:TWISS:ETA_Y:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-02:TWISS:ETA_YP:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-02:TWISS:NEMIT_X:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-02:TWISS:NEMIT_Y:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-03:BEAM:CPX:
+    type: <class 'list'>
+  SIM-CLA-S04-DIA-SCR-03:BEAM:CPY:
+    type: <class 'list'>
+  SIM-CLA-S04-DIA-SCR-03:BEAM:CPZ:
+    type: <class 'list'>
+  SIM-CLA-S04-DIA-SCR-03:BEAM:X:
+    type: <class 'list'>
+  SIM-CLA-S04-DIA-SCR-03:BEAM:Y:
+    type: <class 'list'>
+  SIM-CLA-S04-DIA-SCR-03:BEAM:Z:
+    type: <class 'list'>
+  SIM-CLA-S04-DIA-SCR-03:CENTROID:CP:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-03:CENTROID:GAMMA:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-03:CENTROID:Q:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-03:CENTROID:T:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-03:CENTROID:X:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-03:CENTROID:Y:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-03:SIGMA:CP:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-03:SIGMA:GAMMA:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-03:SIGMA:T:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-03:SIGMA:X:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-03:SIGMA:Y:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-03:TWISS:ALPHA_X:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-03:TWISS:ALPHA_Y:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-03:TWISS:BETA_X:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-03:TWISS:BETA_Y:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-03:TWISS:EMIT_X:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-03:TWISS:EMIT_Y:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-03:TWISS:ETA_X:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-03:TWISS:ETA_XP:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-03:TWISS:ETA_Y:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-03:TWISS:ETA_YP:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-03:TWISS:NEMIT_X:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-03:TWISS:NEMIT_Y:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-04:BEAM:CPX:
+    type: <class 'list'>
+  SIM-CLA-S04-DIA-SCR-04:BEAM:CPY:
+    type: <class 'list'>
+  SIM-CLA-S04-DIA-SCR-04:BEAM:CPZ:
+    type: <class 'list'>
+  SIM-CLA-S04-DIA-SCR-04:BEAM:X:
+    type: <class 'list'>
+  SIM-CLA-S04-DIA-SCR-04:BEAM:Y:
+    type: <class 'list'>
+  SIM-CLA-S04-DIA-SCR-04:BEAM:Z:
+    type: <class 'list'>
+  SIM-CLA-S04-DIA-SCR-04:CENTROID:CP:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-04:CENTROID:GAMMA:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-04:CENTROID:Q:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-04:CENTROID:T:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-04:CENTROID:X:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-04:CENTROID:Y:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-04:SIGMA:CP:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-04:SIGMA:GAMMA:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-04:SIGMA:T:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-04:SIGMA:X:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-04:SIGMA:Y:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-04:TWISS:ALPHA_X:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-04:TWISS:ALPHA_Y:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-04:TWISS:BETA_X:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-04:TWISS:BETA_Y:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-04:TWISS:EMIT_X:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-04:TWISS:EMIT_Y:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-04:TWISS:ETA_X:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-04:TWISS:ETA_XP:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-04:TWISS:ETA_Y:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-04:TWISS:ETA_YP:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-04:TWISS:NEMIT_X:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-04:TWISS:NEMIT_Y:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-05:BEAM:CPX:
+    type: <class 'list'>
+  SIM-CLA-S04-DIA-SCR-05:BEAM:CPY:
+    type: <class 'list'>
+  SIM-CLA-S04-DIA-SCR-05:BEAM:CPZ:
+    type: <class 'list'>
+  SIM-CLA-S04-DIA-SCR-05:BEAM:X:
+    type: <class 'list'>
+  SIM-CLA-S04-DIA-SCR-05:BEAM:Y:
+    type: <class 'list'>
+  SIM-CLA-S04-DIA-SCR-05:BEAM:Z:
+    type: <class 'list'>
+  SIM-CLA-S04-DIA-SCR-05:CENTROID:CP:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-05:CENTROID:GAMMA:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-05:CENTROID:Q:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-05:CENTROID:T:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-05:CENTROID:X:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-05:CENTROID:Y:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-05:SIGMA:CP:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-05:SIGMA:GAMMA:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-05:SIGMA:T:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-05:SIGMA:X:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-05:SIGMA:Y:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-05:TWISS:ALPHA_X:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-05:TWISS:ALPHA_Y:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-05:TWISS:BETA_X:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-05:TWISS:BETA_Y:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-05:TWISS:EMIT_X:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-05:TWISS:EMIT_Y:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-05:TWISS:ETA_X:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-05:TWISS:ETA_XP:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-05:TWISS:ETA_Y:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-05:TWISS:ETA_YP:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-05:TWISS:NEMIT_X:
+    type: <class 'float'>
+  SIM-CLA-S04-DIA-SCR-05:TWISS:NEMIT_Y:
     type: <class 'float'>
   SIM-CLA-S04-MAG-QUAD-01:CENTROID:CP:
     type: <class 'float'>
@@ -1471,6 +2051,64 @@ CLARA:
     type: <class 'float'>
   SIM-CLA-S05-DIA-BPM-02:TWISS:NEMIT_Y:
     type: <class 'float'>
+  SIM-CLA-S05-DIA-SCR-01:BEAM:CPX:
+    type: <class 'list'>
+  SIM-CLA-S05-DIA-SCR-01:BEAM:CPY:
+    type: <class 'list'>
+  SIM-CLA-S05-DIA-SCR-01:BEAM:CPZ:
+    type: <class 'list'>
+  SIM-CLA-S05-DIA-SCR-01:BEAM:X:
+    type: <class 'list'>
+  SIM-CLA-S05-DIA-SCR-01:BEAM:Y:
+    type: <class 'list'>
+  SIM-CLA-S05-DIA-SCR-01:BEAM:Z:
+    type: <class 'list'>
+  SIM-CLA-S05-DIA-SCR-01:CENTROID:CP:
+    type: <class 'float'>
+  SIM-CLA-S05-DIA-SCR-01:CENTROID:GAMMA:
+    type: <class 'float'>
+  SIM-CLA-S05-DIA-SCR-01:CENTROID:Q:
+    type: <class 'float'>
+  SIM-CLA-S05-DIA-SCR-01:CENTROID:T:
+    type: <class 'float'>
+  SIM-CLA-S05-DIA-SCR-01:CENTROID:X:
+    type: <class 'float'>
+  SIM-CLA-S05-DIA-SCR-01:CENTROID:Y:
+    type: <class 'float'>
+  SIM-CLA-S05-DIA-SCR-01:SIGMA:CP:
+    type: <class 'float'>
+  SIM-CLA-S05-DIA-SCR-01:SIGMA:GAMMA:
+    type: <class 'float'>
+  SIM-CLA-S05-DIA-SCR-01:SIGMA:T:
+    type: <class 'float'>
+  SIM-CLA-S05-DIA-SCR-01:SIGMA:X:
+    type: <class 'float'>
+  SIM-CLA-S05-DIA-SCR-01:SIGMA:Y:
+    type: <class 'float'>
+  SIM-CLA-S05-DIA-SCR-01:TWISS:ALPHA_X:
+    type: <class 'float'>
+  SIM-CLA-S05-DIA-SCR-01:TWISS:ALPHA_Y:
+    type: <class 'float'>
+  SIM-CLA-S05-DIA-SCR-01:TWISS:BETA_X:
+    type: <class 'float'>
+  SIM-CLA-S05-DIA-SCR-01:TWISS:BETA_Y:
+    type: <class 'float'>
+  SIM-CLA-S05-DIA-SCR-01:TWISS:EMIT_X:
+    type: <class 'float'>
+  SIM-CLA-S05-DIA-SCR-01:TWISS:EMIT_Y:
+    type: <class 'float'>
+  SIM-CLA-S05-DIA-SCR-01:TWISS:ETA_X:
+    type: <class 'float'>
+  SIM-CLA-S05-DIA-SCR-01:TWISS:ETA_XP:
+    type: <class 'float'>
+  SIM-CLA-S05-DIA-SCR-01:TWISS:ETA_Y:
+    type: <class 'float'>
+  SIM-CLA-S05-DIA-SCR-01:TWISS:ETA_YP:
+    type: <class 'float'>
+  SIM-CLA-S05-DIA-SCR-01:TWISS:NEMIT_X:
+    type: <class 'float'>
+  SIM-CLA-S05-DIA-SCR-01:TWISS:NEMIT_Y:
+    type: <class 'float'>
   SIM-CLA-S05-MAG-QUAD-01:CENTROID:CP:
     type: <class 'float'>
   SIM-CLA-S05-MAG-QUAD-01:CENTROID:GAMMA:
@@ -1654,6 +2292,122 @@ CLARA:
   SIM-CLA-S06-DIA-BPM-02:TWISS:NEMIT_X:
     type: <class 'float'>
   SIM-CLA-S06-DIA-BPM-02:TWISS:NEMIT_Y:
+    type: <class 'float'>
+  SIM-CLA-S06-DIA-SCR-01:BEAM:CPX:
+    type: <class 'list'>
+  SIM-CLA-S06-DIA-SCR-01:BEAM:CPY:
+    type: <class 'list'>
+  SIM-CLA-S06-DIA-SCR-01:BEAM:CPZ:
+    type: <class 'list'>
+  SIM-CLA-S06-DIA-SCR-01:BEAM:X:
+    type: <class 'list'>
+  SIM-CLA-S06-DIA-SCR-01:BEAM:Y:
+    type: <class 'list'>
+  SIM-CLA-S06-DIA-SCR-01:BEAM:Z:
+    type: <class 'list'>
+  SIM-CLA-S06-DIA-SCR-01:CENTROID:CP:
+    type: <class 'float'>
+  SIM-CLA-S06-DIA-SCR-01:CENTROID:GAMMA:
+    type: <class 'float'>
+  SIM-CLA-S06-DIA-SCR-01:CENTROID:Q:
+    type: <class 'float'>
+  SIM-CLA-S06-DIA-SCR-01:CENTROID:T:
+    type: <class 'float'>
+  SIM-CLA-S06-DIA-SCR-01:CENTROID:X:
+    type: <class 'float'>
+  SIM-CLA-S06-DIA-SCR-01:CENTROID:Y:
+    type: <class 'float'>
+  SIM-CLA-S06-DIA-SCR-01:SIGMA:CP:
+    type: <class 'float'>
+  SIM-CLA-S06-DIA-SCR-01:SIGMA:GAMMA:
+    type: <class 'float'>
+  SIM-CLA-S06-DIA-SCR-01:SIGMA:T:
+    type: <class 'float'>
+  SIM-CLA-S06-DIA-SCR-01:SIGMA:X:
+    type: <class 'float'>
+  SIM-CLA-S06-DIA-SCR-01:SIGMA:Y:
+    type: <class 'float'>
+  SIM-CLA-S06-DIA-SCR-01:TWISS:ALPHA_X:
+    type: <class 'float'>
+  SIM-CLA-S06-DIA-SCR-01:TWISS:ALPHA_Y:
+    type: <class 'float'>
+  SIM-CLA-S06-DIA-SCR-01:TWISS:BETA_X:
+    type: <class 'float'>
+  SIM-CLA-S06-DIA-SCR-01:TWISS:BETA_Y:
+    type: <class 'float'>
+  SIM-CLA-S06-DIA-SCR-01:TWISS:EMIT_X:
+    type: <class 'float'>
+  SIM-CLA-S06-DIA-SCR-01:TWISS:EMIT_Y:
+    type: <class 'float'>
+  SIM-CLA-S06-DIA-SCR-01:TWISS:ETA_X:
+    type: <class 'float'>
+  SIM-CLA-S06-DIA-SCR-01:TWISS:ETA_XP:
+    type: <class 'float'>
+  SIM-CLA-S06-DIA-SCR-01:TWISS:ETA_Y:
+    type: <class 'float'>
+  SIM-CLA-S06-DIA-SCR-01:TWISS:ETA_YP:
+    type: <class 'float'>
+  SIM-CLA-S06-DIA-SCR-01:TWISS:NEMIT_X:
+    type: <class 'float'>
+  SIM-CLA-S06-DIA-SCR-01:TWISS:NEMIT_Y:
+    type: <class 'float'>
+  SIM-CLA-S06-DIA-SCR-02:BEAM:CPX:
+    type: <class 'list'>
+  SIM-CLA-S06-DIA-SCR-02:BEAM:CPY:
+    type: <class 'list'>
+  SIM-CLA-S06-DIA-SCR-02:BEAM:CPZ:
+    type: <class 'list'>
+  SIM-CLA-S06-DIA-SCR-02:BEAM:X:
+    type: <class 'list'>
+  SIM-CLA-S06-DIA-SCR-02:BEAM:Y:
+    type: <class 'list'>
+  SIM-CLA-S06-DIA-SCR-02:BEAM:Z:
+    type: <class 'list'>
+  SIM-CLA-S06-DIA-SCR-02:CENTROID:CP:
+    type: <class 'float'>
+  SIM-CLA-S06-DIA-SCR-02:CENTROID:GAMMA:
+    type: <class 'float'>
+  SIM-CLA-S06-DIA-SCR-02:CENTROID:Q:
+    type: <class 'float'>
+  SIM-CLA-S06-DIA-SCR-02:CENTROID:T:
+    type: <class 'float'>
+  SIM-CLA-S06-DIA-SCR-02:CENTROID:X:
+    type: <class 'float'>
+  SIM-CLA-S06-DIA-SCR-02:CENTROID:Y:
+    type: <class 'float'>
+  SIM-CLA-S06-DIA-SCR-02:SIGMA:CP:
+    type: <class 'float'>
+  SIM-CLA-S06-DIA-SCR-02:SIGMA:GAMMA:
+    type: <class 'float'>
+  SIM-CLA-S06-DIA-SCR-02:SIGMA:T:
+    type: <class 'float'>
+  SIM-CLA-S06-DIA-SCR-02:SIGMA:X:
+    type: <class 'float'>
+  SIM-CLA-S06-DIA-SCR-02:SIGMA:Y:
+    type: <class 'float'>
+  SIM-CLA-S06-DIA-SCR-02:TWISS:ALPHA_X:
+    type: <class 'float'>
+  SIM-CLA-S06-DIA-SCR-02:TWISS:ALPHA_Y:
+    type: <class 'float'>
+  SIM-CLA-S06-DIA-SCR-02:TWISS:BETA_X:
+    type: <class 'float'>
+  SIM-CLA-S06-DIA-SCR-02:TWISS:BETA_Y:
+    type: <class 'float'>
+  SIM-CLA-S06-DIA-SCR-02:TWISS:EMIT_X:
+    type: <class 'float'>
+  SIM-CLA-S06-DIA-SCR-02:TWISS:EMIT_Y:
+    type: <class 'float'>
+  SIM-CLA-S06-DIA-SCR-02:TWISS:ETA_X:
+    type: <class 'float'>
+  SIM-CLA-S06-DIA-SCR-02:TWISS:ETA_XP:
+    type: <class 'float'>
+  SIM-CLA-S06-DIA-SCR-02:TWISS:ETA_Y:
+    type: <class 'float'>
+  SIM-CLA-S06-DIA-SCR-02:TWISS:ETA_YP:
+    type: <class 'float'>
+  SIM-CLA-S06-DIA-SCR-02:TWISS:NEMIT_X:
+    type: <class 'float'>
+  SIM-CLA-S06-DIA-SCR-02:TWISS:NEMIT_Y:
     type: <class 'float'>
   SIM-CLA-S06-MAG-QUAD-01:CENTROID:CP:
     type: <class 'float'>
@@ -2068,6 +2822,238 @@ CLARA:
   SIM-CLA-S07-DIA-BPM-07:TWISS:NEMIT_X:
     type: <class 'float'>
   SIM-CLA-S07-DIA-BPM-07:TWISS:NEMIT_Y:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-01:BEAM:CPX:
+    type: <class 'list'>
+  SIM-CLA-S07-DIA-SCR-01:BEAM:CPY:
+    type: <class 'list'>
+  SIM-CLA-S07-DIA-SCR-01:BEAM:CPZ:
+    type: <class 'list'>
+  SIM-CLA-S07-DIA-SCR-01:BEAM:X:
+    type: <class 'list'>
+  SIM-CLA-S07-DIA-SCR-01:BEAM:Y:
+    type: <class 'list'>
+  SIM-CLA-S07-DIA-SCR-01:BEAM:Z:
+    type: <class 'list'>
+  SIM-CLA-S07-DIA-SCR-01:CENTROID:CP:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-01:CENTROID:GAMMA:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-01:CENTROID:Q:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-01:CENTROID:T:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-01:CENTROID:X:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-01:CENTROID:Y:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-01:SIGMA:CP:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-01:SIGMA:GAMMA:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-01:SIGMA:T:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-01:SIGMA:X:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-01:SIGMA:Y:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-01:TWISS:ALPHA_X:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-01:TWISS:ALPHA_Y:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-01:TWISS:BETA_X:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-01:TWISS:BETA_Y:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-01:TWISS:EMIT_X:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-01:TWISS:EMIT_Y:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-01:TWISS:ETA_X:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-01:TWISS:ETA_XP:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-01:TWISS:ETA_Y:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-01:TWISS:ETA_YP:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-01:TWISS:NEMIT_X:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-01:TWISS:NEMIT_Y:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-02:BEAM:CPX:
+    type: <class 'list'>
+  SIM-CLA-S07-DIA-SCR-02:BEAM:CPY:
+    type: <class 'list'>
+  SIM-CLA-S07-DIA-SCR-02:BEAM:CPZ:
+    type: <class 'list'>
+  SIM-CLA-S07-DIA-SCR-02:BEAM:X:
+    type: <class 'list'>
+  SIM-CLA-S07-DIA-SCR-02:BEAM:Y:
+    type: <class 'list'>
+  SIM-CLA-S07-DIA-SCR-02:BEAM:Z:
+    type: <class 'list'>
+  SIM-CLA-S07-DIA-SCR-02:CENTROID:CP:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-02:CENTROID:GAMMA:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-02:CENTROID:Q:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-02:CENTROID:T:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-02:CENTROID:X:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-02:CENTROID:Y:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-02:SIGMA:CP:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-02:SIGMA:GAMMA:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-02:SIGMA:T:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-02:SIGMA:X:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-02:SIGMA:Y:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-02:TWISS:ALPHA_X:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-02:TWISS:ALPHA_Y:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-02:TWISS:BETA_X:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-02:TWISS:BETA_Y:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-02:TWISS:EMIT_X:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-02:TWISS:EMIT_Y:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-02:TWISS:ETA_X:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-02:TWISS:ETA_XP:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-02:TWISS:ETA_Y:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-02:TWISS:ETA_YP:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-02:TWISS:NEMIT_X:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-02:TWISS:NEMIT_Y:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-03:BEAM:CPX:
+    type: <class 'list'>
+  SIM-CLA-S07-DIA-SCR-03:BEAM:CPY:
+    type: <class 'list'>
+  SIM-CLA-S07-DIA-SCR-03:BEAM:CPZ:
+    type: <class 'list'>
+  SIM-CLA-S07-DIA-SCR-03:BEAM:X:
+    type: <class 'list'>
+  SIM-CLA-S07-DIA-SCR-03:BEAM:Y:
+    type: <class 'list'>
+  SIM-CLA-S07-DIA-SCR-03:BEAM:Z:
+    type: <class 'list'>
+  SIM-CLA-S07-DIA-SCR-03:CENTROID:CP:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-03:CENTROID:GAMMA:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-03:CENTROID:Q:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-03:CENTROID:T:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-03:CENTROID:X:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-03:CENTROID:Y:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-03:SIGMA:CP:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-03:SIGMA:GAMMA:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-03:SIGMA:T:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-03:SIGMA:X:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-03:SIGMA:Y:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-03:TWISS:ALPHA_X:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-03:TWISS:ALPHA_Y:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-03:TWISS:BETA_X:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-03:TWISS:BETA_Y:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-03:TWISS:EMIT_X:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-03:TWISS:EMIT_Y:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-03:TWISS:ETA_X:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-03:TWISS:ETA_XP:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-03:TWISS:ETA_Y:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-03:TWISS:ETA_YP:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-03:TWISS:NEMIT_X:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-03:TWISS:NEMIT_Y:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-04:BEAM:CPX:
+    type: <class 'list'>
+  SIM-CLA-S07-DIA-SCR-04:BEAM:CPY:
+    type: <class 'list'>
+  SIM-CLA-S07-DIA-SCR-04:BEAM:CPZ:
+    type: <class 'list'>
+  SIM-CLA-S07-DIA-SCR-04:BEAM:X:
+    type: <class 'list'>
+  SIM-CLA-S07-DIA-SCR-04:BEAM:Y:
+    type: <class 'list'>
+  SIM-CLA-S07-DIA-SCR-04:BEAM:Z:
+    type: <class 'list'>
+  SIM-CLA-S07-DIA-SCR-04:CENTROID:CP:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-04:CENTROID:GAMMA:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-04:CENTROID:Q:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-04:CENTROID:T:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-04:CENTROID:X:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-04:CENTROID:Y:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-04:SIGMA:CP:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-04:SIGMA:GAMMA:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-04:SIGMA:T:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-04:SIGMA:X:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-04:SIGMA:Y:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-04:TWISS:ALPHA_X:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-04:TWISS:ALPHA_Y:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-04:TWISS:BETA_X:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-04:TWISS:BETA_Y:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-04:TWISS:EMIT_X:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-04:TWISS:EMIT_Y:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-04:TWISS:ETA_X:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-04:TWISS:ETA_XP:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-04:TWISS:ETA_Y:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-04:TWISS:ETA_YP:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-04:TWISS:NEMIT_X:
+    type: <class 'float'>
+  SIM-CLA-S07-DIA-SCR-04:TWISS:NEMIT_Y:
     type: <class 'float'>
   SIM-CLA-S07-DIA-TDC-01:CENTROID:CP:
     type: <class 'float'>
@@ -2620,6 +3606,64 @@ CLARA:
   SIM-CLA-VBC-DIA-BPM-01:TWISS:NEMIT_X:
     type: <class 'float'>
   SIM-CLA-VBC-DIA-BPM-01:TWISS:NEMIT_Y:
+    type: <class 'float'>
+  SIM-CLA-VBC-DIA-SCR-01:BEAM:CPX:
+    type: <class 'list'>
+  SIM-CLA-VBC-DIA-SCR-01:BEAM:CPY:
+    type: <class 'list'>
+  SIM-CLA-VBC-DIA-SCR-01:BEAM:CPZ:
+    type: <class 'list'>
+  SIM-CLA-VBC-DIA-SCR-01:BEAM:X:
+    type: <class 'list'>
+  SIM-CLA-VBC-DIA-SCR-01:BEAM:Y:
+    type: <class 'list'>
+  SIM-CLA-VBC-DIA-SCR-01:BEAM:Z:
+    type: <class 'list'>
+  SIM-CLA-VBC-DIA-SCR-01:CENTROID:CP:
+    type: <class 'float'>
+  SIM-CLA-VBC-DIA-SCR-01:CENTROID:GAMMA:
+    type: <class 'float'>
+  SIM-CLA-VBC-DIA-SCR-01:CENTROID:Q:
+    type: <class 'float'>
+  SIM-CLA-VBC-DIA-SCR-01:CENTROID:T:
+    type: <class 'float'>
+  SIM-CLA-VBC-DIA-SCR-01:CENTROID:X:
+    type: <class 'float'>
+  SIM-CLA-VBC-DIA-SCR-01:CENTROID:Y:
+    type: <class 'float'>
+  SIM-CLA-VBC-DIA-SCR-01:SIGMA:CP:
+    type: <class 'float'>
+  SIM-CLA-VBC-DIA-SCR-01:SIGMA:GAMMA:
+    type: <class 'float'>
+  SIM-CLA-VBC-DIA-SCR-01:SIGMA:T:
+    type: <class 'float'>
+  SIM-CLA-VBC-DIA-SCR-01:SIGMA:X:
+    type: <class 'float'>
+  SIM-CLA-VBC-DIA-SCR-01:SIGMA:Y:
+    type: <class 'float'>
+  SIM-CLA-VBC-DIA-SCR-01:TWISS:ALPHA_X:
+    type: <class 'float'>
+  SIM-CLA-VBC-DIA-SCR-01:TWISS:ALPHA_Y:
+    type: <class 'float'>
+  SIM-CLA-VBC-DIA-SCR-01:TWISS:BETA_X:
+    type: <class 'float'>
+  SIM-CLA-VBC-DIA-SCR-01:TWISS:BETA_Y:
+    type: <class 'float'>
+  SIM-CLA-VBC-DIA-SCR-01:TWISS:EMIT_X:
+    type: <class 'float'>
+  SIM-CLA-VBC-DIA-SCR-01:TWISS:EMIT_Y:
+    type: <class 'float'>
+  SIM-CLA-VBC-DIA-SCR-01:TWISS:ETA_X:
+    type: <class 'float'>
+  SIM-CLA-VBC-DIA-SCR-01:TWISS:ETA_XP:
+    type: <class 'float'>
+  SIM-CLA-VBC-DIA-SCR-01:TWISS:ETA_Y:
+    type: <class 'float'>
+  SIM-CLA-VBC-DIA-SCR-01:TWISS:ETA_YP:
+    type: <class 'float'>
+  SIM-CLA-VBC-DIA-SCR-01:TWISS:NEMIT_X:
+    type: <class 'float'>
+  SIM-CLA-VBC-DIA-SCR-01:TWISS:NEMIT_Y:
     type: <class 'float'>
   SIM-CLA-VBC-MAG-DIP-01:CENTROID:CP:
     type: <class 'float'>

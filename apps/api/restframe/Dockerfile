@@ -21,6 +21,20 @@ WORKDIR /laura
 # Consolidate all git clones into single RUN block + remove .git to save space
 RUN --mount=type=ssh bash -lc ' \
 ssh-keyscan gitlab.stfc.ac.uk >> /root/.ssh/known_hosts && \
+git fetch -a && git checkout fix/screen-resolve && git pull \
+'
+
+WORKDIR /simba
+# Consolidate all git clones into single RUN block + remove .git to save space
+RUN --mount=type=ssh bash -lc ' \
+ssh-keyscan gitlab.stfc.ac.uk >> /root/.ssh/known_hosts && \
+git fetch -a && git checkout main && git pull \
+'
+
+WORKDIR /laura-lattices
+# Consolidate all git clones into single RUN block + remove .git to save space
+RUN --mount=type=ssh bash -lc ' \
+ssh-keyscan gitlab.stfc.ac.uk >> /root/.ssh/known_hosts && \
 git fetch -a && git checkout main && git pull \
 '
 
