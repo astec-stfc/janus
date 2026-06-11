@@ -34,4 +34,4 @@ groups:
     elements: [CLA-VBC-MAG-DIP-01, CLA-VBC-MAG-DIP-02, CLA-VBC-MAG-DIP-03, CLA-VBC-MAG-DIP-04]
 layout: "/laura-lattices/CLARA/layouts.yaml"
 section: "/laura-lattices/CLARA/sections.yaml"
-element_list: "/laura-lattices/CLARA/YAML/"
+element_list: "/laura-lattices/CLARA/YAML/summary.yaml"

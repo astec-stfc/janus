@@ -1,3 +1,6 @@
+import os
+import sys
+import logging
 import time
 from typing import List
 from janus_common.utils.helpers import EPICSHelper
@@ -13,45 +16,55 @@ from janus_common.schemas import elements
 import requests
 from janus_common.utils.kafka_restframe import API
 from janus_common.utils.comms_handler import get_lattice
+from janus_common.utils.flow_log import flow_log
+
+
+CLIENT_ID = os.getenv("CLIENT_ID")
+if not CLIENT_ID:
+    print("ERROR: CLIENT_ID is not set. Set a unique name: export CLIENT_ID=yourname")
+    sys.exit(1)
 
 
 class Sender(API):
 
     def __init__(self):
-        super().__init__(group_id="lattice-to-epics")
+        # Group ID must be unique per client so that every lattice-to-epics
+        # instance sees every Kafka message and can filter by client_id locally.
+        super().__init__(group_id=f"lattice-to-epics-{CLIENT_ID}")
         self._ctx = Context("pva")
         self.epics_helper = EPICSHelper(self._ctx)
         self._current_uuid = None
+        self._last_result_timestamp = None
+        self._completed_request_ids = set()
         self.simulation_translator = SimulationToPV()
         self.lattice_translator = LatticeToPV()
         self.generator_translator = GeneratorToPV()
 
-    def set_results(self, uuid: str) -> None:
+    def set_results(self, uuid: str = None) -> bool:
         """
-        Initialise the results by getting the latest lattice
-        and setting all sections
+        Initialise the results for the lattice UUID carried by the Kafka message
+        and set all sections.
         """
-        if uuid == self._current_uuid:
-            # No new results to set, return early
-            return
-        else:
+        try:
+            lattice = get_lattice(uuid=uuid)
+            if lattice is None:
+                return False
+            updates = []
+            [
+                updates.extend(self.get_section_results(section))
+                for section in lattice.sections.values()
+            ]
+            updates.extend(self.get_lattice_beam_summary(lattice=lattice))
+            updates.extend(self.get_lattice_generator(lattice=lattice))
+            updates.extend(self.get_lattice_uuid(lattice=lattice))
+            self.epics_helper.set_pv_updates(updates)
+            self.set_tracking_success(lattice=lattice)
             self._current_uuid = uuid
-            try:
-                lattice = get_lattice(uuid=uuid)
-                updates = []
-                if lattice is not None:
-                    self.set_tracking_success(lattice=lattice)
-                    [
-                        updates.extend(self.get_section_results(section))
-                        for section in lattice.sections.values()
-                    ]
-                    updates.extend(self.get_lattice_beam_summary(lattice=lattice))
-                    updates.extend(self.get_lattice_generator(lattice=lattice))
-                    updates.extend(self.get_lattice_uuid(lattice=lattice))
-                    self.epics_helper.set_pv_updates(updates)
-            except requests.exceptions.JSONDecodeError as e:
-                print("Could not decode lattice from restframe")
-                print(e)
+            return True
+        except requests.exceptions.JSONDecodeError as e:
+            print("Could not decode lattice from restframe")
+            print(e)
+            return False
 
     def get_section_results(self, section: elements.Section):
         """Get the results for a section and prepare PV updates"""
@@ -114,6 +127,7 @@ class Sender(API):
                 )
                 for m in pv_metadata
             ]
+        return []
 
     def get_lattice_beam_summary(self, lattice: elements.Lattice) -> List:
         """Get the beam summary PVs for a given section"""
@@ -128,48 +142,142 @@ class Sender(API):
                 )
                 for m in beam_summary_metadata
             ]
+        return []
 
-    def on_msg(self, uuid, message):
+    def on_msg(self, event, message):
         """Route messages based on topic"""
+        msg_client_id = event.get("client_id")
+        if msg_client_id != CLIENT_ID:
+            print(
+                f"[--] client: {CLIENT_ID} | message on topic '{message.topic}' was published for client '{msg_client_id}' -- ignoring"
+            )
+            return
         handlers = {
             "tracking_started": self._handle_tracking_started,
             "lattice_added": self._handle_lattice_added,
             "lattice_updated": self._handle_lattice_updated,
+            "new_results": self._handle_new_results,
         }
 
         handler = handlers.get(message.topic)
         if handler:
-            handler(uuid, message)
+            handler(event, message)
         else:
             print(f"Unknown topic: {message.topic}")
 
-    def _handle_tracking_started(self, uuid, message):
+    def _handle_tracking_started(self, event, message):
         """Handle the tracking started message by setting the simulation status to running"""
+        request_id = event.get("request_id")
+        # for new sim:
+        # - lattice_api publishes to `lattice_added` with request_id
+        # - l2r publishes to `new_results` after writing to db
+        # so both carry same request, but we don't want both setting SIM_STATUS -> 1
+        if request_id and request_id in self._completed_request_ids:
+            print(
+                f"[--] client: {CLIENT_ID} | stale tracking_started ignored for completed request_id '{request_id}'"
+            )
+            return
+        if (
+            self._last_result_timestamp is not None
+            and message.timestamp <= self._last_result_timestamp
+        ):
+            print(
+                f"[--] client: {CLIENT_ID} | stale tracking_started ignored because a later result was already applied"
+            )
+            return
+        flow_log(
+            "G05 tracking.observe",
+            "C2/3",
+            client_id=CLIENT_ID,
+            request_id=request_id,
+            current="consumed message from topic 'tracking_started', setting SIMULATION:STATUS to TRACKING in EPICS",
+            next_step="restframe to complete simulation and publish to topic 'tracking_finished'",
+        )
         self.epics_helper.put_pv(
             pvname=self.simulation_translator.status_pv.name,
             value=1,
         )
 
-    def _handle_lattice_added(self, uuid, message):
-        """Handle the lattice added message by setting the results for the new lattice"""
-        uuid = uuid["uuid"]
-        self.set_results(uuid=uuid)
+    def _handle_lattice_added(self, event, message):
+        """Handle lattice-api confirming that tracked results were stored."""
+        lattice_uuid = event["uuid"]
+        lattice = get_lattice(uuid=lattice_uuid)
+        if lattice is None and not self.epics_helper.is_epics_alive:
+            print("waiting for lattice population. Try again later")
+            return
+        self._handle_results(
+            lattice_uuid,
+            event.get("request_id"),
+            message.topic,
+            message.timestamp,
+        )
 
-    def _handle_lattice_updated(self, uuid, message):
-        """Handle the lattice updated message by setting the results for the lattice"""
-        print("Lattice updated message received, updating results")
-        print("Message UUID: ", uuid)
-        uuid = uuid["uuid"]
-        self.set_results(uuid=uuid)
+    def _handle_lattice_updated(self, event, message):
+        """Handle stored-run reuse by setting the results for the lattice."""
+        lattice_uuid = event["uuid"]
+        lattice = get_lattice(uuid=lattice_uuid)
+        if lattice is None and not self.epics_helper.is_epics_alive:
+            print("waiting for lattice population. Try again later")
+            return
+        self._handle_results(
+            lattice_uuid,
+            event.get("request_id"),
+            message.topic,
+            message.timestamp,
+        )
+
+    def _handle_new_results(self, event, message):
+        """Handle post-write completion signal using the same result path."""
+        lattice_uuid = event["uuid"]
+        lattice = get_lattice(uuid=lattice_uuid)
+        if lattice is None and not self.epics_helper.is_epics_alive:
+            print("waiting for lattice population. Try again later")
+            return
+        self._handle_results(
+            lattice_uuid,
+            event.get("request_id"),
+            message.topic,
+            message.timestamp,
+        )
+
+    def _handle_results(
+        self, lattice_uuid: str, request_id: str, topic: str, timestamp: int
+    ):
+        """Apply completed results once, even though two completion topics may arrive."""
+        # New simulations send both lattice_added and new_results for the same request.
+        # If one has already applied the results, ignore the other.
+        if request_id and request_id in self._completed_request_ids:
+            return
+        # Reused stored runs come from lattice_updated without a request_id.
+        # If `lattice_uuid == self._current_uuid`, then the client has already
+        # had these results applied to its PVs so no need to write again.
+        if request_id is None and lattice_uuid == self._current_uuid:
+            return
+        if self.set_results(lattice_uuid):
+            if request_id:
+                self._completed_request_ids.add(request_id)
+            self._last_result_timestamp = timestamp
+            flow_log(
+                "G09 results.apply",
+                "C3/3",
+                client_id=CLIENT_ID,
+                request_id=request_id,
+                current=f"consumed message from topic '{topic}', writing simulation results to EPICS PVs and setting SIMULATION:STATUS back to 0",
+                next_step="round trip complete",
+            )
 
     def initialise(self):
         while not self.epics_helper.is_epics_alive:
             time.sleep(0.5)
         print("Simulation PVs are available.")
+        # initialise SIM PVs with most recent lattice
+        self.set_results()
 
 
 if __name__ == "__main__":
     sender = Sender()
     sender.initialise()
-    sender.subscribe(["lattice_added", "tracking_started", "lattice_updated"])
+    sender.subscribe(
+        ["lattice_added", "tracking_started", "lattice_updated", "new_results"]
+    )
     sender.forever_loop()

@@ -423,6 +423,7 @@ def convert_lattice_to_db_schema(lattice: elements.Lattice):
         beam_summary=beam_summary,
         success=lattice.success or False,
         set_initial_conditions=lattice.set_initial_conditions or "",
+        client_id=lattice.client_id,
     )
 
     return db_lattice
@@ -456,6 +457,7 @@ def convert_db_schema_to_lattice(lattice: Lattice):
         uuid=uuid_,
         success=lattice.success or False,
         set_initial_conditions=lattice.set_initial_conditions or "",
+        client_id=lattice.client_id,
     )
 
 
@@ -470,13 +472,24 @@ def convert_db_sigma_to_sigma(sigma: Sigma):
 
 
 class LatticeManager:
-    _current: elements.Lattice = None
+    def __init__(self):
+        self._current: elements.Lattice = None
+        self._requests: dict = {}
 
-    def set(self, new_lattice: elements.Lattice = None) -> None:
+    def set(self, new_lattice: elements.Lattice) -> None:
         self._current = new_lattice
+
+    def set_request(self, request_id: str, lattice: elements.Lattice) -> None:
+        self._requests[request_id] = lattice.model_copy(deep=True)
 
     def get(self) -> elements.Lattice:
         return self._current
+
+    def get_request(self, request_id: str) -> elements.Lattice:
+        return self._requests.get(request_id)
+
+    def remove_request(self, request_id: str) -> None:
+        self._requests.pop(request_id, None)
 
 
 lattice_manager = LatticeManager()

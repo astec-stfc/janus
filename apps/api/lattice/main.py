@@ -12,6 +12,7 @@ import core.models as models
 from core.database import engine
 from v1.routers import lattice_v1
 from gql.router import graphql_router
+from janus_common.utils import constants
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -25,12 +26,13 @@ async def lifespan(app: FastAPI):
     global kafka_producer
     try:
         kafka_producer = KafkaProducer(
-            bootstrap_servers="broker:9092",
+            # use internal kafka port to speak to internal kafka container consumers: l2r, l2e
+            bootstrap_servers=f"{constants.BOOTSTRAP_SERVERS}:{constants.KAFKA_PORT}",
             value_serializer=lambda v: json.dumps(v).encode("utf-8"),
         )
-        print("Kafka producer initialized")
+        print("Kafka producer initialised")
     except Exception as e:
-        print(f"Failed to initialize Kafka producer: {e}")
+        print(f"Failed to initialise Kafka producer: {e}")
 
     yield
 

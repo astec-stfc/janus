@@ -1,0 +1,98 @@
+services:
+
+  frontend:
+    build: ../apps/web/frontend/
+    ports:
+      - ${FRONTEND_PORT:-5173}:5173
+    depends_on:
+      - pvws
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - LATTICE_API_URL=http://${LATTICE_API_HOST:-host.docker.internal}:${LATTICE_API_PORT:-1337}
+      - VITE_PVWS_PORT=${PVWS_PORT:-8080}
+    volumes:
+      - ../apps/web/frontend:/app # allows for hot reload
+      # override: use node_modules from image that we copied over, not from host pc
+      # so changes to node_modules not hot reloadable.
+      - /app/node_modules
+
+  # PVWS (PV Web Socket) for accessing PVs directly via frontend
+  pvws:
+    build: ../apps/web/pvws
+    ports:
+      - "${PVWS_PORT:-8080}:8080"
+    depends_on:
+      - physics_iocs
+    environment:
+      - PV_THROTTLE_MS=100
+      - PV_WRITE_SUPPORT=true
+      - EPICS_PVA_NAME_SERVERS=physics_iocs:${PHYSICS_PORT:-6091}
+
+  sandbox:
+    build: 
+      context: ../sandbox/
+      ssh:
+        - default
+    tty: true
+    environment:
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ../sandbox/workspace:/home/janus-developer/workspace
+    stdin_open: true
+    user: "janus-developer" 
+    command: -c "jupyter lab --ip=0.0.0.0 --port=8889 --no-browser --allow-root --NotebookApp.token='' --NotebookApp.password=''"
+    ports:
+      - "${SANDBOX_PORT:-8889}:8889"  # Expose Jupyter Lab inside the container
+
+  # service to update the physics IOCs when new results come through from RestFrame
+  lattice_to_epics:
+    build: ../services/shared/lattice-to-epics/
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - physics_iocs
+    environment:
+      - EPICS_PVA_AUTO_ADDR_LIST=YES
+      - EPICS_PVA_BROADCAST_PORT=${PVA_PORT:-6092}  # this is required to allow pvget to work in sandbox. It also doesn't have to be different to 
+      - EPICS_PVA_NAME_SERVERS=physics_iocs:${PHYSICS_PORT:-6091}
+      - PYTHONUNBUFFERED=1
+      - CLIENT_ID=${CLIENT_ID:-defaultclient}
+      - LATTICE_API_HOST=${LATTICE_API_HOST:-host.docker.internal}
+      - LATTICE_API_PORT=${LATTICE_API_PORT:-1337}
+      - BROKER_HOST=${BOOTSTRAP_SERVERS:-host.docker.internal}
+      - KAFKA_PORT=${KAFKA_PORT:-9092}
+
+    volumes:
+      - ../janus_common:/usr/src/app/janus_common
+
+  # Soft PVA IOCs containing simulation results 
+  physics_iocs:
+    build: 
+      context: ../apps/controls/shared/simulation
+      dockerfile: Dockerfile
+      ssh:
+        - default
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    entrypoint: /src/app/entrypoint.sh
+    environment:
+      - PYTHONUNBUFFERED=1
+      - EPICS_PVA_SERVER_PORT=${PHYSICS_PORT:-6091}
+      - EPICS_PVAS_SERVER_PORT=${PHYSICS_PORT:-6091}
+      # this is required to allow pvget to work in sandbox. It also doesn't have to be the
+      # same as the server port which HAS to be different to any other IOC's server ports
+      # all IOCs in the stack share the broadcast port (as UDP doesn't care) but have to
+      # have different external server ports to avoid clashes between the containers
+      - EPICS_PVA_BROADCAST_PORT=${PVA_PORT:-6092}
+      - EPICS_PVA_AUTO_ADDR_LIST=YES
+      - EPICS_PVAS_INTF_ADDR_LIST=
+      - EPICS_PVA_ADDR_LIST=
+      - LATTICE_API_HOST=${LATTICE_API_HOST:-host.docker.internal}
+      - LATTICE_API_PORT=${LATTICE_API_PORT:-1337}
+    ports:
+      - ${PHYSICS_PORT:-6091}:${PHYSICS_PORT:-6091}/tcp
+      - ${PHYSICS_PORT:-6091}:${PHYSICS_PORT:-6091}/udp
+    volumes:
+      - ../janus_common:/src/app/janus_common
+      - ../apps/controls/shared/output:/src/app/output

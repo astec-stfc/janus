@@ -28,10 +28,10 @@ class LatticeToEPICS:
             self.lattice_params = {}
         self.exclude = ["CLA-S07-MAG-QUAD-11"]
         self.magnet_factory = MagnetFactory(
-            is_virtual=True,
+            is_virtual=False,
         )
         self.cavity_factory = CavityFactory(
-            is_virtual=True,
+            is_virtual=False,
         )
         self.quads = {
             k: v

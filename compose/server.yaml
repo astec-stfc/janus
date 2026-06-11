@@ -1,0 +1,120 @@
+services:
+  # kafka broker handles messaging between services
+
+  broker:
+    image: docker.redpanda.com/redpandadata/redpanda:latest
+    command:
+      - redpanda
+      - start
+      - --kafka-addr=internal://0.0.0.0:29092,external://0.0.0.0:9092
+      - --advertise-kafka-addr=internal://broker:29092,external://${BROKER_ADVERTISED_HOST}:9092
+      - --rpc-addr=broker:33145
+      - --advertise-rpc-addr=broker:33145
+      - --mode=dev-container
+      - --smp=1
+      - --default-log-level=${log_level:-error}
+    ports:
+      - "9092:9092"
+  # Lattice DB stores results of all lattices that have passed through the Lattice API
+  lattice_db:
+    image: postgres:13
+    ports:
+      - "5431:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=janus
+      - log_level=${log_level:-error}
+    healthcheck:
+      test: /usr/bin/pg_isready -U postgres
+      interval: 5s
+      timeout: 10s
+      retries: 120
+
+  # comm to restframe handles requests to restframe from the lattice API
+  lattice_to_restframe:
+    build: ../services/shared/lattice-to-restframe/
+    depends_on:
+      - lattice_api
+      - restframe
+    volumes:
+      - ../janus_common:/usr/src/app/janus_common
+    environment:
+      - PYTHONUNBUFFERED=1
+      - KAFKA_PORT=29092
+      - RESTFRAME_HOST=restframe
+      - RESTFRAME_PORT=${RESTFRAME_PORT:-8000}
+      - PYTHONUNBUFFERED=1
+  
+  # restframe to comm handles the return of results of simulation to the lattice API
+  restframe_to_lattice:
+    build: ../services/shared/restframe-to-lattice/
+    depends_on:
+      - lattice_api
+      - restframe
+    volumes:
+      - ../janus_common:/usr/src/app/janus_common
+    environment:
+      - PYTHONUNBUFFERED=1
+      - KAFKA_PORT=29092
+      - RESTFRAME_HOST=restframe
+      - RESTFRAME_PORT=${RESTFRAME_PORT:-8000}
+      - PYTHONUNBUFFERED=1
+
+  # RESTFRAME handles the distribution of simulations to SimFrame instances
+  restframe:    
+    build: 
+      context: ../apps/api/restframe/
+      ssh:
+        - default
+    ports:
+      - ${RESTFRAME_PORT:-8000}:${RESTFRAME_PORT:-8000}
+    expose:
+      - ${RESTFRAME_PORT:-8000}
+    healthcheck:
+      test: wget --no-verbose -O /dev/null --tries=1 http://restframe:${RESTFRAME_PORT:-8000}/lattice/ || exit 1
+      interval: 1s
+      timeout: 5s
+    environment:
+      - FACILITY=${FACILITY:-CLARA}
+      - KAFKA_PORT=29092
+      - BROKER_HOST=broker
+      - log_level=${log_level:-error}
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ../apps/api/restframe/${FACILITY:-CLARA}:/home/web/webapp/Output/${FACILITY:-CLARA}
+      - ../janus_common:/home/web/webapp/janus_common
+
+  # lattice API handles the storage and transport of the Lattice objects
+  lattice_api:
+    build: ../apps/api/lattice/
+    stdin_open: true
+    tty: true
+    volumes:
+      - ../janus_common:/usr/src/app/janus_common:ro
+    expose:
+      - 5000
+    ports:
+      - "${SERVER_LATTICE_PORT:-1337}:5000"
+    environment:
+      - FACILITY=${FACILITY:-CLARA}
+      - BROKER_HOST=broker
+      - KAFKA_PORT=29092
+      - log_level=${log_level:-error}
+      - RESTFRAME_HOST=restframe
+      - RESTFRAME_PORT=${RESTFRAME_PORT:-8000}
+      - PYTHONUNBUFFERED=1
+    env_file:
+      - ../apps/api/lattice/.env.dev
+    depends_on:
+      - lattice_db
+      - restframe
+    healthcheck:
+      test: wget --no-verbose -O /dev/null --tries=1 http://lattice_api:5000/v1/ || exit 1
+      interval: 1s
+      timeout: 5s
+
+volumes:
+  postgres_data:

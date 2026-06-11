@@ -1,35 +1,28 @@
 services:
-
-  # PVWS (PV Web Socket) for accessing PVs directly via frontend
-  pvws:
-    build: ../apps/web/pvws
-    ports:
-      - "8080:8080"
-    depends_on:
-      - physics_iocs
-    environment:
-      # See https://github.com/ornl-epics/pvws
-      - PV_THROTTLE_MS=100
-      - PV_WRITE_SUPPORT=true
-      - EPICS_PVA_NAME_SERVERS=physics_iocs:6091 isis_iocs:6090
-
-  # Managing connection between changes to Virtual PVs and the rest of the services
-  isis_to_lattice:
+  # Virtual accelerator IOC generated from the ISIS LAURA lattice by SARABI.
+  ioc:
     build:
-      context: ../services/isis/
+      context: ../apps/controls/shared/virtual-accelerator/
+      dockerfile: Dockerfile
       ssh:
         - default
-    depends_on:
-      - lattice_api
-      - physics_iocs
-      - ioc
+      args:
+        FACILITY: ISIS
+    tty: true
+    ports:
+      - ${PORT:-6090}:${PORT:-6090}/tcp
+      - ${PORT:-6090}:${PORT:-6090}/udp
+      - ${PVA_PORT:-6092}:${PVA_PORT:-6092}/tcp
+      - ${PVA_PORT:-6092}:${PVA_PORT:-6092}/udp
     environment:
-      - EPICS_PVA_AUTO_ADDR_LIST=YES
-      # - EPICS_PVA_NAME_SERVERS=isis_iocs:${PORT:-6090} #
-      - EPICS_CA_SERVER_PORT=${PORT:-6090} # 6060 (original) # 6090 (from ioc service)
-      - EPICS_PVA_BROADCAST_PORT=${PORT:-6090}  # this is required to allow pvget to work in sandbox. It also doesn't have to be different to
       - PYTHONUNBUFFERED=1
-      - FACILITY=ISIS
-    volumes:
-      - ../janus_common:/usr/src/app/janus_common
-
+      - EPICS_CA_SERVER_PORT=${PORT:-6090}
+      - EPICS_CAS_SERVER_PORT=${PORT:-6090}
+      - EPICS_CA_AUTO_ADDR_LIST=NO
+      - EPICS_CA_ADDR_LIST=localhost
+      - EPICS_PVA_AUTO_ADDR_LIST=YES
+      - EPICS_PVA_ADDR_LIST=
+      - EPICS_PVAS_SERVER_PORT=${PVA_PORT:-6092}
+      - EPICS_PVA_SERVER_PORT=${PVA_PORT:-6092}
+      - EPICS_PVA_BROADCAST_PORT=${PVA_PORT:-6092}
+      - EPICS_PVAS_BROADCAST_PORT=${PVA_PORT:-6092}

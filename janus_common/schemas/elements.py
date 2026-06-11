@@ -488,6 +488,7 @@ class Lattice(BaseModel):
     uuid: str | None = None
     beam_summary: BeamSummary | None = None
     success: bool | None = None
+    client_id: str | None = None
 
     class Config:
         from_attributes = True

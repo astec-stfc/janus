@@ -1,0 +1,51 @@
+include:
+  - compose/client.yaml
+
+services:
+  epics_to_lattice:
+    build:
+      context: ./services/clara/
+      ssh:
+        - default
+    depends_on:
+      - physics_iocs
+    # extra_hosts:
+    #   - "host.docker.internal:host-gateway"
+    environment:
+      - EFC_8680_1592913036=1
+      - EPICS_CA_ADDR_LIST=192.168.83.255 192.168.119.225
+      - EPICS_CA_MAX_ARRAY_BYTES=1000000000
+      - EPICS_CA_SERVER_PORT=${PORT:-6090}
+      - EPICS_PVA_AUTO_ADDR_LIST=YES
+      - EPICS_PVA_NAME_SERVERS=physics_iocs:${PHYSICS_PORT:-6091}
+      - EPICS_PVA_BROADCAST_PORT=${PORT:-6090}
+      - PYTHONUNBUFFERED=1
+      - FACILITY=CLARA
+      - CLIENT_ID=${CLIENT_ID:-defaultclient}
+      - LATTICE_API_HOST=${SERVER_HOST:-host.docker.internal}
+      - LATTICE_API_PORT=${SERVER_LATTICE_PORT:-1337}
+      - BROKER_HOST=${SERVER_HOST:-host.docker.internal}
+      - RESTFRAME_HOST=${SERVER_HOST:-host.docker.internal}
+    volumes:
+      - ./janus_common:/usr/src/app/janus_common
+      - ./janus_common/utils:/usr/src/app/common
+      - ./janus_common/schemas:/usr/src/app/schemas
+  pvws:
+    extends:
+      file: compose/client.yaml
+      service: pvws
+    depends_on:
+      - ioc
+    environment:
+      - EPICS_CA_ADDR_LIST=ioc
+      - EPICS_CA_SERVER_PORT=${PORT:-6090}
+  sandbox:
+    extends:
+      file: compose/client.yaml
+      service: sandbox
+    user: "janus-developer"
+    environment:
+      - EPICS_CA_SERVER_PORT=6090
+      - EPICS_CA_ADDR_LIST=ioc
+      - EPICS_PVA_NAME_SERVERS=physics_iocs:${PHYSICS_PORT:-6091}
+
