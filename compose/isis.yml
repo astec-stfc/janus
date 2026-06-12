@@ -1,7 +1,19 @@
 services:
-  # Virtual ISIS IOCs
-  isis_iocs:
-    build: ../apps/controls/isis/
+  # Virtual accelerator IOC generated from the ISIS LAURA lattice by SARABI.
+  ioc:
+    build:
+      context: ../apps/controls/shared/virtual-accelerator/
+      dockerfile: Dockerfile
+      ssh:
+        - default
+      args:
+        FACILITY: ISIS
+    tty: true
+    ports:
+      - ${PORT:-6090}:${PORT:-6090}/tcp
+      - ${PORT:-6090}:${PORT:-6090}/udp
+      - ${PVA_PORT:-6092}:${PVA_PORT:-6092}/tcp
+      - ${PVA_PORT:-6092}:${PVA_PORT:-6092}/udp
     environment:
       - PYTHONUNBUFFERED=1
       - EPICS_PVA_SERVER_PORT=${PORT:-6090}
@@ -10,8 +22,3 @@ services:
       - EPICS_PVA_AUTO_ADDR_LIST=YES
       - EPICS_PVAS_INTF_ADDR_LIST=
       - EPICS_PVA_ADDR_LIST=
-    ports:
-      - ${PORT:-6090}:${PORT:-6090}/tcp
-      - ${PORT:-6090}:${PORT:-6090}/udp
-    volumes:
-      - ../janus_common:/src/app/janus_common

@@ -8,16 +8,18 @@ services:
       file: ./compose/client.yaml
       service: pvws
     depends_on:
-      - isis_iocs
+      - ioc
     environment:
-      - EPICS_PVA_NAME_SERVERS=physics_iocs:${PHYSICS_PORT:-6091} isis_iocs:${PORT:-6090}
+      - EPICS_PVA_NAME_SERVERS=physics_iocs:${PHYSICS_PORT:-6091} ioc:${PORT:-6090}
 
   sandbox:
     extends:
       file: ./compose/client.yaml
       service: sandbox
     environment:
-      - EPICS_PVA_NAME_SERVERS=physics_iocs:${PHYSICS_PORT:-6091} isis_iocs:${PORT:-6090}
+      - EPICS_PVA_AUTO_ADDR_LIST=YES
+      - EPICS_PVA_NAME_SERVERS=physics_iocs:${PHYSICS_PORT:-6091} ioc:${PORT:-6090}
+      - EPICS_PVA_BROADCAST_PORT=${PVA_PORT:-6092}
   # Managing connection between changes to Virtual PVs and the rest of the services
   epics_to_lattice:
     build: ./services/isis/
@@ -25,10 +27,10 @@ services:
       - "host.docker.internal:host-gateway"
     depends_on:
       - physics_iocs
-      - isis_iocs
+      - ioc
     environment:
       - EPICS_PVA_AUTO_ADDR_LIST=YES
-      - EPICS_PVA_NAME_SERVERS=physics_iocs:${PHYSICS_PORT:-6091} isis_iocs:${PORT:-6090}
+      - EPICS_PVA_NAME_SERVERS=physics_iocs:${PHYSICS_PORT:-6091} ioc:${PORT:-6090}
       - EPICS_PVA_BROADCAST_PORT=${PORT:-6090}  # this is required to allow pvget to work in sandbox. It also doesn't have to be different to 
       - PYTHONUNBUFFERED=1
       - FACILITY=ISIS

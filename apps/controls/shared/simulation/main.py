@@ -104,11 +104,11 @@ def construct_pvs_from_lattice(lattice: elements.Lattice) -> Dict[
             }
         )
         output.update(
-        {
-            pv: {"type": str(pv_type)}
-            for pv, pv_type in section_translator.section_pv_types.items()
-        }
-    )
+            {
+                pv: {"type": str(pv_type)}
+                for pv, pv_type in section_translator.section_pv_types.items()
+            }
+        )
     lattice_translator = LatticeToPV()
     shared_pvs.update(
         {
@@ -135,7 +135,11 @@ def construct_pvs_from_lattice(lattice: elements.Lattice) -> Dict[
             for pv, pv_type in simulation_translator.simulation_pv_types.items()
         }
     )
+    seed_pv = f"{lattice.facility}:SIM:SEED"
+    shared_pvs[seed_pv] = pv_builder.make_shared_pv_from_type(int)
+    output[seed_pv] = {"type": str(int)}
     _write_facility_pv_yaml(facility=lattice.facility, pvs=output)
+
     return shared_pvs
 
 

@@ -11,7 +11,7 @@ cfg.set_config_format(
 from CATAP.magnet import MagnetFactory
 from CATAP.cavity import CavityFactory, Cavity
 from typing import Dict
-from janus_common.utils.helpers import EPICSHelper 
+from janus_common.utils.helpers import EPICSHelper
 from janus_common.utils.constants import SIGFIG
 from janus_common.utils.numeric import round_it
 from janus_common.pv.translate import SectionToPV, GeneratorToPV

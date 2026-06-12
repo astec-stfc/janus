@@ -18,10 +18,9 @@ services:
       service: sandbox
     user: "janus-developer"
     environment:
-     - EPICS_PVA_BROADCAST_PORT=${PORT:-6090} # to allow udp coms inside the stack
-     - EPICS_PVA_AUTO_ADDR_LIST=YES
-     - EPICS_PVA_NAME_SERVERS=physics_iocs:${PHYSICS_PORT:-6091} isis_iocs:${PORT:-6090}
-
+      - EPICS_PVA_BROADCAST_PORT=${PORT:-6090} # to allow udp coms inside the stack
+      - EPICS_PVA_AUTO_ADDR_LIST=YES
+      - EPICS_PVA_NAME_SERVERS=physics_iocs:${PHYSICS_PORT:-6091} ioc:${PORT:-6090}
   lattice_api:
     extends:
       file: compose/server.yaml
@@ -33,22 +32,28 @@ services:
       file: compose/client.yaml
       service: pvws
     depends_on:
-      - isis_iocs
+      - ioc
     environment:
-      - EPICS_PVA_NAME_SERVERS=physics_iocs:${PHYSICS_PORT:-6091} isis_iocs:${PORT:-6090}
-
-  # Managing connection between changes to Virtual PVs and the rest of the services
+      - EPICS_PVA_NAME_SERVERS=physics_iocs:${PHYSICS_PORT:-6091} ioc:${PORT:-6090}
+      - EPICS_CA_ADDR_LIST=ioc
+      - EPICS_CA_SERVER_PORT=${PORT:-6090}
+  # managing requests from changes in ISIS IOCs to the lattice API
   epics_to_lattice:
-    build: ./services/isis/
+    build:
+      context: ./services/isis/
+      ssh:
+        - default
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:
-      - isis_iocs
+      - physics_iocs
+      - ioc
     environment:
       - EPICS_PVA_AUTO_ADDR_LIST=YES
-      - EPICS_PVA_NAME_SERVERS=physics_iocs:${PHYSICS_PORT:-6091} isis_iocs:${PORT:-6090}
-      - EPICS_PVA_BROADCAST_PORT=${PORT:-6090}  # this is required to allow pvget to work in sandbox. It also doesn't have to be different to 
+      - EPICS_PVA_NAME_SERVERS=physics_iocs:${PHYSICS_PORT:-6091} ioc:${PORT:-6090}
+      - EPICS_PVA_BROADCAST_PORT=${PORT:-6090}  # this is required to allow pvget to work in sandbox. It also doesn't have to be different to
       - PYTHONUNBUFFERED=1
+      - VIRTUAL_MODE=True
       - FACILITY=ISIS
       - CLIENT_ID=${CLIENT_ID:-defaultclient}
       - LATTICE_API_HOST=${LATTICE_API_HOST:-host.docker.internal}
@@ -57,5 +62,8 @@ services:
       - KAFKA_PORT=${KAFKA_PORT:-9092}
       - RESTFRAME_HOST=${RESTFRAME_HOST:-host.docker.internal}
       - RESTFRAME_PORT=${RESTFRAME_PORT:-8000}
+
+      #- LATTICE_PARAMS={"dipoles":["CLA-VBC-MAG-DIP-01"],"generator":{"charge":"CLA-S01-DIA-WCM-01"}}
+
     volumes:
       - ./janus_common:/usr/src/app/janus_common

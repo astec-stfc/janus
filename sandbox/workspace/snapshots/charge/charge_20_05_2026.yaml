@@ -1,0 +1,43 @@
+charge:
+  CLA-S01-DIA-WCM-01:
+    Q:
+      value: 0.0
+      buffer: []
+      timestamps: []
+  CLA-SP1-DIA-FCUP-01:
+    Q:
+      value: 0.0
+      buffer: []
+      timestamps: []
+  CLA-S04-DIA-ICT-01:
+    Q:
+      value: 0.0
+      buffer: []
+      timestamps: []
+  CLA-S05-DIA-ICT-01:
+    Q:
+      value: 0.0
+      buffer: []
+      timestamps: []
+  CLA-SP2-DIA-FCUP-01:
+    Q:
+      value: 0.0
+      buffer: []
+      timestamps: []
+  CLA-SP3-DIA-FCUP-01:
+    Q:
+      value: 0.0
+      buffer: []
+      timestamps: []
+  CLA-FED-DIA-FCUP-01:
+    Q:
+      value: 0.0
+      buffer: []
+      timestamps: []
+  CLA-S07-DIA-FCUP-01:
+    Q:
+      value:
+      buffer: []
+      timestamps: []
+comment: ''
+created: '2026-05-20T13:39:35.169923'

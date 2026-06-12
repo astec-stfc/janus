@@ -69,7 +69,8 @@ services:
   # Soft PVA IOCs containing simulation results 
   physics_iocs:
     build: 
-      context: ../apps/controls/shared/
+      context: ../apps/controls/shared/simulation
+      dockerfile: Dockerfile
       ssh:
         - default
     extra_hosts:
