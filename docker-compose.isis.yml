@@ -20,7 +20,7 @@ services:
     environment:
       - EPICS_PVA_BROADCAST_PORT=${PORT:-6090} # to allow udp coms inside the stack
       - EPICS_PVA_AUTO_ADDR_LIST=YES
-      - EPICS_PVA_NAME_SERVERS=physics_iocs:${PHYSICS_PORT:-6091}
+      - EPICS_PVA_NAME_SERVERS=physics_iocs:${PHYSICS_PORT:-6091} ioc:${PORT:-6090}
   lattice_api:
     extends:
       file: compose/server.yaml
@@ -34,7 +34,7 @@ services:
     depends_on:
       - ioc
     environment:
-      - EPICS_PVA_NAME_SERVERS=physics_iocs:${PHYSICS_PORT:-6091}
+      - EPICS_PVA_NAME_SERVERS=physics_iocs:${PHYSICS_PORT:-6091} ioc:${PORT:-6090}
       - EPICS_CA_ADDR_LIST=ioc
       - EPICS_CA_SERVER_PORT=${PORT:-6090}
   # managing requests from changes in ISIS IOCs to the lattice API
@@ -50,7 +50,7 @@ services:
       - ioc
     environment:
       - EPICS_PVA_AUTO_ADDR_LIST=YES
-      - EPICS_PVA_NAME_SERVERS=physics_iocs:${PHYSICS_PORT:-6091}
+      - EPICS_PVA_NAME_SERVERS=physics_iocs:${PHYSICS_PORT:-6091} ioc:${PORT:-6090}
       - EPICS_PVA_BROADCAST_PORT=${PORT:-6090}  # this is required to allow pvget to work in sandbox. It also doesn't have to be different to
       - PYTHONUNBUFFERED=1
       - VIRTUAL_MODE=True
