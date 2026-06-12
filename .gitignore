@@ -216,6 +216,7 @@ apps/api/restframe/Output/
 *.png
 *:Zone.Identifier
 *.ipynb
+sandbox/workspace/snapshots/
 
 # Un-ignore frontend src/lib (overrides the generic lib/ rule above)
 !apps/web/frontend/src/lib/
