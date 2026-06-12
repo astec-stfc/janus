@@ -15,3 +15,9 @@ master_lattice = '/laura-lattices/CLARA/'
 screen_directory = './Lattices/CLARA/'
 particle = "electron"
 
+[JFEL]
+runs_directory = "./Output/JFEL/"
+settings_file = "./Lattices/JFEL/jfel_combined.def"
+master_lattice = '/laura-lattices/JFEL/'
+screen_directory = './Lattices/JFEL/'
+particle = "electron"

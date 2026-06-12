@@ -229,6 +229,14 @@ class Element(BaseModel):
         return subtype.name
 
 
+class PhotonMonitor(Element):  # RESTFrame --> EPICS
+    type: str = Field(default="PhotonMonitor", frozen=True)
+    intensity: float = 0.0
+
+    class Config:
+        from_attributes = True
+
+
 class BPM(Element):  # RESTFrame --> EPICS
     type: str = Field(default="BPM", frozen=True)
 
@@ -447,6 +455,7 @@ class Section(BaseModel):
     cavities: List[Cavity] | None = None
     lasers: List[Laser] | None = None
     markers: List[Marker] | None = None
+    photonmonitors: List[PhotonMonitor] | None = None
     beam_summary: BeamSummary | None = None
 
     class Config:
@@ -462,6 +471,7 @@ class Section(BaseModel):
             self.cavities,
             self.lasers,
             self.markers,
+            self.photonmonitors,
         ]:
             if typ is not None:
                 elems += typ
@@ -506,6 +516,7 @@ class Lattice(BaseModel):
                 section.cavities,
                 section.lasers,
                 section.markers,
+                section.photonmonitors,
             ]:
                 if typ is not None:
                     if elem_type is None:

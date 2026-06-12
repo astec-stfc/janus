@@ -20,6 +20,7 @@ from core.models import (
     Lattice,
     InitialConditions,
     Generator,
+    PhotonMonitors,
 )
 
 
@@ -245,6 +246,21 @@ def make_db_bpm(bpm: elements.BPM):
     )
 
 
+def make_db_photon_monitor(photon_monitor: elements.PhotonMonitor):
+    twiss, sigma, centroid = fetch_generic_element_properties(photon_monitor)
+
+    return PhotonMonitors(
+        name=photon_monitor.name,
+        type=photon_monitor.type,
+        subtype=photon_monitor.subtype or None,
+        twiss=twiss or make_twiss(),
+        sigma=sigma or make_sigma(),
+        centroid=centroid or make_centroid(),
+        updated=photon_monitor.updated,
+        intensity=photon_monitor.intensity,
+    )
+
+
 def make_db_cavity(cavity: elements.Cavity):
     twiss, sigma, centroid = fetch_generic_element_properties(cavity)
     return Cavities(
@@ -379,7 +395,7 @@ def convert_lattice_to_db_schema(lattice: elements.Lattice):
     db_sections = []
 
     for section in lattice.get_sections():
-        bpm_info = cavity_info = marker_info = magnet_info = laser_info = (
+        bpm_info = cavity_info = marker_info = magnet_info = laser_info = photon_monitor_info = (
             screen_info
         ) = []
         if section.bpms:
@@ -394,6 +410,11 @@ def convert_lattice_to_db_schema(lattice: elements.Lattice):
             laser_info = [make_db_laser(laser) for laser in section.lasers]
         if section.screens:
             screen_info = [make_db_screen(screen) for screen in section.screens]
+        if section.photonmonitors:
+            photon_monitor_info = [
+                make_db_photon_monitor(photon_monitor)
+                for photon_monitor in section.photonmonitors
+            ]
 
         db_sections.append(
             Section(
@@ -406,6 +427,7 @@ def convert_lattice_to_db_schema(lattice: elements.Lattice):
                 magnets=magnet_info,
                 markers=marker_info,
                 lasers=laser_info,
+                photonmonitors=photon_monitor_info,
                 initial_conditions=make_db_initial_conditions(
                     section.initial_conditions
                 )

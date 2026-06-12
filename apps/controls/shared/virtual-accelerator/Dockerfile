@@ -23,10 +23,11 @@ WORKDIR /sarabi
 RUN python3.12 render_iocs.py --settings=settings.yaml
 RUN python3.12 render_main.py --settings=settings.yaml
 
-COPY . src/app
+WORKDIR /src/app
 
-WORKDIR src/app
+COPY . .
 
-ADD entrypoint.sh /usr/src/app/ioc_entrypoint.sh
-RUN chmod a+x /usr/src/app/ioc_entrypoint.sh
-ENTRYPOINT ["./entrypoint.sh"]
+COPY entrypoint.sh ./entrypoint.sh
+RUN chmod a+x ./entrypoint.sh
+
+ENTRYPOINT ["/src/app/entrypoint.sh"]

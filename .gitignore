@@ -205,6 +205,9 @@ apps/api/restframe/LCLS2sc/prefixes.yaml
 apps/api/restframe/ISIS/**/
 apps/api/restframe/ISIS/changes.yaml
 apps/api/restframe/ISIS/prefixes.yaml
+apps/api/restframe/JFEL/**/
+apps/api/restframe/JFEL/changes.yaml
+apps/api/restframe/JFEL/prefixes.yaml
 apps/api/restframe/API/CLARA/*
 apps/api/restframe/*.hdf5
 apps/api/restframe/*.hdf5

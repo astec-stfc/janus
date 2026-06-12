@@ -318,6 +318,23 @@ class BPMs(Element):
     __mapper_args__ = {"polymorphic_identity": "BPM"}
 
 
+class PhotonMonitors(Element):
+    __tablename__ = "photonmonitors"
+    id: Mapped[int] = mapped_column(
+        ForeignKey("elements.id"), primary_key=True, nullable=False
+    )
+    section_id = mapped_column(
+        ForeignKey("section.id", ondelete="CASCADE", onupdate="CASCADE")
+    )
+    section: Mapped["Section"] = relationship(
+        foreign_keys=[section_id],
+        back_populates="photonmonitors",
+    )
+    intensity: Mapped[float] = mapped_column(Float, nullable=False)
+    __mapper_args__ = {"polymorphic_identity": "PhotonMonitor"}
+
+
+
 class Lasers(Element):
     __tablename__ = "lasers"
     id: Mapped[int] = mapped_column(
@@ -560,6 +577,10 @@ class Section(Base):
         back_populates="section",
         cascade="all, delete",
     )
+    photonmonitors: Mapped[List[PhotonMonitors]] = relationship(
+        back_populates="section",
+        cascade="all, delete",
+    )
     cavities: Mapped[List[Cavities]] = relationship(
         back_populates="section",
         cascade="all, delete",
@@ -599,6 +620,10 @@ class Section(Base):
 
     @validates("markers")
     def validate_markers(self, _, value) -> Markers:
+        return value
+
+    @validates("photonmonitors")
+    def validate_photon_monitors(self, _, value) -> PhotonMonitors:
         return value
 
 

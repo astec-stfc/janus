@@ -30,6 +30,7 @@ from janus_common.schemas.elements import (
     Element,
     InitialConditions,
     Generator,
+    PhotonMonitor,
 )
 from janus_common.utils.numeric import round_it
 from janus_common.utils.constants import SIGFIG
@@ -52,6 +53,7 @@ from simba.Codes.Generators import frameworkGenerator
 from laura.models.element import Screen as laura_screen
 from laura.models.element import RFCavity as laura_cavity
 from laura.models.element import Aperture as laura_aperture
+from laura.models.element import Photon_Monitor as laura_photon_monitor
 
 import traceback
 
@@ -271,6 +273,16 @@ class SimFrame_Interface:
     # def update_magnet(self, elem):
     #     elem.KnL = [getattr()]
 
+    def update_wavefront(self, name, elem):
+        if isinstance(elem, PhotonMonitor):
+            try:
+                from pmd_beamphysics.wavefront.wavefront import Wavefront
+                fname = self.runs_directory + str(self.track_uuid) + "/" + name + ".fld.h5"
+                wv = Wavefront.from_genesis4(fname)
+                elem.intensity = wv.energy
+            except Exception as e:
+                print(f"Failed to update wavefront for {name}: {e}")
+
     def update_beam_and_screen(self, name, elem):
         self.update_beam(name, elem)
         if isinstance(elem, Screen):
@@ -309,6 +321,7 @@ class SimFrame_Interface:
             for name, elem in section.get_elements_dict().items():
                 if section_success:
                     self.update_beam(name, elem)
+                    self.update_wavefront(name, elem)
                 else:
                     self._set_null_results(elem)
             section.model = self.framework[section.name].code
@@ -548,6 +561,7 @@ class SimFrame_Interface:
                                 bpms=lattice_elements["bpms"],
                                 magnets=lattice_elements["magnets"],
                                 cavities=lattice_elements["cavities"],
+                                photonmonitors=lattice_elements["photonmonitors"],
                                 model=self.framework[lat].code,
                                 initial_conditions=lattice_elements[
                                     "initial_conditions"
@@ -658,6 +672,9 @@ class SimFrame_Interface:
                 schemalattice.magnets = [
                     mag for mag in latelems if isinstance(mag, Magnet)
                 ]
+                schemalattice.photonmonitors = [
+                    phm for phm in latelems if isinstance(phm, PhotonMonitor)
+                ]
 
                 schemalattice.model = self.framework[lattice].code
                 schemalattice.initial_conditions = None
@@ -681,6 +698,7 @@ class SimFrame_Interface:
                     "magnets": schemalattice.magnets,
                     "bpms": schemalattice.bpms,
                     "cavities": schemalattice.cavities,
+                    "photonmonitors": schemalattice.photonmonitors,
                     "model": schemalattice.model,
                     "initial_conditions": schemalattice.initial_conditions,
                 }
@@ -695,6 +713,7 @@ class SimFrame_Interface:
                 "magnets": None,
                 "bpms": None,
                 "cavities": None,
+                "photonmonitors": None,
                 "markers": None,
                 "beam_summary": None,
                 "model": "",
@@ -872,6 +891,7 @@ class SimFrame_Interface:
                 self.framework_directory = fw.frameworkDirectory(
                     twiss=True,
                     beams=True,
+                    wavefronts=True,
                     framework=frameworkcopy,
                     rest_mass=self.mass,
                     E0=mass(self.particle),

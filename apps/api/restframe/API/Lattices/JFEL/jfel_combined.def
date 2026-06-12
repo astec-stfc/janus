@@ -1,0 +1,54 @@
+generator:
+  code: astra
+  default: jfel_400_3ps
+files:
+  injector:
+    code: astra
+    charge:
+      cathode: True
+      space_charge_mode: 2D
+      mirror_charge: True
+    input:
+      particle_definition: 'initial_distribution'
+    output:
+      zstart: 0
+      end_element: JFEL-S02-SIM-APER-01
+  Linac:
+    input:
+      twiss:
+        beta_x: 20
+        alpha_x: 0
+        beta_y: 10
+        alpha_y: 0
+    code: elegant
+    output:
+      start_element: JFEL-S02-SIM-APER-01
+      end_element: JFEL-FEL-SIM-MARK-01
+  FEL_ST:
+    code: genesis
+    npart: 1000
+    fel:
+      nbins: 10
+    output:
+      start_element: JFEL-FEL-SIM-MARK-01
+      end_element: JFEL-FEL-SIM-MARK-02
+    fel:
+      steady_state: True
+      beam_type: beam
+      waist_size: 0.00007
+      #fundamental_wavelength: 1.269573e-08
+    input:
+      twiss:
+        beta_x: 37.75
+        beta_y: 36.86
+        alpha_x: -0.1874
+        alpha_y: 0.1874
+        #nemit_x: 4e-7
+        #nemit_y: 4e-7
+groups:
+  bunch_compressor:
+    type: chicane
+    elements: [JFEL-VBC-MAG-DIP-01, JFEL-VBC-MAG-DIP-02, JFEL-VBC-MAG-DIP-03, JFEL-VBC-MAG-DIP-04]
+layout: "/laura-lattices/JFEL/layouts.yaml"
+section: "/laura-lattices/JFEL/sections.yaml"
+element_list: "/laura-lattices/JFEL/YAML/summary.yaml"
