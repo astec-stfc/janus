@@ -1,6 +1,6 @@
 include:
   - compose/client.yaml
-  - compose/clara.yml
+  - compose/jfel.yml
 services:
   pvws:
     extends:
@@ -23,10 +23,10 @@ services:
       - EPICS_PVA_AUTO_ADDR_LIST=YES
       - EPICS_PVA_NAME_SERVERS=physics_iocs:${PHYSICS_PORT:-6091}
       - EPICS_PVA_BROADCAST_PORT=${PVA_PORT:-6092}  # this is required to allow pvget to work in sandbox. It also doesn't have to be different to
-  # managing requests from changes in CLARA IOCs to the lattice API
+  # managing requests from changes in JFEL IOCs to the lattice API
   epics_to_lattice:
-    build: 
-      context: ./services/clara/
+    build:
+      context: ./services/jfel/
       ssh:
         - default
     extra_hosts:
@@ -43,7 +43,7 @@ services:
       - EPICS_PVA_BROADCAST_PORT=${PVA_PORT:-6092}  # this is required to allow pvget to work in sandbox. It also doesn't have to be different to
       - PYTHONUNBUFFERED=1
       - VIRTUAL_MODE=True
-      - FACILITY=CLARA
+      - FACILITY=JFEL
       - CLIENT_ID=${CLIENT_ID:-defaultclient}
       - LATTICE_API_HOST=${LATTICE_API_HOST:-host.docker.internal}
       - LATTICE_API_PORT=${LATTICE_API_PORT:-1337}
@@ -51,8 +51,6 @@ services:
       - KAFKA_PORT=${KAFKA_PORT:-9092}
       - RESTFRAME_HOST=${RESTFRAME_HOST:-host.docker.internal}
       - RESTFRAME_PORT=${RESTFRAME_PORT:-8000}
-
-      #- LATTICE_PARAMS={"dipoles":["CLA-VBC-MAG-DIP-01"],"generator":{"charge":"CLA-S01-DIA-WCM-01"}}
 
     volumes:
       - ./janus_common:/usr/src/app/janus_common

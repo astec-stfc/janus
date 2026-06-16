@@ -33,9 +33,9 @@ Install Git LFS from the official installer, then:
 
 ### Getting Started
 
-Clone this repo including all of the relevant submodules:
+Clone this repo:
 ```bash
-git clone --recursive git@gitlab.stfc.ac.uk:janus/janus.git
+git clone --recursive git@github.com:astec-stfc/janus.git
 ```
 Then navigate into the `janus` directory.
 

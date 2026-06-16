@@ -1,6 +1,6 @@
 
 
-FACILITY=clara
+FACILITY=jfel
 MODE ?= stack
 
 IMAGE ?= ghcr.io/adb-xkc85723/janus-base:latest
