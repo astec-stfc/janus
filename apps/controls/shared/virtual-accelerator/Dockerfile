@@ -12,10 +12,12 @@ RUN --mount=type=ssh bash -lc ' \
 mkdir -p /root/.ssh && \
 ssh-keyscan gitlab.stfc.ac.uk >> /root/.ssh/known_hosts && \
 git clone --branch main git@gitlab.stfc.ac.uk:ujo48515/sarabi.git && \
-git clone --branch main git@gitlab.stfc.ac.uk:xkc85723/laura-lattices.git \
 '
 
 RUN pip install --no-cache-dir -r /sarabi/requirements.txt
+
+WORKDIR /laura-lattices
+RUN git fetch -a && git checkout main && git pull
 
 RUN cp -r "/laura-lattices/${FACILITY}/YAML" /sarabi/yaml/nala
 

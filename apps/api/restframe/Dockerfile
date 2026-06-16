@@ -26,10 +26,7 @@ WORKDIR /simba
 RUN git fetch -a && git checkout feature/split-genesis-line && git pull
 
 WORKDIR /laura-lattices
-RUN --mount=type=ssh bash -lc ' \
-ssh-keyscan gitlab.stfc.ac.uk >> /root/.ssh/known_hosts && \
-git fetch -a && git checkout main && git pull \
-'
+RUN git fetch -a && git checkout main && git pull
 
 WORKDIR /home/web/webapp
 ENV PYTHONPATH=/home/web/webapp

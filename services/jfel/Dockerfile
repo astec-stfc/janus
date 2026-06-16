@@ -8,10 +8,7 @@ RUN git fetch -a && git checkout fix/split-genesis-line && git pull
 RUN pip install -e .
 
 WORKDIR /laura-lattices
-RUN --mount=type=ssh bash -lc ' \
-ssh-keyscan gitlab.stfc.ac.uk >> /root/.ssh/known_hosts && \
-git fetch -a && git checkout main && git pull \
-'
+RUN git fetch -a && git checkout main && git pull
 
 RUN pip install --upgrade flask black pytest
 
