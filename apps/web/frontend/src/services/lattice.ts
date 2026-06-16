@@ -1,8 +1,8 @@
 import axios from "axios";
-import type { Beam } from "../types";
+import type { Beam, LatticeResponse } from "../types";
 
-const baseUrl = "/v1/";
-const latticeBase = `${baseUrl}lattice`;
+const baseUrl = "/v1";
+const latticeBase = `${baseUrl}/lattice`;
 
 const getRunUuids = async (): Promise<string[]> => {
   const response = await axios.get<string[]>(`${latticeBase}/runs`);
@@ -23,4 +23,11 @@ const getScreenBeam = async (uuid: string, name: string): Promise<Beam> => {
   return response.data;
 };
 
-export default { getRunUuids, getScreenNames, getScreenBeam };
+const getLattice = async (uuid: string): Promise<LatticeResponse> => {
+  const response = await axios.get<LatticeResponse>(`${latticeBase}/`, {
+    params: { uuid },
+  });
+  return response.data;
+};
+
+export default { getRunUuids, getScreenNames, getScreenBeam, getLattice };
