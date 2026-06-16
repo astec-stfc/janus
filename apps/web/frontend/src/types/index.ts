@@ -3,15 +3,6 @@ export interface HelloResponse {
   message: string;
 }
 
-// Blog Types
-export interface Blog {
-  id?: string;
-  title: string;
-  author: string;
-  url?: string;
-  likes?: number;
-}
-
 // Notification Types
 export type NotificationType = "success" | "error" | "info" | null;
 
@@ -27,6 +18,27 @@ export interface Beam {
   cpx: number[] | null;
   cpy: number[] | null;
   cpz: number[] | null;
+}
+
+export interface BeamSummary {
+  position: number[];
+  alpha_x: number[];
+  alpha_y: number[];
+  beta_x: number[];
+  beta_y: number[];
+}
+
+export interface LatticeResponse {
+  uuid: string;
+  facility: string;
+  beam_summary: BeamSummary | null;
+}
+
+export interface PhysicalElement {
+  name: string;
+  type: string;
+  start: number;
+  end: number;
 }
 
 export interface BeamAxisDef {
