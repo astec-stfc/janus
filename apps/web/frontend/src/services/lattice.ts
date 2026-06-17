@@ -3,8 +3,8 @@ import type {
   Beam,
   BeamSummary,
   BeamSummaryParameter,
+  BeamSummaryPlotResponse,
   LatticeResponse,
-  TwissPlotResponse,
 } from "../types";
 
 const baseUrl = "/v1";
@@ -38,7 +38,7 @@ const getLattice = async (uuid: string): Promise<LatticeResponse> => {
 
 const getLatticeforTwissPlot = async (
   uuid: string,
-): Promise<TwissPlotResponse> => {
+): Promise<BeamSummaryPlotResponse> => {
   const lattice = await getLattice(uuid);
   const beamSummary = lattice.beam_summary;
 
