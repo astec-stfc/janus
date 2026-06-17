@@ -23,15 +23,53 @@ export interface Beam {
 export interface BeamSummary {
   position: number[];
   alpha_x: number[];
-  alpha_y: number[];
   beta_x: number[];
+  alpha_y: number[];
   beta_y: number[];
+  energy: number[];
+  charge: number | null;
+  n_particles: number | null;
+  momentum: number[];
+  emittance_x: number[];
+  emittance_y: number[];
+  normalised_emittance_x: number[];
+  normalised_emittance_y: number[];
+  sigma_x: number[];
+  sigma_y: number[];
+  sigma_t: number | null;
+  centroids_x: number[];
+  centroids_y: number[];
+  centroids_t: number | null;
+  cov_xx: number | null;
+  cov_xxp: number | null;
+  cov_yy: number | null;
+  cov_yyp: number | null;
+  cov_xy: number | null;
+  cov_xyp: number | null;
 }
 
 export interface LatticeResponse {
   uuid: string;
   facility: string;
   beam_summary: BeamSummary | null;
+}
+
+export interface BeamSummaryParameter {
+  name: keyof BeamSummary;
+  label: string;
+  unit?: string;
+  values: number[];
+}
+
+export interface BeamSummaryData {
+  xParameter: BeamSummaryParameter;
+  yParameters: BeamSummaryParameter[];
+}
+
+export interface BeamSummaryPlotResponse {
+  uuid: string;
+  facility: string;
+  beamSummaryData: BeamSummaryData | null;
 }
 
 export interface PhysicalElement {
