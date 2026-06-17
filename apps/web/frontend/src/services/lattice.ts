@@ -1,5 +1,11 @@
 import axios from "axios";
-import type { Beam, LatticeResponse } from "../types";
+import type {
+  Beam,
+  BeamSummary,
+  BeamSummaryParameter,
+  LatticeResponse,
+  TwissPlotResponse,
+} from "../types";
 
 const baseUrl = "/v1";
 const latticeBase = `${baseUrl}/lattice`;
@@ -30,4 +36,53 @@ const getLattice = async (uuid: string): Promise<LatticeResponse> => {
   return response.data;
 };
 
-export default { getRunUuids, getScreenNames, getScreenBeam, getLattice };
+const getLatticeforTwissPlot = async (
+  uuid: string,
+): Promise<TwissPlotResponse> => {
+  const lattice = await getLattice(uuid);
+  const beamSummary = lattice.beam_summary;
+
+  if (!beamSummary) {
+    return {
+      uuid: lattice.uuid,
+      facility: lattice.facility,
+      beamSummaryData: null,
+    };
+  }
+
+  const yParameters: BeamSummaryParameter[] = [];
+  for (const beamSummaryName of Object.keys(
+    beamSummary,
+  ) as (keyof BeamSummary)[]) {
+    const values = beamSummary[beamSummaryName];
+    if (beamSummaryName !== "position" && Array.isArray(values)) {
+      yParameters.push({
+        name: beamSummaryName,
+        label: beamSummaryName,
+        values,
+      });
+    }
+  }
+
+  return {
+    uuid: lattice.uuid,
+    facility: lattice.facility,
+    beamSummaryData: {
+      xParameter: {
+        name: "position",
+        label: "Position",
+        unit: "m",
+        values: beamSummary.position,
+      },
+      yParameters,
+    },
+  };
+};
+
+export default {
+  getRunUuids,
+  getScreenNames,
+  getScreenBeam,
+  getLattice,
+  getLatticeforTwissPlot,
+};
