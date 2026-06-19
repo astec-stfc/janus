@@ -101,8 +101,7 @@ git clone --branch feature/nala git@gitlab.stfc.ac.uk:ujo48515/pycatap.git \
 '
 
 RUN git clone --branch main https://github.com/astec-stfc/laura.git && \
-    git clone --branch main https://github.com/astec-stfc/simba.git && \
-    git clone --branch main https://github.com/astec-stfc/laura-lattices.git
+    git clone --branch main https://github.com/astec-stfc/simba.git
 
 # Install all requirements in one block (with .git still present for version detection)
 RUN pip install --no-cache-dir -r /simcodes/requirements.txt && \

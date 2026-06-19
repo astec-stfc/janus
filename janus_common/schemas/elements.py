@@ -289,6 +289,7 @@ class MagnetEnum(str, Enum):
     sextupole = "sextupole"
     corrector = "corrector"
     solenoid = "solenoid"
+    wiggler = "wiggler"
 
     class Config:
         from_attributes = True
