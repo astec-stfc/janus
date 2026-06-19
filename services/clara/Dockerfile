@@ -4,24 +4,30 @@ ARG LAURA_LATTICE_REPO=git@gitlab.stfc.ac.uk:xkc85723/laura-lattices.git
 
 # use SSH agent forwarding (BuildKit) and ensure host key is known
 WORKDIR /pycatap
-# Consolidate all git clones into single RUN block + remove .git to save space
 RUN --mount=type=ssh bash -lc ' \
 ssh-keyscan gitlab.stfc.ac.uk >> /root/.ssh/known_hosts && \
 git fetch -a && git checkout feature/nala && git pull \
 '
 RUN pip install -e .
+# Consolidate all git clones into single RUN block + remove .git to save space
+
 WORKDIR /laura
 # Consolidate all git clones into single RUN block + remove .git to save space
-RUN --mount=type=ssh bash -lc ' \
-ssh-keyscan gitlab.stfc.ac.uk >> /root/.ssh/known_hosts && \
-git fetch -a && git checkout fix/screen-resolve && git pull \
-'
+RUN git fetch -a && git checkout fix/screen-resolve && git pull
+
 RUN pip install -e .
 WORKDIR /
-RUN --mount=type=ssh bash -lc ' \
-mkdir -p /root/.ssh && \
-ssh-keyscan gitlab.stfc.ac.uk >> /root/.ssh/known_hosts && \
-git clone --branch main ${LAURA_LATTICE_REPO} /laura-lattices \
+RUN --mount=type=ssh,required=false bash -lc ' \
+case "${LAURA_LATTICE_REPO}" in \
+    http://*|https://*) \
+        git clone --branch main "${LAURA_LATTICE_REPO}" /laura-lattices ;; \
+    git@*|ssh://*) \
+        mkdir -p /root/.ssh && \
+        ssh-keyscan gitlab.stfc.ac.uk >> /root/.ssh/known_hosts && \
+        git clone --branch main "${LAURA_LATTICE_REPO}" /laura-lattices ;; \
+    *) \
+        echo "Unsupported LAURA_LATTICE_REPO format: ${LAURA_LATTICE_REPO}" && exit 1 ;; \
+esac \
 '
 
 WORKDIR /usr/src/app
