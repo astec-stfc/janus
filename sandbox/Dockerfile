@@ -15,12 +15,12 @@ RUN mkdir -p /pycatap /laura /home/janus-developer/workspace/snapshots && \
     chown -R janus-developer:janus-developer /pycatap /laura /laura-lattices /home/janus-developer/workspace && \
     chmod -R a+rwX /home/janus-developer/workspace
 
-USER janus-developer
-
 WORKDIR /pycatap
 RUN pip install -e .
-WORKDIR /laura
-RUN pip install -e .
+
+RUN pip install pyepics p4p pydantic numpy ruamel.yaml scipy matplotlib jupyterlab
+
+USER janus-developer
 
 WORKDIR /home/janus-developer/workspace
 ENTRYPOINT ["/bin/bash"]

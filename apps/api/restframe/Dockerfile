@@ -5,7 +5,7 @@ COPY docker/elegant-2025.2.0-1.ubuntu.22.04.mpich.x86_64.rpm /home/web/
 
 RUN alien -i /home/web/SDDSPython3-5.2.1-1.ubuntu.22.04.x86_64.rpm && \
     SITEPKG=$($VIRTUAL_ENV/bin/python -c "import site; print(site.getsitepackages()[0])") && \
-    cp -r /usr/local/lib/python3.12/dist-packages/* "$SITEPKG/" && \
+#    cp -r /usr/local/lib/python3.12/dist-packages/* "$SITEPKG/" && \
     rm /home/web/SDDSPython3-5.2.1-1.ubuntu.22.04.x86_64.rpm && \
     alien -i /home/web/elegant-2025.2.0-1.ubuntu.22.04.mpich.x86_64.rpm && \
     rm /home/web/elegant-2025.2.0-1.ubuntu.22.04.mpich.x86_64.rpm
@@ -31,7 +31,7 @@ RUN mkdir -p /home/web/webapp/Output/CLARA && \
 
 WORKDIR /laura
 # Consolidate all git clones into single RUN block + remove .git to save space
-RUN git fetch -a && git checkout fix/screen-resolve && git pull 
+RUN git fetch -a && git checkout fix/screen-resolve && git pull
 
 WORKDIR /simba
 # Consolidate all git clones into single RUN block + remove .git to save space
