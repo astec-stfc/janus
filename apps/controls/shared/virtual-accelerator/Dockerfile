@@ -8,17 +8,12 @@ ARG FACILITY
 ENV FACILITY=$FACILITY
 
 # Consolidate all git clones into single RUN block + remove .git to save space
-RUN --mount=type=ssh bash -lc ' \
-mkdir -p /root/.ssh && \
-ssh-keyscan gitlab.stfc.ac.uk >> /root/.ssh/known_hosts && \
-git clone --branch main git@gitlab.stfc.ac.uk:ujo48515/sarabi.git && \
-'
-
+WORKDIR /
+RUN git clone https://github.com/astec-stfc/sarabi.git
 RUN pip install --no-cache-dir -r /sarabi/requirements.txt
+RUN mkdir -p /sarabi/yaml/nala
 
-WORKDIR /laura-lattices
-RUN git fetch -a && git checkout main && git pull
-
+RUN git clone https://github.com/astec-stfc/laura-lattices.git
 RUN cp -r "/laura-lattices/${FACILITY}/YAML" /sarabi/yaml/nala
 
 WORKDIR /sarabi

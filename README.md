@@ -1,5 +1,5 @@
 # JANUS - Joint Accelerator Network for Unified Simulation
-JANUS is a series of Docker containers that allow users to interact with simulations of accelerator components, interact with virtual IOCs for EPICS components or trigger simulations using EPICS PVs. 
+JANUS is a series of Docker containers that allow users to interact with simulations of accelerator components, interact with virtual IOCs for EPICS components, or trigger simulations using EPICS PVs. 
 
 *diagram here?*
 
@@ -7,26 +7,23 @@ JANUS is a series of Docker containers that allow users to interact with simulat
 
 ### Setup
 
-**INSTALL GIT-LFS TO USE RPMs**
+Install git-lfs to use RPMs
 
-Ubuntu / WSL
-------------
+#### Ubuntu / WSL
 
 ```
 apt install git-lfs
 git lfs install
 ```
 
-macOS
------
+#### macOS
 
 ```
 brew install git-lfs
 git lfs install
 ```
 
-Windows
--------
+#### Windows
 
 Install Git LFS from the official installer, then:
 `git lfs install`
@@ -35,13 +32,13 @@ Install Git LFS from the official installer, then:
 
 Clone this repo:
 ```bash
-git clone --recursive git@github.com:astec-stfc/janus.git
+git clone git@github.com:astec-stfc/janus.git
 ```
 Then navigate into the `janus` directory.
 
-To use your host ssh-keys to clone repositories into containers, run the following:
+If you want to use your host ssh-keys to clone private repositories into containers, run the following:
 ```bash
-source ./configure.sh <path-to-gitlab-ssh-key>
+source ./configure.sh <path-to-gitlab/hub-ssh-key>
 ```
 
 This will add your host key to an ssh-agent instance, ready to clone repositories for docker images.
@@ -51,13 +48,13 @@ This will add your host key to an ssh-agent instance, ready to clone repositorie
 
 
 ### Build
-Running the following command will start all of the services in the JANUS stack. Depending on whether you're working on CLARA or ISIS will determine which of the `docker-compose<facility>.yml` files you use.  
+
+#### Local Version
+
+Running the following command will start all the services in the JANUS stack, provided that there is a `docker-compose.<facility.lower()>.yml` file:  
 
 ```docker
-docker compose -f docker-compose.clara.yml up --build
-```
-```docker
-docker compose -f docker-compose.isis.yml up --build
+make stack-up FACILITY=<facility>
 ```
 
 To just start or run a subset you can either use the VSCode Containers extension to select the services you want to build or specify them by container name in the style below:
@@ -73,7 +70,7 @@ Another way to select which subset of containers you want to use is to modify th
 The bring the stack down, you can run:
 
 ```docker
-docker compose -f <facility-compose-file> down
+make stack-down FACILITY=<facility>
 ```
 
 If you want to remove the postgres database tables, then you need to run
@@ -83,7 +80,7 @@ docker compose -f <facility-compose-file> down --volumes
 ```
 
 ### Using Different Ports
-In some cases you might want to change the default port (e.g. to run multiple versions of the janus containers). In this case you will need to provide additional environment variables which you can do using the following command in Windows:
+In some cases you might want to change the default port (e.g. to run multiple versions of the JANUS containers). In this case you will need to provide additional environment variables which you can do using the following command in Windows:
 ```bash
 $env:PORT=6010; $env:PHYSICS_PORT=6011; docker compose -f docker-compose.isis.yml up
 ```
@@ -104,40 +101,24 @@ you may need to check that the line endings in the file are using LF not CRLF.
 ### Examples
 Once the stack is running, navigate into the sandbox container using the following command:
 ```
-docker exec -it janus-sandbox-1 /bin/bash
+docker exec -it janus-stack-sandbox-1 /bin/bash
 ```
-#### ISIS
-From inside the container run 
-```bash
-python -m p4p.client.cli get ISIS:SIM:SEED
-```
-and see it is returned as 0. This is currently the input to trigger the simulation.
 
-Check the output of the simulation by running:
-```bash
-python -m p4p.client.cli get VM-MEBT-ALPHA:X
-```
-and see an array is returned (this may unpopulated..)
+#### JFEL
 
-Trigger a simulation by running 
-```bash
-python -m p4p.client.cli put ISIS:SIM:SEED=1
-```
-or by doing a simple `pvput` to the same PV.
+JFEL (JANUS Free Electron Laser) is an example accelerator facility used for demonstrating the functionality of JANUS. 
+It is not based on a real facility. The JFEL lattice can be cloned from [here](https://gitlab.com/astec-stfc/laura-lattices).
+With only a LAURA-style lattice (including control system variables) provided, the entire JANUS stack can be built.
 
-In the services terminal, see that a change is noted and a simulation is beginning to track with random settings..
-After the simulation has finished, in the dev terminal, run 
-```bash
-python -m p4p.client.cli get VM-MEBT-ALPHA:X
-```
-and see it is populated or has different values to before. 
+The following example shows how to use the sandbox container to change the quadrupole strength and check the Twiss parameters.
 
-**NOTE** these PVs will be different if you're working with the CLARA implementation. 
-
-#### CLARA
 Inside the sandbox container:
-```bash
-caput VM-CLA-S02-MAG-QUAD-01:CalcK 0.2
-caget VM-CLA-S02-DIA-BPM-02:X  # BPM-01 is before the quad so not worth checking
-pvget SIM-CLA-S02-DIA-SCR-01:TWISS:Nemit_x
+```python
+from epics import caput
+from p4p.client.thread import Context
+ctx = Context("pva")
+caput("VM-JFEL-S02-MAG-QUAD-01:CalcK", 0.2)
+# wait for the simulation to finish; you can monitor via `pvget("SIMULATION:STATUS")`
+ctx.get("SIM-JFEL-S02-DIA-BPM-02:TWISS:BETA_X")  # BPM-01 is before the quad so not worth checking
+ctx.get("SIM-JFEL-S02-DIA-SCR-05:TWISS:Nemit_x")
 ```

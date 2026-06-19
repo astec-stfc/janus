@@ -148,6 +148,7 @@ def main():
     lattice = get_lattice()
     pvs = construct_pvs_from_lattice(lattice)
     conf = get_server_conf()
+    print(pvs)
     with Server(providers=[pvs], conf=conf) as server:
         while True:
             try:
