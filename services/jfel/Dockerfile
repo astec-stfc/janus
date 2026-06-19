@@ -10,7 +10,10 @@ RUN pip install -e .
 WORKDIR /laura-lattices
 RUN git fetch -a && git checkout main && git pull
 
-RUN pip install --upgrade flask black pytest
+WORKDIR /usr/src/app
+RUN python -m pip install --upgrade pip
+COPY ./requirements.txt /usr/src/app/requirements.txt
+RUN python -m pip install -r requirements.txt
 
 WORKDIR /
 RUN git clone --branch feature/aliases https://github.com/astec-stfc/acronicta-catap.git
