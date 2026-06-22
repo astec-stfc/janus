@@ -1,4 +1,3 @@
-import { useTheme } from "@/providers/ThemeProvider";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -8,13 +7,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useTheme } from "@/hooks/useTheme";
 import { LogOut, Moon, Settings, Sun, User } from "lucide-react";
 
 import gitlabSvg from "@/assets/gitlab.svg";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 
 const Navbar = () => {
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme: setTheme } = useTheme();
 
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");

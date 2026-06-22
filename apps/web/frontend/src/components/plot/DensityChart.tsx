@@ -1,17 +1,16 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import Plot from "react-plotly.js";
 import type { Config, Data, Layout } from "plotly.js";
 
-import { useTheme } from "@/providers/ThemeProvider";
+import { useTheme } from "@/hooks/useTheme";
+import { getCssVariable } from "@/lib/utils";
 import type { ChartProps } from "@/types";
 
-const getCssVar = (name: string): string =>
-  getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 const PLOT_TICK_FORMAT = ".3~g";
 
 const buildLayout = (xLabel: string, yLabel: string): Partial<Layout> => {
-  const axis = getCssVar("--chart-axis");
-  const gridMajor = getCssVar("--chart-grid-major");
+  const axis = getCssVariable("--chart-axis");
+  const gridMajor = getCssVariable("--chart-grid-major");
   return {
     autosize: true,
     margin: { t: 36, l: 56, r: 24, b: 52 },
@@ -63,12 +62,11 @@ const DensityChart = ({
     [xData, yData, binSize],
   );
 
-  const [layout, setLayout] = useState<Partial<Layout>>(() =>
-    buildLayout(xLabel, yLabel),
+  const layout = useMemo(
+    () => buildLayout(xLabel, yLabel),
+    // buildLayout reads CSS variables whose values are controlled by theme.
+    [theme, xLabel, yLabel],
   );
-  useEffect(() => {
-    setLayout(buildLayout(xLabel, yLabel));
-  }, [theme]);
 
   const config = useMemo<Partial<Config>>(
     () => ({
