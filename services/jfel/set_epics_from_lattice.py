@@ -136,5 +136,8 @@ class LatticeToEPICS:
                 if epics_photon_monitor is None:
                     print(f"Could not find {name} in elements.")
                 else:
-                    epics_photon_monitor.intensity = round_it(photon_monitor.intensity, SIGFIG)
+                    try:
+                        epics_photon_monitor.intensity = round_it(photon_monitor.intensity, SIGFIG)
+                    except Exception as e:
+                        print(e)
             print("Photon Monitors initialised")
