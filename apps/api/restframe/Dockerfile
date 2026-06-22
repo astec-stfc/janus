@@ -1,38 +1,29 @@
 FROM ghcr.io/adb-xkc85723/janus-base:latest
 
-COPY docker/SDDSPython3-5.2.1-1.ubuntu.22.04.x86_64.rpm /home/web/
-COPY docker/elegant-2025.2.0-1.ubuntu.22.04.mpich.x86_64.rpm /home/web/
+RUN apt-get update && apt-get install -y --no-install-recommends  \
+    gcc g++ make zlib1g-dev libzstd-dev liblzma-dev libhdf5-dev libaec-dev libgsl-dev libpng-dev libgd-dev liblerc-dev libdeflate-dev libtiff-dev qtbase5-dev libblas-dev liblapack-dev liblapacke-dev libfftw3-dev mpich libmpich-dev
 
-RUN alien -i /home/web/SDDSPython3-5.2.1-1.ubuntu.22.04.x86_64.rpm && \
-    SITEPKG=$($VIRTUAL_ENV/bin/python -c "import site; print(site.getsitepackages()[0])") && \
-    cp -r /usr/local/lib/python3.12/dist-packages/* "$SITEPKG/" && \
-    rm /home/web/SDDSPython3-5.2.1-1.ubuntu.22.04.x86_64.rpm && \
-    alien -i /home/web/elegant-2025.2.0-1.ubuntu.22.04.mpich.x86_64.rpm && \
-    rm /home/web/elegant-2025.2.0-1.ubuntu.22.04.mpich.x86_64.rpm
+WORKDIR "${VIRTUAL_ENV}/lib/python3.10/site-packages/SimCodes/"
+
+RUN git clone https://github.com/rtsoliday/SDDS.git &&\
+    cd SDDS &&\
+    make -j$(nproc)
+
+RUN git clone https://github.com/rtsoliday/elegant.git &&\
+    cd elegant &&\
+    git checkout elegant-2026.1.0 &&\
+    export MPI_PATH=/usr/lib64/openmpi && \
+    export USE_MPI=1 &&\
+    make -j1
+
+RUN cp "${VIRTUAL_ENV}/lib/python3.10/site-packages/SimCodes/elegant/bin/Linux-x86_64/elegant" /usr/bin/elegant
+
+ARG LAURA_LATTICE_REPO=git@gitlab.stfc.ac.uk:xkc85723/laura-lattices.git
 
 ENV RPN_DEFNS="${VIRTUAL_ENV}/lib/python3.10/site-packages/SimCodes/Elegant/defns.rpn"
 
 ADD API /home/web/webapp
 ADD docker/ASTRA /opt/ASTRA
-
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-      build-essential \
-      cmake \
-      git \
-      libopenmpi-dev \
-      libhdf5-openmpi-dev \
-      pkg-config \
-      libfftw3-dev
-
-WORKDIR /simcodes/SimCodes
-
-RUN git clone https://github.com/svenreiche/Genesis-1.3-Version4.git Genesis
-RUN mkdir Genesis/build && \
-    cd Genesis/build && \
-    cmake -DCMAKE_BUILD_TYPE=Release .. && \
-    make && \
-    cp genesis4 ..
 
 # Consolidate all file operations
 RUN mkdir -p /home/web/webapp/Output/CLARA && \
@@ -49,13 +40,27 @@ RUN mkdir -p /home/web/webapp/Output/CLARA && \
     chmod +x /opt/ASTRA/Astra
 
 WORKDIR /laura
+# Consolidate all git clones into single RUN block + remove .git to save space
 RUN git fetch -a && git checkout fix/split-genesis-line && git pull
 
 WORKDIR /simba
+# Consolidate all git clones into single RUN block + remove .git to save space
 RUN git fetch -a && git checkout feature/split-genesis-line && git pull
 
-WORKDIR /laura-lattices
-RUN git fetch -a && git checkout main && git pull
+
+WORKDIR /
+RUN --mount=type=ssh,required=false bash -lc ' \
+case "${LAURA_LATTICE_REPO}" in \
+    http://*|https://*) \
+        git clone --branch main "${LAURA_LATTICE_REPO}" /laura-lattices ;; \
+    git@*|ssh://*) \
+        mkdir -p /root/.ssh && \
+        ssh-keyscan gitlab.stfc.ac.uk >> /root/.ssh/known_hosts && \
+        git clone --branch main "${LAURA_LATTICE_REPO}" /laura-lattices ;; \
+    *) \
+        echo "Unsupported LAURA_LATTICE_REPO format: ${LAURA_LATTICE_REPO}" && exit 1 ;; \
+esac \
+'
 
 WORKDIR /home/web/webapp
 ENV PYTHONPATH=/home/web/webapp
