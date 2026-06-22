@@ -62,8 +62,8 @@ export interface BeamSummaryParameter {
 }
 
 export interface BeamSummaryData {
-  xParameter: BeamSummaryParameter;
-  yParameters: BeamSummaryParameter[];
+  xParameter: BeamSummaryParameter; // position along beamline
+  yParameters: BeamSummaryParameter[]; // array of twiss parameters
 }
 
 export interface BeamSummaryPlotResponse {
