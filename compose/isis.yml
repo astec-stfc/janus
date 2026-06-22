@@ -8,6 +8,7 @@ services:
         - default
       args:
         FACILITY: ISIS
+        LAURA_LATTICE_REPO: ${LAURA_LATTICE_REPO}
     tty: true
     ports:
       - ${PORT:-6090}:${PORT:-6090}/tcp

@@ -202,6 +202,9 @@ apps/api/restframe/CLARA/prefixes.yaml
 apps/api/restframe/LCLS2sc/**/
 apps/api/restframe/LCLS2sc/changes.yaml
 apps/api/restframe/LCLS2sc/prefixes.yaml
+apps/api/restframe/JFEL/**/
+apps/api/restframe/JFEL/changes.yaml
+apps/api/restframe/JFEL/prefixes.yaml
 apps/api/restframe/ISIS/**/
 apps/api/restframe/ISIS/changes.yaml
 apps/api/restframe/ISIS/prefixes.yaml
