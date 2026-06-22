@@ -83,6 +83,11 @@ sf_mapping = {
         "KnL": [None, None, None, None],
         "field_amplitude": None,
     },
+    "wiggler": {
+        "type": Magnet,
+        "subtype": MagnetEnum.wiggler,
+        "KnL": ["normalized_strength", None, None, None],
+    },
     "rfcavity": {
         "type": Cavity,
         "subtype": CavityEnum.linac,

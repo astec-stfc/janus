@@ -1,7 +1,7 @@
 from p4p.client.thread import Context
 import os
 import sys
-from janus_common.schemas.elements import Lattice, Magnet, Generator
+from janus_common.schemas.elements import Lattice, Magnet, Generator, PhotonMonitor
 from janus_common.schemas.elements import Cavity as CavityElement
 sys.path.append("/acronicta-catap/")
 import catapcore.config as cfg
@@ -10,6 +10,7 @@ cfg.set_config_format("LAURA", f"/laura-lattices/{os.environ['FACILITY']}")
 sys.path.append(f"/acronicta-catap/facility/{os.environ['FACILITY'].lower()}")
 
 from hardware.quadrupole import QuadrupoleFactory
+from hardware.photon_monitor import Photon_MonitorFactory
 from hardware.dipole import DipoleFactory
 from hardware.rfcavity import RFCavityFactory, RFCavity
 
@@ -38,6 +39,9 @@ class LatticeToEPICS:
             is_virtual=True,
         )
         self.cavity_factory = RFCavityFactory(
+            is_virtual=True,
+        )
+        self.photon_monitor_factory = Photon_MonitorFactory(
             is_virtual=True,
         )
         self.quads = {
@@ -124,3 +128,13 @@ class LatticeToEPICS:
             #     )
             #     epics_cavity.set_power = round_it(power / 1e6, SIGFIG)
         print("Cavities initialised")
+
+    def initialise_all_photon_monitors(self, lattice: Lattice) -> None:
+            elements: Dict[str, PhotonMonitor] = lattice.get_elements_dict(PhotonMonitor)
+            for name, photon_monitor in elements.items():
+                epics_photon_monitor = self.photon_monitor_factory.get_photon_monitor(name)
+                if epics_photon_monitor is None:
+                    print(f"Could not find {name} in elements.")
+                else:
+                    epics_photon_monitor.intensity = round_it(photon_monitor.intensity, SIGFIG)
+            print("Photon Monitors initialised")

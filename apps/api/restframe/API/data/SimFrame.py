@@ -53,7 +53,6 @@ from simba.Codes.Generators import frameworkGenerator
 from laura.models.element import Screen as laura_screen
 from laura.models.element import RFCavity as laura_cavity
 from laura.models.element import Aperture as laura_aperture
-from laura.models.element import Photon_Monitor as laura_photon_monitor
 
 import traceback
 

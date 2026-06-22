@@ -89,6 +89,8 @@ class Sender(API):
         print("initialised magnets")
         self.l2e.initialise_all_cavities(lattice=lattice)
         print("initialised phase for all cavities")
+        self.l2e.initialise_all_photon_monitors(lattice=lattice)
+        print("initialised all photon monitors")
         self.l2e.initialise_all_sim_codes(lattice=lattice)
         print("initialised simulation codes for all sections")
         self.l2e.initialise_generator(lattice=lattice)
