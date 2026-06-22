@@ -69,6 +69,8 @@ services:
       context: ../apps/api/restframe/
       ssh:
         - default
+      args:
+        LAURA_LATTICE_REPO: ${LAURA_LATTICE_REPO}
     ports:
       - ${RESTFRAME_PORT:-8000}:${RESTFRAME_PORT:-8000}
     expose:
