@@ -1,7 +1,7 @@
 FROM ghcr.io/adb-xkc85723/janus-base:latest
 
 RUN apt-get update && apt-get install -y --no-install-recommends  \
-    gcc g++ make zlib1g-dev libzstd-dev liblzma-dev libhdf5-dev libaec-dev libgsl-dev libpng-dev libgd-dev liblerc-dev libdeflate-dev libtiff-dev qtbase5-dev libblas-dev liblapack-dev liblapacke-dev libfftw3-dev mpich libmpich-dev
+    gcc g++ make zlib1g-dev libzstd-dev liblzma-dev libhdf5-dev libaec-dev libgsl-dev libpng-dev libgd-dev liblerc-dev libdeflate-dev libtiff-dev qtbase5-dev libblas-dev liblapack-dev liblapacke-dev libfftw3-dev mpich libmpich-dev build-essential cmake libopenmpi-dev libhdf5-openmpi-dev pkg-config
 
 WORKDIR "${VIRTUAL_ENV}/lib/python3.10/site-packages/SimCodes/"
 
@@ -15,6 +15,14 @@ RUN git clone https://github.com/rtsoliday/elegant.git &&\
     export MPI_PATH=/usr/lib64/openmpi && \
     export USE_MPI=1 &&\
     make -j1
+
+WORKDIR /simcodes/SimCodes
+
+RUN git clone https://github.com/svenreiche/Genesis-1.3-Version4.git &&\
+    mkdir Genesis &&\
+    cd Genesis &&\
+    cmake -DCMAKE_BUILD_TYPE=Release ../Genesis-1.3-Version4 &&\
+    make
 
 RUN cp "${VIRTUAL_ENV}/lib/python3.10/site-packages/SimCodes/elegant/bin/Linux-x86_64/elegant" /usr/bin/elegant
 
