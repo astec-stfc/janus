@@ -1,6 +1,7 @@
 
 
 FACILITY=clara
+LAURA_LATTICE_REPO ?= git@gitlab.stfc.ac.uk:xkc85723/laura-lattices.git
 MODE ?= stack
 
 IMAGE ?= ghcr.io/adb-xkc85723/janus-base:latest
@@ -77,11 +78,11 @@ prod-down:
 	$(MAKE) down MODE=prod
 
 up:
-	docker compose $(if $(CLIENT),-p $(CLIENT)) \
+	LAURA_LATTICE_REPO="$(LAURA_LATTICE_REPO)" docker compose $(if $(CLIENT),-p $(CLIENT)) \
 	$(if $(ENV_FILE),--env-file $(ENV_FILE)) \
 	-f $(COMPOSE_FILE) up --build
 
 down:
-	docker compose $(if $(CLIENT),-p $(CLIENT)) \
+	LAURA_LATTICE_REPO="$(LAURA_LATTICE_REPO)" docker compose $(if $(CLIENT),-p $(CLIENT)) \
 	$(if $(ENV_FILE),--env-file $(ENV_FILE)) \
 	-f $(COMPOSE_FILE) down --volumes $(REMOVE_ORPHANS)

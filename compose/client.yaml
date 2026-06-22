@@ -34,6 +34,8 @@ services:
       context: ../sandbox/
       ssh:
         - default
+      args:
+        LAURA_LATTICE_REPO: ${LAURA_LATTICE_REPO}
     tty: true
     environment:
       - PYTHONUNBUFFERED=1
@@ -41,7 +43,7 @@ services:
       - ../sandbox/workspace:/home/janus-developer/workspace
     stdin_open: true
     user: "janus-developer" 
-    command: -c "jupyter lab --ip=0.0.0.0 --port=8889 --no-browser --allow-root --NotebookApp.token='' --NotebookApp.password=''"
+#    command:      #-c "jupyter lab --ip=0.0.0.0 --port=8889 --no-browser --allow-root --NotebookApp.token='' --NotebookApp.password=''"
     ports:
       - "${SANDBOX_PORT:-8889}:8889"  # Expose Jupyter Lab inside the container
 
@@ -70,7 +72,6 @@ services:
   physics_iocs:
     build: 
       context: ../apps/controls/shared/simulation
-      dockerfile: Dockerfile
       ssh:
         - default
     extra_hosts:
@@ -95,4 +96,4 @@ services:
       - ${PHYSICS_PORT:-6091}:${PHYSICS_PORT:-6091}/udp
     volumes:
       - ../janus_common:/src/app/janus_common
-      - ../apps/controls/shared/output:/src/app/output
+      - ../apps/controls/shared/simulation/output:/src/app/output
