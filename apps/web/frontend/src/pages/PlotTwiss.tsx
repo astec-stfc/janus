@@ -12,6 +12,8 @@ import type {
 import type { FormEvent } from "react";
 import { useCallback, useEffect, useState } from "react";
 
+const TWISS_PLOT_LAYOUT = "CLARA";
+
 const hasBeamSummaryData = (
   beamSummaryData: BeamSummaryData | null | undefined,
 ): beamSummaryData is BeamSummaryData => {
@@ -40,7 +42,10 @@ const PlotTwiss = () => {
     try {
       const [nextLattice, nextElements] = await Promise.all([
         latticeService.getLatticeforTwissPlot(uuid),
-        restframeService.getPhysicalElements(PLOTTED_ELEMENT_TYPES),
+        restframeService.getPhysicalElements(
+          TWISS_PLOT_LAYOUT,
+          PLOTTED_ELEMENT_TYPES,
+        ),
       ]);
       setPlotLattice(nextLattice);
       setElements(nextElements);

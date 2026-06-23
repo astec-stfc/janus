@@ -147,12 +147,24 @@ def get_physical_element_types() -> dict:
 
 @app.get("/diagnostics/physical-elements")
 def get_physical_elements(
+    layout: str,
     include: Annotated[list[str] | None, Query()] = None,
 ) -> dict:
+    machine = master_framework.framework.machine  # LAURA model
+    available_layouts = sorted(machine.lattices)
+    if layout not in machine.lattices:
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "unknown_layout": layout,
+                "available_layouts": available_layouts,
+            },
+        )
+
     physical_elements = [
-        elem
-        for elem in master_framework.framework.machine.elements.values()
-        if isinstance(elem, PhysicalBaseElement)
+        machine.elements[name]
+        for name in machine.elements_between(path=layout)
+        if isinstance(machine.elements[name], PhysicalBaseElement)
     ]
     available_types = {elem.hardware_type for elem in physical_elements}
     requested_types = set(include) if include is not None else available_types
@@ -181,6 +193,7 @@ def get_physical_elements(
 
     return {
         "facility": master_framework.facility,
+        "layout": layout,
         "elements": sorted(
             elements,
             key=lambda elem: (elem["start"], elem["end"], elem["name"]),
