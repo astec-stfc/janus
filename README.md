@@ -52,6 +52,7 @@ JANUS provides three deployment modes, each with a corresponding `make` target.
 ### Stack mode — single-user local deployment
 
 Runs the entire JANUS stack (server and client services) on a single machine. This is the recommended starting point.
+The default lattice that is built is the JANUS Free-Electron Laser ([JFEL](https://github.com/astec-stfc/laura-lattices/tree/main/JFEL)), which was developed for testing JANUS
 
 ```bash
 make stack-up
@@ -83,11 +84,13 @@ make server-down
 make client-down
 ```
 
-Client instances communicate with the server over the network. Copy `env.client1` or `env.client2` to `.env.client` and adjust `SERVER_HOST`, port assignments, and `CLIENT_ID` before starting a client. The example files show how to run two clients on the same machine without port conflicts.
+Client instances communicate with the server over the network. 
+Copy `env.client1` or `env.client2` to `.env.client` and adjust `SERVER_HOST`, port assignments, and `CLIENT_ID` before starting a client. The example files show how to run two clients on the same machine without port conflicts.
 
 ### Production mode — real control system
 
 Connects to the live facility control system instead of a virtual IOC. Uses `.env.prod` for configuration.
+As in the server-client mode, `SERVER_HOST` must be set in `env.prod`.
 
 ```bash
 make prod-up
@@ -99,13 +102,14 @@ make prod-down
 
 ### Selecting a facility
 
-`JFEL` (JANUS Free Electron Laser) is the default facility. To use a different facility, pass the `FACILITY` variable:
+`JFEL` (JANUS Free Electron Laser) is the default facility. To use a different facility, pass the `FACILITY` variable, and set `LAURA_LATTICE_REPO` to point to a different repository:
 
 ```bash
-make stack-up FACILITY=<facility>
+make stack-up FACILITY=<facility> LAURA_LATTICE_REPO=</path/to/lattice/repo>
 ```
 
 This requires a corresponding `docker-compose.<facility>.yml` file in the repository root.
+If the lattice is public and open-source, provide the GitHub HTTPS link; if it is only available via Git SSH, provide the link as `git@</path/to/git/repo>` after running the `configure.sh` script. 
 
 ---
 
@@ -181,3 +185,20 @@ ctx.get("SIM-JFEL-S02-DIA-SCR-05:TWISS:Nemit_x")
 ```
 
 The JFEL lattice is cloned automatically from the repository specified by `LAURA_LATTICE_REPO` (default: [astec-stfc/laura-lattices](https://github.com/astec-stfc/laura-lattices.git)) at build time.
+
+## Running JANUS
+
+If you require any support for setting up or running JANUS, please raise an issue [here](https://github.com/astec-stfc/janus/issues).
+
+If you use JANUS, please cite the paper below.
+
+```bibtex
+@article{janus2024arxiv,
+    author={A. D. Brynes and M. King and K. R. L. Baker and R. Banerjee and R. Clarke and D. J. Dunning and J. K. Jones and M. Leputa and A. E. Pollard and M. Romanovschi and M. Shaw and N. Ziyan},
+    title={{Closing the Loop: Deploying Auto-Generating Digital Twins for Particle Accelerators}},
+    journal={arXiv},
+    url={https://arxiv.org/abs/2604.19101},
+    year={2026},
+    pages={2604.19101},
+}
+```
