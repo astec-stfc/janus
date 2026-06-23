@@ -5,6 +5,7 @@ import type { Shape } from "plotly.js";
 export const X_AXIS_SCHEMATIC = "x2";
 export const Y_AXIS_SCHEMATIC = "y2";
 export const SCHEMATIC_CENTER_Y = 0.5;
+const MINIMUM_ELEMENT_WIDTH_RATIO = 0.003;
 
 interface ShapeBounds {
   x0: number;
@@ -77,8 +78,23 @@ const ELEMENT_PLOT_CONFIG: Record<string, ElementPlotConfig> = {
 
 export const PLOTTED_ELEMENT_TYPES = Object.keys(ELEMENT_PLOT_CONFIG);
 
+const getDisplayBounds = (element: PhysicalElement, beamlineWidth: number) => {
+  const physicalWidth = element.end - element.start;
+  const displayWidth = Math.max(
+    physicalWidth,
+    beamlineWidth * MINIMUM_ELEMENT_WIDTH_RATIO,
+  );
+  const centre = (element.start + element.end) / 2;
+
+  return {
+    x0: centre - displayWidth / 2,
+    x1: centre + displayWidth / 2,
+  };
+};
+
 export const buildElementShapes = (
   elements: PhysicalElement[],
+  beamlineWidth: number,
 ): Array<Partial<Shape>> =>
   elements.map((element) => {
     const elementConfig = ELEMENT_PLOT_CONFIG[element.type];
@@ -89,9 +105,10 @@ export const buildElementShapes = (
     }
 
     const halfHeight = elementConfig.height / 2;
+    // elements with negligible physical width are stretched to 0.3% of beam length
+    const displayBounds = getDisplayBounds(element, beamlineWidth);
     const bounds: ShapeBounds = {
-      x0: element.start,
-      x1: element.end,
+      ...displayBounds,
       y0: SCHEMATIC_CENTER_Y - halfHeight,
       y1: SCHEMATIC_CENTER_Y + halfHeight,
     };

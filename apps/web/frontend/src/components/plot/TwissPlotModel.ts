@@ -166,5 +166,5 @@ export const buildPlotLayout = (
   font: { color: getCssVariable("--chart-axis"), size: 13 },
   ...buildTwissAxisLayout(),
   ...buildSchematicAxisLayout(xParameter, range),
-  shapes: buildElementShapes(elements),
+  shapes: buildElementShapes(elements, range.xEnd - range.xStart),
 });
