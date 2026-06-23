@@ -20,7 +20,9 @@ RUN pip install -e .
 
 RUN pip install pyepics p4p pydantic numpy ruamel.yaml scipy matplotlib jupyterlab
 
+RUN chmod -R a+rX /home/web/.venv
+
 USER janus-developer
 
 WORKDIR /home/janus-developer/workspace
-ENTRYPOINT ["/bin/bash"]
+CMD ["/bin/bash"]

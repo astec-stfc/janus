@@ -144,14 +144,10 @@ The `sandbox` service provides an interactive environment for working with **EPI
 ---
 
 ### Usage
-Start the sandbox:
-
-```bash
-docker compose -f docker-compose.jfel.yml up sandbox
-```
+The sandbox is included in `stack` and `client` deployments and starts automatically with the stack. See the root `README.md` for how to start the stack.
 
 Access Jupyter Lab: `http://localhost:8889`
-:
+
 - EPICS
   - `EPICS_CA_ADDR_LIST=ioc` – connects to IOC container
   - `EPICS_CA_SERVER_PORT=6090`

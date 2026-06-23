@@ -1,124 +1,183 @@
 # JANUS - Joint Accelerator Network for Unified Simulation
-JANUS is a series of Docker containers that allow users to interact with simulations of accelerator components, interact with virtual IOCs for EPICS components, or trigger simulations using EPICS PVs. 
 
-*diagram here?*
+JANUS is a suite of Docker containers that allow users to interact with simulations of accelerator components, interact with virtual IOCs for EPICS components, or trigger simulations using EPICS PVs.
 
-## Usage
+See [`docs/janus.md`](docs/janus.md) for a full system overview including architecture diagrams.
 
-### Setup
+## Setup
 
-Install git-lfs to use RPMs
+### Prerequisites
 
-#### Ubuntu / WSL
+Install `git-lfs` to pull RPMs tracked by Git LFS.
 
-```
+**Ubuntu / WSL**
+```bash
 apt install git-lfs
 git lfs install
 ```
 
-#### macOS
-
-```
+**macOS**
+```bash
 brew install git-lfs
 git lfs install
 ```
 
-#### Windows
+**Windows**
 
-Install Git LFS from the official installer, then:
-`git lfs install`
+Install Git LFS from the official installer, then run `git lfs install`.
 
-### Getting Started
+### Clone
 
-Clone this repo:
 ```bash
 git clone git@github.com:astec-stfc/janus.git
+cd janus
 ```
-Then navigate into the `janus` directory.
 
-If you want to use your host ssh-keys to clone private repositories into containers, run the following:
+### SSH Keys (optional)
+
+If any containers need to clone private repositories at build time, add your SSH key to a local agent first:
+
 ```bash
-source ./configure.sh <path-to-gitlab/hub-ssh-key>
+source ./configure.sh <path-to-ssh-key>
 ```
 
-This will add your host key to an ssh-agent instance, ready to clone repositories for docker images.
+Your SSH key is forwarded only during the build stage and is never baked into an image.
 
+---
 
-🟢 **Your SSH keys will not persist past the build stage of the docker images!** 🟢
+## Running JANUS
 
+JANUS provides three deployment modes, each with a corresponding `make` target.
 
-### Build
+### Stack mode — single-user local deployment
 
-#### Local Version
+Runs the entire JANUS stack (server and client services) on a single machine. This is the recommended starting point.
 
-Running the following command will start all the services in the JANUS stack, provided that there is a `docker-compose.<facility.lower()>.yml` file:  
+```bash
+make stack-up
+```
 
-```docker
+To stop and remove all containers and volumes:
+
+```bash
+make stack-down
+```
+
+### Server / Client mode — distributed deployment
+
+For multi-machine or multi-user setups, the server-side and client-side services are started separately.
+
+**On the server machine:**
+```bash
+make server-up
+```
+
+**On each client machine:**
+```bash
+make client-up
+```
+
+To stop each side:
+```bash
+make server-down
+make client-down
+```
+
+Client instances communicate with the server over the network. Copy `env.client1` or `env.client2` to `.env.client` and adjust `SERVER_HOST`, port assignments, and `CLIENT_ID` before starting a client. The example files show how to run two clients on the same machine without port conflicts.
+
+### Production mode — real control system
+
+Connects to the live facility control system instead of a virtual IOC. Uses `.env.prod` for configuration.
+
+```bash
+make prod-up
+```
+
+```bash
+make prod-down
+```
+
+### Selecting a facility
+
+`JFEL` (JANUS Free Electron Laser) is the default facility. To use a different facility, pass the `FACILITY` variable:
+
+```bash
 make stack-up FACILITY=<facility>
 ```
 
-To just start or run a subset you can either use the VSCode Containers extension to select the services you want to build or specify them by container name in the style below:
+This requires a corresponding `docker-compose.<facility>.yml` file in the repository root.
 
-```docker
-docker compose up -f <facility-compose-file> --build 'sandbox' 'lattice_db' 'lattice_api' 'restframe' 'lattice_to_restframe' 'restframe_to_lattice'
-```
+---
 
-Another way to select which subset of containers you want to use is to modify the `include` statements in the docker-compose files. For example if you don't want to include the `physics-iocs` and their related services, remove this entry from the include statements. 
+## Configuration
 
-### Stopping the Containers
+Each mode reads its defaults from a corresponding env file:
 
-The bring the stack down, you can run:
+| Mode       | Env file       |
+|------------|----------------|
+| `stack`    | `.env.stack`   |
+| `client`   | `.env.client`  |
+| `server`   | `.env.server`  |
+| `prod`     | `.env.prod`    |
 
-```docker
-make stack-down FACILITY=<facility>
-```
+Override any variable by editing the relevant env file before running `make`.
 
-If you want to remove the postgres database tables, then you need to run
+### Running multiple stacks on the same machine
 
-```docker
-docker compose -f <facility-compose-file> down --volumes
-```
+To run two stacks simultaneously without port conflicts, copy and modify the client env files provided:
 
-### Using Different Ports
-In some cases you might want to change the default port (e.g. to run multiple versions of the JANUS containers). In this case you will need to provide additional environment variables which you can do using the following command in Windows:
+- `env.client1` — default ports
+- `env.client2` — shifted ports to avoid clashes with client 1
+
+Copy the appropriate file to `.env.client` before running `make client-up`.
+
+---
+
+## Removing database volumes
+
+`make stack-down` (and the other `*-down` targets) removes containers and volumes, including the Postgres lattice database. If you want to stop containers but **keep** the database, run Docker Compose directly:
+
 ```bash
-$env:PORT=6010; $env:PHYSICS_PORT=6011; docker compose -f docker-compose.isis.yml up
+docker compose -f docker-compose.jfel.yml down
 ```
 
-To run **multiple stacks** using different ports, different 'project names' need to be provided:
+---
+
+## Common Issues
+
+**`entrypoint.sh: no such file or directory` on Windows**
+
+Line endings in `entrypoint.sh` may have been converted to CRLF. Convert them back to LF using your editor or `dos2unix`.
+
+---
+
+## Examples
+
+### Sandbox
+
+The `sandbox` service provides an interactive Python and EPICS environment for development and testing. It is included in `stack` and `client` deployments.
+
+Access Jupyter Lab at `http://localhost:8889` once the stack is running.
+
+To open a shell inside the sandbox container:
+
 ```bash
-$env:PORT=6010; $env:PHYSICS_PORT=6011; docker compose -f docker-compose.isis.yml -p stack1 up -d
-$env:PORT=6020; $env:PHYSICS_PORT=6021; docker compose -f docker-compose.isis.yml -p stack2 up -d
-```
-
-#### Common Issues
-If you get errors about the `entrypoint.sh` file not existing (which will most likely happen if you're using Windows):
-```
-restframe_to_lattice-1  | exec /usr/src/app/entrypoint.sh: no such file or directory
-```
-you may need to check that the line endings in the file are using LF not CRLF. 
-
-### Examples
-Once the stack is running, navigate into the sandbox container using the following command:
-```
 docker exec -it janus-stack-sandbox-1 /bin/bash
 ```
 
-#### JFEL
-
-JFEL (JANUS Free Electron Laser) is an example accelerator facility used for demonstrating the functionality of JANUS. 
-It is not based on a real facility. The JFEL lattice can be cloned from [here](https://gitlab.com/astec-stfc/laura-lattices).
-With only a LAURA-style lattice (including control system variables) provided, the entire JANUS stack can be built.
-
-The following example shows how to use the sandbox container to change the quadrupole strength and check the Twiss parameters.
+### JFEL — changing a quadrupole and reading Twiss parameters
 
 Inside the sandbox container:
+
 ```python
 from epics import caput
 from p4p.client.thread import Context
+
 ctx = Context("pva")
 caput("VM-JFEL-S02-MAG-QUAD-01:CalcK", 0.2)
-# wait for the simulation to finish; you can monitor via `pvget("SIMULATION:STATUS")`
-ctx.get("SIM-JFEL-S02-DIA-BPM-02:TWISS:BETA_X")  # BPM-01 is before the quad so not worth checking
+# wait for simulation to finish; monitor progress with pvget("SIMULATION:STATUS")
+ctx.get("SIM-JFEL-S02-DIA-BPM-02:TWISS:BETA_X")
 ctx.get("SIM-JFEL-S02-DIA-SCR-05:TWISS:Nemit_x")
 ```
+
+The JFEL lattice is cloned automatically from the repository specified by `LAURA_LATTICE_REPO` (default: [astec-stfc/laura-lattices](https://github.com/astec-stfc/laura-lattices.git)) at build time.
