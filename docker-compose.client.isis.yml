@@ -1,0 +1,45 @@
+include:
+  - compose/client.yaml
+  - compose/isis.yml
+
+services:
+  pvws:
+    extends:
+      file: ./compose/client.yaml
+      service: pvws
+    depends_on:
+      - ioc
+    environment:
+      - EPICS_PVA_NAME_SERVERS=physics_iocs:${PHYSICS_PORT:-6091} ioc:${PORT:-6090}
+
+  sandbox:
+    extends:
+      file: ./compose/client.yaml
+      service: sandbox
+    environment:
+      - EPICS_PVA_AUTO_ADDR_LIST=YES
+      - EPICS_PVA_NAME_SERVERS=physics_iocs:${PHYSICS_PORT:-6091} ioc:${PORT:-6090}
+      - EPICS_PVA_BROADCAST_PORT=${PVA_PORT:-6092}
+  # Managing connection between changes to Virtual PVs and the rest of the services
+  epics_to_lattice:
+    build: ./services/isis/
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - physics_iocs
+      - ioc
+    environment:
+      - EPICS_PVA_AUTO_ADDR_LIST=YES
+      - EPICS_PVA_NAME_SERVERS=physics_iocs:${PHYSICS_PORT:-6091} ioc:${PORT:-6090}
+      - EPICS_PVA_BROADCAST_PORT=${PORT:-6090}  # this is required to allow pvget to work in sandbox. It also doesn't have to be different to 
+      - PYTHONUNBUFFERED=1
+      - FACILITY=ISIS
+      - CLIENT_ID=${CLIENT_ID:-defaultclient}
+      - LATTICE_API_HOST=${LATTICE_API_HOST:-host.docker.internal}
+      - LATTICE_API_PORT=${LATTICE_API_PORT:-1337}
+      - BROKER_HOST=${BOOTSTRAP_SERVERS:-host.docker.internal}
+      - KAFKA_PORT=${KAFKA_PORT:-9092}
+      - RESTFRAME_HOST=${RESTFRAME_HOST:-host.docker.internal}
+      - RESTFRAME_PORT=${RESTFRAME_PORT:-8000}
+    volumes:
+      - ./janus_common:/usr/src/app/janus_common
