@@ -63,6 +63,7 @@ Base and derived classes describing accelerator components:
 - `Cavity` – RF structures  
 - `Laser` – Laser systems  
 - `Collimator` – Beam collimation  
+- `PhotonMonitor` - Photon intensity monitor for radiation sources
 
 Each element may include:
 
