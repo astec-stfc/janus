@@ -1,10 +1,11 @@
 import { getCssVariable } from "@/lib/utils";
 import type { PhysicalElement } from "@/types";
-import type { Shape } from "plotly.js";
+import type { Data, Shape } from "plotly.js";
 
 export const X_AXIS_SCHEMATIC = "x2";
 export const Y_AXIS_SCHEMATIC = "y2";
 export const SCHEMATIC_CENTER_Y = 0.5;
+export const TWISS_ELEMENT_HOVER_GROUP = "twiss-element-hover";
 const MINIMUM_ELEMENT_WIDTH_RATIO = 0.003;
 
 interface ShapeBounds {
@@ -92,26 +93,40 @@ const getDisplayBounds = (element: PhysicalElement, beamlineWidth: number) => {
   };
 };
 
+const getElementConfig = (element: PhysicalElement) => {
+  const elementConfig = ELEMENT_PLOT_CONFIG[element.type];
+  if (!elementConfig) {
+    throw new Error(
+      `No plot configuration found for element "${element.name}" of type "${element.type}".`,
+    );
+  }
+
+  return elementConfig;
+};
+
+const getElementBounds = (
+  element: PhysicalElement,
+  elementConfig: ElementPlotConfig,
+  beamlineWidth: number,
+): ShapeBounds => {
+  const halfHeight = elementConfig.height / 2;
+  // elements with negligible physical width are stretched to 0.3% of beam length
+  const displayBounds = getDisplayBounds(element, beamlineWidth);
+
+  return {
+    ...displayBounds,
+    y0: SCHEMATIC_CENTER_Y - halfHeight,
+    y1: SCHEMATIC_CENTER_Y + halfHeight,
+  };
+};
+
 export const buildElementShapes = (
   elements: PhysicalElement[],
   beamlineWidth: number,
 ): Array<Partial<Shape>> =>
   elements.map((element) => {
-    const elementConfig = ELEMENT_PLOT_CONFIG[element.type];
-    if (!elementConfig) {
-      throw new Error(
-        `No plot configuration found for element "${element.name}" of type "${element.type}".`,
-      );
-    }
-
-    const halfHeight = elementConfig.height / 2;
-    // elements with negligible physical width are stretched to 0.3% of beam length
-    const displayBounds = getDisplayBounds(element, beamlineWidth);
-    const bounds: ShapeBounds = {
-      ...displayBounds,
-      y0: SCHEMATIC_CENTER_Y - halfHeight,
-      y1: SCHEMATIC_CENTER_Y + halfHeight,
-    };
+    const elementConfig = getElementConfig(element);
+    const bounds = getElementBounds(element, elementConfig, beamlineWidth);
 
     return {
       ...elementConfig.buildShape(bounds),
@@ -123,4 +138,36 @@ export const buildElementShapes = (
         width: 1,
       },
     };
+  });
+
+export const buildElementHoverTraces = (
+  elements: PhysicalElement[],
+  beamlineWidth: number,
+): Data[] =>
+  elements.map((element) => {
+    const elementConfig = getElementConfig(element);
+    const { x0, x1, y0, y1 } = getElementBounds(
+      element,
+      elementConfig,
+      beamlineWidth,
+    );
+    const hoverTrace: Data = {
+      type: "scatter",
+      mode: "lines",
+      name: element.name,
+      x: [x0, x1, x1, x0, x0],
+      y: [y0, y0, y1, y1, y0],
+      fill: "toself", // make filled area hoverable
+      fillcolor: "rgba(0,0,0,0)",
+      line: { color: "rgba(0,0,0,0)", width: 0 },
+      hoveron: "fills",
+      hoverinfo: "none", // don't show Plotly's own tooltip - we use our own by reacting to `plotly_hover` event
+      legendgroup: TWISS_ELEMENT_HOVER_GROUP, // add identifier to hover-type traces which we can match on.
+      text: [element.name, element.type].join("\n"),
+      showlegend: false,
+      xaxis: X_AXIS_SCHEMATIC,
+      yaxis: Y_AXIS_SCHEMATIC,
+    };
+
+    return hoverTrace;
   });

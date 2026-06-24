@@ -1,4 +1,5 @@
 import {
+  buildElementHoverTraces,
   buildElementShapes,
   SCHEMATIC_CENTER_Y,
   X_AXIS_SCHEMATIC,
@@ -106,12 +107,17 @@ const buildBeamLine = (range: PlotRange): Data => ({
 
 export const buildPlotData = (
   beamSummaryData: BeamSummaryData,
+  elements: PhysicalElement[],
   range: PlotRange,
 ): Data[] => {
   const upperPlotData = buildTwissTraces(beamSummaryData);
   const lowerPlotData = buildBeamLine(range);
+  const hoverTraces = buildElementHoverTraces(
+    elements,
+    range.xEnd - range.xStart,
+  );
 
-  return [...upperPlotData, lowerPlotData];
+  return [...upperPlotData, lowerPlotData, ...hoverTraces];
 };
 
 const buildTwissAxisLayout = (): Pick<Layout, "xaxis" | "yaxis"> => ({
