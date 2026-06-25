@@ -19,7 +19,6 @@ mkdir -p /root/.ssh && \
 ssh-keyscan gitlab.stfc.ac.uk >> /root/.ssh/known_hosts && \
 git clone --branch main ${LAURA_LATTICE_REPO} /laura-lattices \
 '
-
 RUN mkdir -p /pycatap /laura /home/janus-developer/workspace/snapshots && \
     chown -R janus-developer:janus-developer /pycatap /laura /laura-lattices /home/janus-developer/workspace && \
     chmod -R a+rwX /home/janus-developer/workspace
@@ -27,8 +26,6 @@ RUN mkdir -p /pycatap /laura /home/janus-developer/workspace/snapshots && \
 RUN pip install pyepics p4p pydantic numpy ruamel.yaml scipy matplotlib jupyterlab
 
 USER janus-developer
+
 WORKDIR /home/janus-developer/workspace
-
-RUN pip install pyepics p4p pydantic numpy ruamel.yaml scipy matplotlib jupyterlab
-
 ENTRYPOINT ["/bin/bash"]
