@@ -13,8 +13,9 @@ WORKDIR /pycatap
 RUN pip install -e .
 
 WORKDIR /laura
-RUN git fetch -a && git checkout fix/screen-resolve && git pull
-RUN pip install -e .
+RUN git fetch -a && git checkout main && git pull
+RUN pip install -e . --no-deps
+RUN pip install -r requirements-lightweight.txt
 
 WORKDIR /
 RUN --mount=type=ssh,required=false bash -lc ' \

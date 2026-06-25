@@ -50,10 +50,12 @@ RUN mkdir -p /home/web/webapp/Output/CLARA && \
 WORKDIR /laura
 # Consolidate all git clones into single RUN block + remove .git to save space
 RUN git fetch -a && git checkout fix/split-genesis-line && git pull
+RUN pip install -r requirements.txt
 
 WORKDIR /simba
 # Consolidate all git clones into single RUN block + remove .git to save space
 RUN git fetch -a && git checkout feature/split-genesis-line && git pull
+RUN pip install -r requirements.txt
 
 
 WORKDIR /
