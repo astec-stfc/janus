@@ -2,7 +2,7 @@ FROM ghcr.io/adb-xkc85723/janus-base:latest
 
 ARG LAURA_LATTICE_REPO=git@gitlab.stfc.ac.uk:xkc85723/laura-lattices.git
 
-# use SSH agent forwarding (BuildKit) and ensure host key is known
+# use SSH agent forwarding (BuildKit) and ensure host key is known1
 WORKDIR /
 RUN --mount=type=ssh bash -lc ' \
 mkdir -p /root/.ssh && \
@@ -11,7 +11,6 @@ git clone --branch feature/nala git@gitlab.stfc.ac.uk:ujo48515/pycatap.git \
 '
 WORKDIR /pycatap
 RUN pip install -e .
-
 
 WORKDIR /laura
 # Consolidate all git clones into single RUN block + remove .git to save space
