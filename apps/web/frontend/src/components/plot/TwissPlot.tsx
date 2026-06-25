@@ -22,10 +22,7 @@ const TwissPlot = ({ beamSummaryData, elements }: TwissPlotProps) => {
     useTwissElementTooltip();
 
   const range = useMemo(() => getPlotRange(beamSummaryData), [beamSummaryData]);
-  const data = useMemo(
-    () => buildPlotData(beamSummaryData, elements, range),
-    [beamSummaryData, elements, range],
-  );
+  const data = buildPlotData(beamSummaryData, elements, range);
   const layout = useMemo(
     () => buildPlotLayout(beamSummaryData.xParameter, elements, range),
     [beamSummaryData.xParameter, elements, range, theme],

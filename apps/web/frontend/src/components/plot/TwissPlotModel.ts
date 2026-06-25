@@ -102,7 +102,7 @@ const buildBeamLine = (range: PlotRange): Data => ({
   yaxis: Y_AXIS_SCHEMATIC,
   hoverinfo: "skip",
   showlegend: false,
-  line: { color: "#000000", width: 2 },
+  line: { color: getCssVariable("--beamline-colour"), width: 2 },
 });
 
 export const buildPlotData = (
