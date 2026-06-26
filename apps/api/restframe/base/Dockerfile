@@ -28,11 +28,13 @@ RUN cp "${VIRTUAL_ENV}/lib/python3.10/site-packages/SimCodes/elegant/bin/Linux-x
 
 ENV RPN_DEFNS="${VIRTUAL_ENV}/lib/python3.10/site-packages/SimCodes/Elegant/defns.rpn"
 
+COPY ASTRA $VIRTUAL_ENV/lib/python3.10/site-packages/SimCodes/ASTRA/
+
 WORKDIR /laura
 # Consolidate all git clones into single RUN block + remove .git to save space
 RUN git fetch -a && git checkout fix/split-genesis-line && git pull
 RUN pip install --no-cache-dir -e . --no-deps
-RUN pip install --no-cache-dir -r requirements-lightweight.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 WORKDIR /
 RUN git clone --branch main https://github.com/astec-stfc/simba.git

@@ -3,9 +3,9 @@ FROM ghcr.io/adb-xkc85723/janus-base:latest
 RUN apt-get update && apt-get install -y black flake8
 
 WORKDIR /laura
-# Consolidate all git clones into single RUN block
 RUN git fetch -a && git checkout fix/split-genesis-line && git pull
-RUN pip install -e .
+RUN pip install -e . --no-deps
+RUN pip install -r requirements_lightweight.txt
 
 ARG LAURA_LATTICE_REPO=git@gitlab.stfc.ac.uk:xkc85723/laura-lattices.git
 
