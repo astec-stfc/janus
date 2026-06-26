@@ -1,8 +1,14 @@
 import axios from "axios";
-import type { Beam } from "../types";
+import type {
+  Beam,
+  BeamSummary,
+  BeamSummaryParameter,
+  BeamSummaryPlotResponse,
+  LatticeResponse,
+} from "../types";
 
-const baseUrl = "/v1/";
-const latticeBase = `${baseUrl}lattice`;
+const baseUrl = "/v1";
+const latticeBase = `${baseUrl}/lattice`;
 
 const getRunUuids = async (): Promise<string[]> => {
   const response = await axios.get<string[]>(`${latticeBase}/runs`);
@@ -23,4 +29,60 @@ const getScreenBeam = async (uuid: string, name: string): Promise<Beam> => {
   return response.data;
 };
 
-export default { getRunUuids, getScreenNames, getScreenBeam };
+const getLattice = async (uuid: string): Promise<LatticeResponse> => {
+  const response = await axios.get<LatticeResponse>(`${latticeBase}/`, {
+    params: { uuid },
+  });
+  return response.data;
+};
+
+const getLatticeforTwissPlot = async (
+  uuid: string,
+): Promise<BeamSummaryPlotResponse> => {
+  const lattice = await getLattice(uuid);
+  const beamSummary = lattice.beam_summary;
+
+  if (!beamSummary) {
+    return {
+      uuid: lattice.uuid,
+      facility: lattice.facility,
+      beamSummaryData: null,
+    };
+  }
+
+  const yParameters: BeamSummaryParameter[] = [];
+  for (const beamSummaryName of Object.keys(
+    beamSummary,
+  ) as (keyof BeamSummary)[]) {
+    const values = beamSummary[beamSummaryName];
+    if (beamSummaryName !== "position" && Array.isArray(values)) {
+      yParameters.push({
+        name: beamSummaryName,
+        label: beamSummaryName,
+        values,
+      });
+    }
+  }
+
+  return {
+    uuid: lattice.uuid,
+    facility: lattice.facility,
+    beamSummaryData: {
+      xParameter: {
+        name: "position",
+        label: "Position",
+        unit: "m",
+        values: beamSummary.position,
+      },
+      yParameters,
+    },
+  };
+};
+
+export default {
+  getRunUuids,
+  getScreenNames,
+  getScreenBeam,
+  getLattice,
+  getLatticeforTwissPlot,
+};

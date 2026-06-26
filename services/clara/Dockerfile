@@ -7,7 +7,8 @@ WORKDIR /
 RUN --mount=type=ssh bash -lc ' \
 mkdir -p /root/.ssh && \
 ssh-keyscan gitlab.stfc.ac.uk >> /root/.ssh/known_hosts && \
-git clone --branch feature/nala git@gitlab.stfc.ac.uk:ujo48515/pycatap.git \
+rm -rf /pycatap && \
+git clone --branch feature/nala git@gitlab.stfc.ac.uk:ujo48515/pycatap.git /pycatap \
 '
 WORKDIR /pycatap
 RUN pip install -e .

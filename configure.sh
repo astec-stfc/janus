@@ -20,18 +20,6 @@ if [ "${BASH_SOURCE[0]}" != "$0" ]; then
   sourced=1
 fi
 
-# Cleanup function to kill SSH agent on exit
-cleanup() {
-  if [ -n "$SSH_AGENT_PID" ]; then
-    kill "$SSH_AGENT_PID" 2>/dev/null || true
-  fi
-}
-
-# Set trap to run cleanup when exit signal is received (only if not sourced)
-if [ $sourced -eq 0 ]; then
-  trap cleanup EXIT
-fi
-
 # helper to print export lines (for eval "$(./configure.sh ...)")
 print_exports() {
   printf 'export SSH_AUTH_SOCK=%q;\n' "$SSH_AUTH_SOCK"

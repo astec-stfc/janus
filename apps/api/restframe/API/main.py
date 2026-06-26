@@ -1,11 +1,12 @@
 import os
 import json
-from typing import Dict, Union, Any
+from collections import Counter
+from typing import Annotated, Dict, Union, Any
 import base64
 import toml
 
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, HTTPException, Response
+from fastapi import FastAPI, HTTPException, Query, Response
 from fastapi.responses import HTMLResponse
 from fastapi.middleware.gzip import GZipMiddleware
 from kafka import KafkaProducer
@@ -16,6 +17,7 @@ from data.SimFrame import SimFrame_Interface
 from janus_common.schemas.elements import Lattice
 from janus_common.utils import constants
 from janus_common.utils.flow_log import flow_log
+from laura.models.element import PhysicalBaseElement
 
 import logging
 
@@ -125,6 +127,78 @@ def get_lattice() -> dict:
     }
     """
     return master_framework.get_lattice().model_dump()
+
+
+@app.get("/diagnostics/physical-element-types")
+def get_physical_element_types() -> dict:
+    elements = [
+        elem
+        for elem in master_framework.framework.machine.elements.values()
+        if isinstance(elem, PhysicalBaseElement)
+    ]
+    type_counts = Counter(elem.hardware_type for elem in elements)
+
+    return {
+        "facility": master_framework.facility,
+        "total": len(elements),
+        "type_counts": dict(sorted(type_counts.items())),
+    }
+
+
+@app.get("/diagnostics/physical-elements")
+def get_physical_elements(
+    layout: str,
+    include: Annotated[list[str] | None, Query()] = None,
+) -> dict:
+    machine = master_framework.framework.machine  # LAURA model
+    available_layouts = sorted(machine.lattices)
+    if layout not in machine.lattices:
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "unknown_layout": layout,
+                "available_layouts": available_layouts,
+            },
+        )
+
+    physical_elements = [
+        machine.elements[name]
+        for name in machine.elements_between(path=layout)
+        if isinstance(machine.elements[name], PhysicalBaseElement)
+    ]
+    available_types = {elem.hardware_type for elem in physical_elements}
+    requested_types = set(include) if include is not None else available_types
+    unknown_types = sorted(requested_types - available_types)
+    if unknown_types:
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "unknown_types": unknown_types,
+                "available_types": sorted(available_types),
+            },
+        )
+
+    elements = []
+    for elem in physical_elements:
+        elem_type = elem.hardware_type
+        if elem_type in requested_types:
+            elements.append(
+                {
+                    "name": elem.name,
+                    "type": elem_type,
+                    "start": elem.start.z,
+                    "end": elem.end.z,
+                }
+            )
+
+    return {
+        "facility": master_framework.facility,
+        "layout": layout,
+        "elements": sorted(
+            elements,
+            key=lambda elem: (elem["start"], elem["end"], elem["name"]),
+        ),
+    }
 
 
 @app.post("/lattice")

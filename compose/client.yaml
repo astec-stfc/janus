@@ -10,6 +10,7 @@ services:
       - "host.docker.internal:host-gateway"
     environment:
       - LATTICE_API_URL=http://${LATTICE_API_HOST:-host.docker.internal}:${LATTICE_API_PORT:-1337}
+      - RESTFRAME_URL=http://${RESTFRAME_HOST:-host.docker.internal}:${RESTFRAME_PORT:-8000}
       - VITE_PVWS_PORT=${PVWS_PORT:-8080}
     volumes:
       - ../apps/web/frontend:/app # allows for hot reload
@@ -98,4 +99,4 @@ services:
       - ${PHYSICS_PORT:-6091}:${PHYSICS_PORT:-6091}/udp
     volumes:
       - ../janus_common:/src/app/janus_common
-      - ../apps/controls/shared/simulation/output:/src/app/output
+      - ../apps/controls/shared/output:/src/app/output

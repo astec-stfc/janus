@@ -8,7 +8,7 @@ import { Route, Routes } from "react-router-dom";
 
 function App() {
   return (
-    <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
+    <ThemeProvider>
       <PVWSProvider>
         <SidebarProvider>
           <div className="flex h-screen w-full flex-col overflow-hidden">
