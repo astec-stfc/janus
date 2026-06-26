@@ -1,13 +1,11 @@
 import * as echarts from "echarts";
 import { useEffect, useRef } from "react";
-import { useTheme } from "@/providers/ThemeProvider";
+import { useTheme } from "@/hooks/useTheme";
+import { getCssVariable } from "@/lib/utils";
 import type { ChartProps } from "@/types";
 import type { CallbackDataParams } from "echarts/types/dist/shared";
 
 import { format } from "d3-format";
-
-const getCssVar = (name: string): string =>
-  getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 
 const fmt = format(".3~g");
 
@@ -32,9 +30,9 @@ const ScatterChart = ({ xData, yData, xLabel, yLabel }: ChartProps) => {
   useEffect(() => {
     if (!chartRef.current) return;
 
-    const axis = getCssVar("--chart-axis");
-    const gridMajor = getCssVar("--chart-grid-major");
-    const gridMinor = getCssVar("--chart-grid-minor");
+    const axis = getCssVariable("--chart-axis");
+    const gridMajor = getCssVariable("--chart-grid-major");
+    const gridMinor = getCssVariable("--chart-grid-minor");
     const data: [number, number][] = xData.map((x, i) => [x, yData[i]]);
 
     const axisStyle = {

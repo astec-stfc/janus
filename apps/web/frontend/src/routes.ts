@@ -6,6 +6,7 @@ import DownloadComponent from "@/pages/Download";
 import HomeComponent from "@/pages/Home";
 import PVManagerComponent from "@/pages/PVManager";
 import PlotComponent from "@/pages/Plot";
+import PlotTwissComponent from "@/pages/PlotTwiss";
 
 export interface AppRoute {
   path: string;
@@ -29,4 +30,10 @@ export const appRoutes: AppRoute[] = [
     component: PVManagerComponent,
   },
   { path: "/plot", label: "Plot", icon: ChartLine, component: PlotComponent },
+  {
+    path: "/plot-twiss",
+    label: "Plot Twiss",
+    icon: ChartLine,
+    component: PlotTwissComponent,
+  },
 ];

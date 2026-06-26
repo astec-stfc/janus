@@ -10,3 +10,9 @@ export function subtractMean(data: number[]): number[] {
   const mean = data.reduce((acc, v) => acc + v, 0) / data.length;
   return data.map((v) => v - mean);
 }
+
+export function getCssVariable(name: string): string {
+  return getComputedStyle(document.documentElement)
+    .getPropertyValue(name)
+    .trim();
+}
