@@ -1,7 +1,7 @@
 
 
-FACILITY=clara
-LAURA_LATTICE_REPO ?= git@gitlab.stfc.ac.uk:xkc85723/laura-lattices.git
+FACILITY=jfel
+LAURA_LATTICE_REPO ?= https://github.com/astec-stfc/laura-lattices.git
 MODE ?= stack
 
 IMAGE ?= ghcr.io/adb-xkc85723/janus-base:latest

@@ -1,9 +1,19 @@
+import os
 import logging
+import threading
 from time import sleep
 from typing import List, Any, Tuple
+from itertools import islice
 from p4p.client.thread import Context, TimeoutError
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from p4p.wrapper import Value
+
+
+def _chunked(iterable, size):
+    it = iter(iterable)
+    while chunk := list(islice(it, size)):
+        yield chunk
+
 
 def countdown(filename, seconds):
     while seconds > 0:
@@ -24,6 +34,10 @@ class EPICSHelper:
 
     def __init__(self, ctx: Context):
         self._ctx = ctx
+        self._chunk_size = int(os.environ.get("CHUNKS", 500))
+        self._executor = ThreadPoolExecutor(
+            max_workers=int(os.environ.get("MAX_WORKERS", 8))
+        )
 
     def epics_scalar(self, v):
         # Structured NTScalar
@@ -85,24 +99,24 @@ class EPICSHelper:
             print(f"Failed to put {values} to {pvnames}: {e}")
             return [e] * len(pvnames)
 
+    def _put_chunk(self, chunk: List[Tuple[str, Any]]) -> None:
+        pvs, vals = zip(*chunk)
+        try:
+            self._ctx.put(list(pvs), list(vals), timeout=0.5, wait=False)
+        except Exception as e:
+            print("Bulk put error:", e)
+
     def set_pv_updates(
         self,
         pv_updates: List[Tuple[str, Any]],
     ) -> None:
-        """Set multiple PVs in EPICS using threading for efficiency"""
+        """Bulk-write PVs in chunks, dispatching each chunk as a single p4p put."""
         if not pv_updates:
             return
-        with ThreadPoolExecutor(max_workers=3) as executor:
-            futures = [
-                executor.submit(self.put_pv, pv, val)
-                for pv, val in pv_updates
-                if pv and val
-            ]
-            for future in as_completed(futures):
-                try:
-                    future.result()
-                except Exception as e:
-                    print("Error in thread:", e)
+        filtered = [
+            (pv, val) for pv, val in pv_updates if pv is not None and val is not None
+        ]
+        list(self._executor.map(self._put_chunk, _chunked(filtered, self._chunk_size)))
 
     @property
     def is_epics_alive(self):
@@ -134,3 +148,35 @@ class EPICSHelper:
                 )
             else:
                 logging.info("Updated %s", set_pvs[i])
+
+
+class EPICSStreamer:
+    """
+    Accumulates PV updates and flushes them in chunks via EPICSHelper.
+    Thread-safe: push() can be called from multiple worker threads simultaneously.
+    """
+
+    def __init__(self, helper: EPICSHelper):
+        self._helper = helper
+        self._chunk_size = int(os.environ.get("CHUNKS", 500))
+        self._buffer: List[Tuple[str, Any]] = []
+        self._lock = threading.Lock()
+
+    def push(self, pv, val) -> None:
+        if pv is None or val is None:
+            return
+        chunk = None
+        with self._lock:
+            self._buffer.append((pv, val))
+            if len(self._buffer) >= self._chunk_size:
+                chunk = list(self._buffer)
+                self._buffer.clear()
+        if chunk:
+            self._helper.set_pv_updates(chunk)
+
+    def flush(self) -> None:
+        with self._lock:
+            chunk = list(self._buffer)
+            self._buffer.clear()
+        if chunk:
+            self._helper.set_pv_updates(chunk)

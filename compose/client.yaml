@@ -43,8 +43,10 @@ services:
     volumes:
       - ../sandbox/workspace:/home/janus-developer/workspace
     stdin_open: true
-    user: "janus-developer" 
-#    command:      #-c "jupyter lab --ip=0.0.0.0 --port=8889 --no-browser --allow-root --NotebookApp.token='' --NotebookApp.password=''"
+    user: "janus-developer"
+    command: >-
+      jupyter lab --ip=0.0.0.0 --port=8889 --no-browser
+      --ServerApp.token='' --ServerApp.password=''
     ports:
       - "${SANDBOX_PORT:-8889}:8889"  # Expose Jupyter Lab inside the container
 

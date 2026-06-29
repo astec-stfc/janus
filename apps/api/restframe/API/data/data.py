@@ -21,6 +21,7 @@ from janus_common.schemas.elements import (
     CavityEnum,
     Marker,
     Generator,
+    PhotonMonitor,
 )
 
 
@@ -52,6 +53,7 @@ def hash_function(data):
 
 sf_mapping = {
     "beam_position_monitor": {"type": BPM},
+    "photon_monitor": {"type": PhotonMonitor},
     "screen": {"type": Screen, "camera": Camera},
     "marker": {"type": Marker},
     "quadrupole": {
@@ -80,6 +82,11 @@ sf_mapping = {
         "subtype": MagnetEnum.solenoid,
         "KnL": [None, None, None, None],
         "field_amplitude": None,
+    },
+    "wiggler": {
+        "type": Magnet,
+        "subtype": MagnetEnum.wiggler,
+        "KnL": ["normalized_strength", None, None, None],
     },
     "rfcavity": {
         "type": Cavity,
@@ -596,6 +603,7 @@ def RESTData(latticeObjects_names):
                         "magnets",
                         "lasers",
                         "markers",
+                        "photonmonitors",
                     ]:
                         sections[lattice].update({typ: []})
                         if getattr(lat, typ):

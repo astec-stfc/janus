@@ -98,14 +98,11 @@ RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
 RUN --mount=type=ssh bash -lc ' \
 mkdir -p /root/.ssh && \
 ssh-keyscan gitlab.stfc.ac.uk >> /root/.ssh/known_hosts && \
-git clone --branch rm-gpt-opal-for-gh git@gitlab.stfc.ac.uk:xkc85723/simcodes.git && \
-git clone --branch feature/nala git@gitlab.stfc.ac.uk:ujo48515/pycatap.git \
+git clone --branch rm-gpt-opal-for-gh git@gitlab.stfc.ac.uk:xkc85723/simcodes.git \
 '
 
-RUN git clone --branch main https://github.com/astec-stfc/laura.git && \
-    git clone --branch main https://github.com/astec-stfc/simba.git
+RUN git clone --branch main https://github.com/astec-stfc/laura.git
 
 # Install all requirements in one block (with .git still present for version detection)
 RUN pip install --no-cache-dir -r /simcodes/requirements.txt && \
-    pip install --no-cache-dir -r /laura/requirements.txt && \
-    pip install --no-cache-dir -r /simba/requirements.txt
+    pip install --no-cache-dir -r /laura/requirements_lightweight.txt

@@ -3,7 +3,8 @@ import sys
 import logging
 import time
 from typing import List
-from janus_common.utils.helpers import EPICSHelper
+from concurrent.futures import ThreadPoolExecutor
+from janus_common.utils.helpers import EPICSHelper, EPICSStreamer
 from janus_common.pv.translate import (
     ElementToPV,
     GeneratorToPV,
@@ -33,31 +34,41 @@ class Sender(API):
         super().__init__(group_id=f"lattice-to-epics-{CLIENT_ID}")
         self._ctx = Context("pva")
         self.epics_helper = EPICSHelper(self._ctx)
+        self.epics_streamer = EPICSStreamer(self.epics_helper)
         self._current_uuid = None
         self._last_result_timestamp = None
         self._completed_request_ids = set()
         self.simulation_translator = SimulationToPV()
         self.lattice_translator = LatticeToPV()
         self.generator_translator = GeneratorToPV()
+        self._element_translators = {}
+        self._section_translators = {}
+        self._section_executor = ThreadPoolExecutor(max_workers=8)
 
     def set_results(self, uuid: str = None) -> bool:
         """
-        Initialise the results for the lattice UUID carried by the Kafka message
-        and set all sections.
+        Fetch the lattice for uuid, write all section PVs in parallel via
+        the streamer, then write beam-summary / generator / uuid PVs.
         """
         try:
             lattice = get_lattice(uuid=uuid)
             if lattice is None:
                 return False
+
+            stream = self.epics_streamer
+            stream.flush()  # clear any leftover state from a previous failed call
+            list(self._section_executor.map(
+                lambda s: self.get_section_results_fast(s, stream),
+                lattice.sections.values(),
+            ))
+            stream.flush()
+
             updates = []
-            [
-                updates.extend(self.get_section_results(section))
-                for section in lattice.sections.values()
-            ]
             updates.extend(self.get_lattice_beam_summary(lattice=lattice))
             updates.extend(self.get_lattice_generator(lattice=lattice))
             updates.extend(self.get_lattice_uuid(lattice=lattice))
             self.epics_helper.set_pv_updates(updates)
+
             self.set_tracking_success(lattice=lattice)
             self._current_uuid = uuid
             return True
@@ -66,31 +77,23 @@ class Sender(API):
             print(e)
             return False
 
-    def get_section_results(self, section: elements.Section):
-        """Get the results for a section and prepare PV updates"""
-        pv_updates = []
+    def get_section_results_fast(self, section: elements.Section, stream: EPICSStreamer) -> None:
+        """Push all PV updates for a section directly into the streamer."""
         for element in section.get_elements():
-            translator = ElementToPV(element)
-            pv_metadata = translator.element_pv_metadata
-            pv_updates += [
-                (
-                    (m.name, m.get_schema_value(element))
-                    if m.get_schema_value(element) is not None
-                    else (m.name, m.value_as_type(-999))
-                )
-                for m in pv_metadata
-            ]
-        translator = SectionToPV(section)
-        pv_metadata = translator.section_pv_metadata
-        pv_updates += [
-            (
-                (m.name, m.get_schema_value(section))
-                if m.get_schema_value(section) is not None
-                else (m.name, m.value_as_type(-999))
-            )
-            for m in pv_metadata
-        ]
-        return pv_updates
+            translator = self._element_translators.get(element.name)
+            if translator is None:
+                translator = ElementToPV(element)
+                self._element_translators[element.name] = translator
+            for m in translator.element_pv_metadata:
+                v = m.get_schema_value(element)
+                stream.push(m.name, v if v is not None else m.value_as_type(-999))
+        translator = self._section_translators.get(section.name)
+        if translator is None:
+            translator = SectionToPV(section)
+            self._section_translators[section.name] = translator
+        for m in translator.section_pv_metadata:
+            v = m.get_schema_value(section)
+            stream.push(m.name, v if v is not None else m.value_as_type(-999))
 
     def get_lattice_uuid(self, lattice: elements.Lattice) -> List:
         """Get the simulation code PV for a given section"""

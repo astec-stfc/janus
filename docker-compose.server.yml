@@ -7,11 +7,11 @@ services:
       file: ./compose/server.yaml
       service: restframe
     environment:
-      - FACILITY=${FACILITY:-CLARA}
+      - FACILITY=${FACILITY:-JFEL}
       - RESTFRAME_PORT=${RESTFRAME_PORT:-8000}
   lattice_api:
     extends:
       file: ./compose/server.yaml
       service: lattice_api
     environment:
-      - FACILITY=${FACILITY:-CLARA}
+      - FACILITY=${FACILITY:-JFEL}

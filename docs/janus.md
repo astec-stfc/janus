@@ -7,9 +7,7 @@ JANUS is a series of Docker containers that allow users to interact with simulat
 The JANUS components can be grouped into the following domains:
 
 - **Control System**
-  - [CLARA (EPICS, CA/PVA)](../apps/controls/clara/) - used for CLARA JANUS instance
-  - [ISIS (EPICS, PVA)](../apps/controls/isis) - used for ISIS JANUS instance
-  - [Shared (EPICS, PVA)](../apps/controls/shared/) - facility-agnostic control system for simulation control
+  - [Shared (EPICS, PVA)](../apps/controls/shared/) - facility-agnostic control system for simulation control. Facility-specific control system logic can be added to this directory.
 - **Lattice**
   - [API](../apps/api/lattice/)
   - [Database](../apps/api/lattice/)
@@ -18,8 +16,7 @@ The JANUS components can be grouped into the following domains:
   - [Engine (SIMBA)](https://github.com/astec-stfc/simba)
 - **Services**
   - `epics-to-lattice` - facility specific logic to convert control system values into `Lattice` format
-    - [CLARA](../services/clara/)
-    - [ISIS](../services/isis/)
+    - [JFEL](../services/jfel/)
   - `lattice-to-restframe` - request simulation with settings in `Lattice` format
   - `restframe-to-lattice` - submit new results in `Lattice` format to database
   - `lattice-to-epics` - update shared control system with simulation results (using `Lattice` format)
@@ -140,25 +137,21 @@ The `sandbox` service provides an interactive environment for working with **EPI
 
 ### Features
 - EPICS CA/PVA CLI tools (`ca/pvaget`, `ca/pvput`, `ca/pvmonitor`, etc.)
-- Python environment with project dependencies ([pyepics](https://pyepics.github.io/pyepics/overview.html), [p4p](https://epics-base.github.io/p4p/index.html)) and [pycatap - for CLARA](https://projects.astec.ac.uk/pycatap/)
+- Python environment with project dependencies ([pyepics](https://pyepics.github.io/pyepics/overview.html), [p4p](https://epics-base.github.io/p4p/index.html))
 - [Jupyter Lab](https://jupyter.org/) for interactive workflows
 - Non-root user (`janus-developer`)
 
 ---
 
 ### Usage
-Start the sandbox:
-
-```bash
-docker compose -f docker-compose.clara.yml up sandbox
-```
+The sandbox is included in `stack` and `client` deployments and starts automatically with the stack. See the root `README.md` for how to start the stack.
 
 Access Jupyter Lab: `http://localhost:8889`
-:
+
 - EPICS
-  - EPICS_CA_ADDR_LIST=ioc – connects to IOC container
-  - EPICS_CA_SERVER_PORT=6090
-  - EPICS_PVA_AUTO_ADDR_LIST=YES - connects to physics IOC container
+  - `EPICS_CA_ADDR_LIST=ioc` – connects to IOC container
+  - `EPICS_CA_SERVER_PORT=6090`
+  - `EPICS_PVA_AUTO_ADDR_LIST=YES` - connects to physics IOC container
 - Jupyter
   - Runs on port 8889
   - No authentication (dev use only)

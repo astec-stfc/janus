@@ -3,6 +3,8 @@ import requests
 from janus_common.utils import constants
 from janus_common.schemas.elements import Lattice
 
+_session = requests.Session()
+
 
 # -------------- SEED/POST requests --------------
 def add_lattice(lattice: Lattice, request_id: str = None):
@@ -103,7 +105,7 @@ def get_lattice(uuid: str = None) -> Lattice:
     )
     if uuid:
         url += f"?uuid={uuid}"
-    response = requests.get(url)
+    response = _session.get(url)
     if response.ok:
         return Lattice.model_validate(
             response.json(),

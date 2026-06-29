@@ -8,3 +8,4 @@ services:
       - ./API:/home/web/webapp
       - ./CLARA:/home/web/webapp/CLARA
       - ./ISIS:/home/web/webapp/ISIS
+      - ./JFEL:/home/web/webapp/JFEL

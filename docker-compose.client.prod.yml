@@ -4,7 +4,7 @@ include:
 services:
   epics_to_lattice:
     build:
-      context: ./services/clara/
+      context: ./services/jfel/
       ssh:
         - default
     depends_on:
@@ -20,7 +20,7 @@ services:
       - EPICS_PVA_NAME_SERVERS=physics_iocs:${PHYSICS_PORT:-6091}
       - EPICS_PVA_BROADCAST_PORT=${PORT:-6090}
       - PYTHONUNBUFFERED=1
-      - FACILITY=CLARA
+      - FACILITY=JFEL
       - CLIENT_ID=${CLIENT_ID:-defaultclient}
       - LATTICE_API_HOST=${SERVER_HOST:-host.docker.internal}
       - LATTICE_API_PORT=${SERVER_LATTICE_PORT:-1337}

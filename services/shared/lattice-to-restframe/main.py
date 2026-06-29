@@ -13,7 +13,7 @@ class Sender(API):
     def run_restframe(
         self, wait: bool = True, client_id: str = None, request_id: str = None
     ):
-        self.modify_object("generator", "number_of_particles", int(2 ** (3 * 4)))
+        # self.modify_object("generator", "number_of_particles", int(2 ** (3 * 4)))
         if wait:
             self.track_and_wait(client_id=client_id, request_id=request_id)
         else:
