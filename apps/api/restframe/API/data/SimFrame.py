@@ -1,4 +1,5 @@
 from copy import deepcopy
+from io import BytesIO
 from math import radians, degrees, sqrt
 import os
 import sys
@@ -6,6 +7,8 @@ import time
 import copy
 from typing import Union
 import concurrent.futures
+import base64
+from .screen_image import ScreenImage
 from .uuids import create_uuid
 from . import data
 from janus_common.schemas.elements import (
@@ -144,6 +147,7 @@ class SimFrame_Interface:
         latdict = {k: v for k, v in lat.sections.items()}
         latdict.update({"generator": lat.generator})
         self.latticeclass = data.LatticeClass.model_validate(latdict)
+        self.screenimage = ScreenImage(lattice_location=screen_directory)
         self.load_data_structures()
 
         self.changes = self.get_changes_dict()
@@ -277,6 +281,14 @@ class SimFrame_Interface:
                 elem.intensity = wv.energy
             except Exception as e:
                 print(f"Failed to update wavefront for {name}: {e}")
+
+    def update_beam_and_screen(self, name, elem):
+        self.update_beam(name, elem)
+        if isinstance(elem, Screen):
+            elem.camera.arraydata = self.get_screen_image(elem.name)
+        # if isinstance(elem, Marker):
+        #     elem.beam = self.get_beam(elem.name)
+        elem.updated = False
 
     def check_section_success(self, section: Section) -> bool:
         """
@@ -957,6 +969,18 @@ class SimFrame_Interface:
                 #     print(lattice, "uuid hasn't changed")
                 pass
 
+    def assign_screen_data(self, uuid: str, screen: Screen) -> BytesIO:
+        """assign screen array data to the ScreenData model"""
+        screen_basename = self.runs_directory + str(uuid) + "/" + screen.name
+        if not os.path.isfile(screen_basename + ".png"):
+            screenbeam = rbf.beam(filename=screen_basename + ".openpmd.hdf5")
+            scrimg, ardat = self.screenimage.get_screen_array(screen.name, screenbeam)
+            scrimg.save(screen_basename + ".png", format="png")
+        else:
+            ardat = self.screenimage.load_image(screen_basename + ".png")
+        # seek to the start of the bytes before returning
+        ardat.seek(0)
+        return ardat
 
     def start_tracking(
         self, endfile: Union[str, None] = "S07", rerun: str = False
@@ -1013,6 +1037,15 @@ class SimFrame_Interface:
             beam_obj.cpz = list(beam.cpz.val)
             return beam_obj
         return None
+
+    def get_screen_image(self, screen: str, force: bool = False) -> bytes:
+        """return screen image as bytes array"""
+        screen_dict = self.latticeclass.get_element(screen)
+        if isinstance(screen_dict, Screen) and (screen_dict.updated or force):
+            self.arraydata = self.assign_screen_data(self.track_uuid, screen_dict)
+            # self.latticeclass.set_screen_update_flag(screen, False)
+            return base64.b64encode(self.arraydata.read())
+        return "".encode()
 
     def get_element_twiss(self, elem: str | float | int) -> twiss | None:
         """return twiss parameters at element"""
