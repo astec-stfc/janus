@@ -1,5 +1,4 @@
 from copy import deepcopy
-from io import BytesIO
 from math import radians, degrees, sqrt
 import os
 import sys

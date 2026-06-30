@@ -25,7 +25,7 @@ RUN mkdir -p /laura /home/janus-developer/workspace/snapshots && \
     chown -R janus-developer:janus-developer /laura /laura-lattices /home/janus-developer/workspace && \
     chmod -R a+rwX /home/janus-developer/workspace
 
-RUN pip install pyepics p4p pydantic numpy ruamel.yaml scipy matplotlib jupyterlab
+RUN pip install pyepics p4p pydantic numpy ruamel.yaml scipy matplotlib jupyterlab pytest
 
 RUN chmod -R a+rX /home/web
 
