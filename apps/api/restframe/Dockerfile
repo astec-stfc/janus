@@ -38,5 +38,7 @@ ENV PYTHONPATH=/home/web/webapp
 ENV PYTHONUNBUFFERED=1
 
 ADD entrypoint.sh /home/web/webapp/
+ADD requirements.txt /home/web/webapp/
+RUN pip install -r requirements.txt
 
 ENTRYPOINT ["./entrypoint.sh"]

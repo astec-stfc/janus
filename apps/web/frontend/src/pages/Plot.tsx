@@ -25,7 +25,7 @@ import {
 import latticeService from "@/services/lattice";
 import type { Beam } from "@/types";
 import { subtractMean } from "@/lib/utils";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 const GRID_SIZE_MIN = 1;
 const GRID_SIZE_MAX = 4;
@@ -44,6 +44,30 @@ interface BinSizeSliderProps {
   onCommit: (value: number) => void;
   disabled: boolean;
 }
+
+interface BeamSelectionItem {
+  label: string;
+  value: string;
+  kind: "screen" | "marker";
+  name: string;
+}
+
+const getBeamSelectionValue = (kind: BeamSelectionItem["kind"], name: string) =>
+  `${kind}:${name}`;
+
+const parseBeamSelectionValue = (value: string): BeamSelectionItem | null => {
+  const [kind, ...rest] = value.split(":");
+  const name = rest.join(":");
+  if ((kind === "screen" || kind === "marker") && name) {
+    return {
+      kind,
+      name,
+      value,
+      label: `${kind}: ${name}`,
+    };
+  }
+  return null;
+};
 
 const BinSizeSlider = ({
   value,
@@ -81,10 +105,13 @@ const Plot = () => {
   const [uuids, setUuids] = useState<string[]>([]);
   const [selectedUuid, setSelectedUuid] = useState<string | null>(null);
   const [screenNames, setScreenNames] = useState<string[]>([]);
-  const [selectedScreenName, setSelectedScreenName] = useState<string | null>(
-    null,
-  );
+  const [markerNames, setMarkerNames] = useState<string[]>([]);
+  const [selectedBeam, setSelectedBeam] = useState<BeamSelectionItem | null>(null);
   const [beam, setBeam] = useState<Beam | null>(null);
+  const [beamLoadError, setBeamLoadError] = useState<string | null>(null);
+  const [namesLoading, setNamesLoading] = useState(false);
+  const [namesLoadError, setNamesLoadError] = useState<string | null>(null);
+  const [beamLoading, setBeamLoading] = useState(false);
   const [pairs, setPairs] = useState<[keyof Beam, keyof Beam][]>(() => [
     ...DEFAULT_PAIRS,
   ]);
@@ -93,6 +120,8 @@ const Plot = () => {
   const [plotType, setPlotType] = useState<PlotType>(DEFAULT_PLOT_TYPE);
   const [removeZOffset, setRemoveZOffset] = useState(true);
   const [binSize, setBinSize] = useState(DEFAULT_BIN_SIZE);
+  const namesRequestIdRef = useRef(0);
+  const beamRequestIdRef = useRef(0);
 
   const displayBeam = useMemo<Beam | null>(() => {
     if (!beam) return null;
@@ -100,25 +129,111 @@ const Plot = () => {
     return { ...beam, z: subtractMean(beam.z) };
   }, [beam, removeZOffset]);
 
+  const beamOptions = useMemo<BeamSelectionItem[]>(() => {
+    return [
+      ...screenNames.map((name) => ({
+        kind: "screen" as const,
+        name,
+        value: getBeamSelectionValue("screen", name),
+        label: `screen: ${name}`,
+      })),
+      ...markerNames.map((name) => ({
+        kind: "marker" as const,
+        name,
+        value: getBeamSelectionValue("marker", name),
+        label: `marker: ${name}`,
+      })),
+    ];
+  }, [markerNames, screenNames]);
+
   useEffect(() => {
     latticeService.getRunUuids().then(setUuids);
   }, []);
 
   useEffect(() => {
-    if (!selectedUuid) return;
-    setSelectedScreenName(null);
+    if (!selectedUuid) {
+      namesRequestIdRef.current += 1;
+      beamRequestIdRef.current += 1;
+      setSelectedBeam(null);
+      setScreenNames([]);
+      setMarkerNames([]);
+      setBeam(null);
+      setBeamLoadError(null);
+      setNamesLoadError(null);
+      setNamesLoading(false);
+      setBeamLoading(false);
+      return;
+    }
+
+    const requestId = ++namesRequestIdRef.current;
+    beamRequestIdRef.current += 1;
+    setSelectedBeam(null);
     setScreenNames([]);
+    setMarkerNames([]);
     setBeam(null);
-    latticeService.getScreenNames(selectedUuid).then(setScreenNames);
+    setBeamLoadError(null);
+    setNamesLoadError(null);
+    setNamesLoading(true);
+    setBeamLoading(false);
+
+    Promise.all([
+      latticeService.getScreenNames(selectedUuid),
+      latticeService.getMarkerNames(selectedUuid),
+    ])
+      .then(([nextScreens, nextMarkers]) => {
+        if (requestId !== namesRequestIdRef.current) return;
+        setScreenNames(nextScreens);
+        setMarkerNames(nextMarkers);
+      })
+      .catch(() => {
+        if (requestId !== namesRequestIdRef.current) return;
+        setNamesLoadError("Failed to load screens and markers.");
+      })
+      .finally(() => {
+        if (requestId !== namesRequestIdRef.current) return;
+        setNamesLoading(false);
+      });
   }, [selectedUuid]);
 
   useEffect(() => {
-    if (!selectedUuid || !selectedScreenName) return;
+    if (!selectedUuid || !selectedBeam) {
+      setBeamLoading(false);
+      return;
+    }
+
+    const requestId = ++beamRequestIdRef.current;
     setBeam(null);
-    latticeService
-      .getScreenBeam(selectedUuid, selectedScreenName)
-      .then(setBeam);
-  }, [selectedUuid, selectedScreenName]);
+    setBeamLoadError(null);
+    setBeamLoading(true);
+
+    const beamLoader =
+      selectedBeam.kind === "screen"
+        ? latticeService.getScreenBeam
+        : latticeService.getMarkerBeam;
+
+    beamLoader(selectedUuid, selectedBeam.name)
+      .then((nextBeam) => {
+        if (requestId !== beamRequestIdRef.current) return;
+        setBeam(nextBeam);
+      })
+      .catch((error: unknown) => {
+        if (requestId !== beamRequestIdRef.current) return;
+        const message =
+          typeof error === "object" &&
+          error !== null &&
+          "response" in error &&
+          typeof (error as { response?: { data?: { detail?: unknown } } }).response
+            ?.data?.detail === "string"
+            ? (error as { response: { data: { detail: string } } }).response.data
+                .detail
+            : "Failed to load beam data for the selected item.";
+        setBeamLoadError(message);
+          })
+          .finally(() => {
+          if (requestId !== beamRequestIdRef.current) return;
+          setBeamLoading(false);
+      });
+  }, [selectedBeam, selectedUuid]);
 
   const handleAddPair = useCallback(
     (pair: [keyof Beam, keyof Beam]) => {
@@ -151,6 +266,12 @@ const Plot = () => {
     setPlotType(value);
   };
 
+  const handleBeamSelection = (value: string) => {
+    const nextSelection = parseBeamSelectionValue(value);
+    if (!nextSelection) return;
+    setSelectedBeam(nextSelection);
+  };
+
   return (
     /* Page root: [left panel] [right panel] */
     <div className="flex h-full">
@@ -170,11 +291,17 @@ const Plot = () => {
         {/* Screen list box */}
         <div className="min-h-0 flex-1 rounded-lg border">
           <SelectionList
-            items={screenNames}
-            selectedItem={selectedScreenName}
-            onSelect={setSelectedScreenName}
-            placeholder="Search screens..."
-            emptyText={selectedUuid ? "No screens found." : "Select a run"}
+            items={beamOptions}
+            selectedItem={selectedBeam?.value ?? null}
+            onSelect={handleBeamSelection}
+            placeholder="Search screens and markers..."
+            emptyText={
+              selectedUuid
+                ? namesLoading
+                  ? "Loading screens and markers..."
+                  : namesLoadError ?? "No beams found."
+                : "Select a run"
+            }
           />
         </div>
 
@@ -279,7 +406,10 @@ const Plot = () => {
           beam={displayBeam}
           pairs={pairs}
           selectedUuid={selectedUuid}
-          selectedScreenName={selectedScreenName}
+          selectedBeamName={selectedBeam?.name ?? null}
+          namesLoading={namesLoading}
+          beamLoading={beamLoading}
+          beamLoadError={beamLoadError}
           gridColumns={gridColumns}
           gridRows={gridRows}
           plotType={plotType}

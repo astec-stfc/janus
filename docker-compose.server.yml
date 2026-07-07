@@ -3,6 +3,10 @@ include:
 
 services:
   restframe:
+    build:
+      args:
+        FACILITY: ${FACILITY:-JFEL}
+        LAURA_LATTICE_REPO: ${LAURA_LATTICE_REPO}
     extends:
       file: ./compose/server.yaml
       service: restframe

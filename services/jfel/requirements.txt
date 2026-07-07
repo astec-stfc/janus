@@ -8,3 +8,4 @@ kafka-python
 flask
 black
 pytest
+zstandard

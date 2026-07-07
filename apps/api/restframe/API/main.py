@@ -1,5 +1,6 @@
 import os
 import json
+import threading
 from collections import Counter
 from typing import Annotated, Dict, Union, Any
 import base64
@@ -18,7 +19,7 @@ from janus_common.schemas.elements import Lattice
 from janus_common.utils import constants
 from janus_common.utils.flow_log import flow_log
 from laura.models.element import PhysicalBaseElement
-
+from time import perf_counter
 import logging
 
 
@@ -99,6 +100,134 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 app.add_middleware(GZipMiddleware)
 
+_binary_cache_lock = threading.Lock()
+_binary_lattice_cache: dict[tuple[str, bool], bytes] = {}
+_binary_lattice_inflight: dict[tuple[str, bool], threading.Event] = {}
+
+
+def _invalidate_binary_cache() -> None:
+    """Drop cached binary payloads when the tracked lattice changes."""
+    with _binary_cache_lock:
+        _binary_lattice_cache.clear()
+        _binary_lattice_inflight.clear()
+
+
+def _set_binary_cache(uuid: str, compress: bool, payload: bytes) -> None:
+    with _binary_cache_lock:
+        _binary_lattice_cache[(uuid, compress)] = payload
+
+
+def _get_binary_cache(uuid: str, compress: bool) -> bytes | None:
+    with _binary_cache_lock:
+        return _binary_lattice_cache.get((uuid, compress))
+
+
+def _build_binary_payload(uuid: str, compress: bool) -> tuple[bytes, float, float]:
+    """Build binary payload bytes and return payload plus timing slices.
+
+    The expensive part of the RestFrame export path is reconstructing the schema
+    lattice from simulation output and serializing its large arrays into the
+    shared binary transport format.
+    """
+    t0 = perf_counter()
+    lattice = master_framework.get_lattice()
+    t1 = perf_counter()
+    binary_data = lattice.to_binary(compress=compress, compression_level=1)
+    t2 = perf_counter()
+    return binary_data, t1 - t0, t2 - t1
+
+
+def _get_or_build_binary_payload(
+    uuid: str,
+    compress: bool,
+) -> tuple[bytes, dict[str, float | bool]]:
+    """Single-flight binary payload fetch/build.
+
+    Only one thread builds a given (uuid, compress) payload. Concurrent callers
+    wait for the in-flight build and then reuse the cached result.
+    """
+    key = (uuid, compress)
+    wait_started = None
+
+    # with _binary_cache_lock:
+    #     cached = _binary_lattice_cache.get(key)
+    #     if cached is not None:
+    #         return cached, {
+    #             "cache_hit": True,
+    #             "waited": False,
+    #             "get_lattice": 0.0,
+    #             "encode": 0.0,
+    #         }
+
+    #     inflight = _binary_lattice_inflight.get(key)
+    #     if inflight is None:
+    #         inflight = threading.Event()
+    #         _binary_lattice_inflight[key] = inflight
+    #         is_builder = True
+    #     else:
+    #         is_builder = False
+    #         wait_started = perf_counter()
+
+    # if not is_builder:
+    #     inflight.wait()
+    #     waited_for = perf_counter() - wait_started if wait_started is not None else 0.0
+    #     with _binary_cache_lock:
+    #         cached = _binary_lattice_cache.get(key)
+    #     if cached is not None:
+    #         return cached, {
+    #             "cache_hit": True,
+    #             "waited": True,
+    #             "wait_time": waited_for,
+    #             "get_lattice": 0.0,
+    #             "encode": 0.0,
+    #         }
+
+    #     # Builder failed without populating the cache. Fall through and rebuild.
+    #     with _binary_cache_lock:
+    #         if key not in _binary_lattice_inflight:
+    #             _binary_lattice_inflight[key] = threading.Event()
+    #         inflight = _binary_lattice_inflight[key]
+
+    get_lattice_time = 0.0
+    encode_time = 0.0
+    # try:
+    binary_data, get_lattice_time, encode_time = _build_binary_payload(
+        uuid=uuid,
+        compress=compress,
+    )
+    # _set_binary_cache(uuid=uuid, compress=compress, payload=binary_data)
+    return binary_data, {
+        "cache_hit": False,
+        "waited": False,
+        "get_lattice": get_lattice_time,
+        "encode": encode_time,
+    }
+    # finally:
+    #     with _binary_cache_lock:
+    #         event = _binary_lattice_inflight.pop(key, None)
+    #     if event is not None:
+    #         event.set()
+
+
+def _warm_binary_cache_for_uuid(uuid: str) -> None:
+    """Pre-build the compressed binary payload for the just-finished track UUID."""
+    try:
+        t0 = perf_counter()
+        binary_data, stats = _get_or_build_binary_payload(uuid=uuid, compress=True)
+        t1 = perf_counter()
+        print(
+            "restframe binary cache warm timings ",
+            f"uuid={uuid} ",
+            f"cache_hit={stats.get('cache_hit')} ",
+            f"waited={stats.get('waited', False)} ",
+            f"get_lattice={stats.get('get_lattice', 0.0):.3f}s ",
+            f"encode={stats.get('encode', 0.0):.3f}s ",
+            f"total={t1-t0:.3f}s ",
+            f"payload_mb={len(binary_data) / (1024 * 1024):.2f}",
+        )
+    except Exception as exc:
+        print(f"Failed to warm binary cache for uuid={uuid}: {exc}")
+
 
 @app.get("/")
 def read_root() -> dict:
@@ -113,7 +242,7 @@ def create_simframe_instance(clean: bool = False) -> dict:
 
 
 @app.get("/lattice")
-def get_lattice() -> dict:
+def get_lattice(include_array_data: bool = False) -> dict:
     """Returns a dict of the lattice properties.
     {
         'name': str,
@@ -126,7 +255,62 @@ def get_lattice() -> dict:
         'beamp': int | float
     }
     """
-    return master_framework.get_lattice().model_dump()
+    lattice = master_framework.get_lattice()
+    if not include_array_data:
+        lattice = lattice.without_large_float_arrays()
+    return lattice.model_dump()
+
+
+@app.get("/lattice/binary", response_class=Response)
+def get_lattice_binary(compress: bool = True):
+    """Returns lattice data as compressed binary format for efficient array transport.
+    
+    Format:
+      [4 bytes: compression flag (0xFFFFFFFF = zstd compressed)]
+      [4 bytes: metadata JSON length]
+      [variable: metadata JSON]
+      [variable: binary payload (array data)]
+    
+    Content-Type: application/octet-stream
+
+    The first caller for a given (uuid, compress) pair pays the build cost. Any
+    concurrent callers wait on the same in-flight build instead of recomputing
+    the binary payload a second time.
+    """
+    t0 = perf_counter()
+    uuid = master_framework.get_track_uuid()
+    binary_data, stats = _get_or_build_binary_payload(uuid=uuid, compress=compress)
+    t2 = perf_counter()
+    payload_mb = len(binary_data) / (1024 * 1024)
+    print(
+        "restframe get_lattice_binary timings ",
+        f"compress={compress} ",
+        f"cache_hit={stats.get('cache_hit')} ",
+        f"waited={stats.get('waited', False)} ",
+        f"wait_time={stats.get('wait_time', 0.0):.3f}s ",
+        f"get_lattice={stats.get('get_lattice', 0.0):.3f}s ",
+        f"encode={stats.get('encode', 0.0):.3f}s ",
+        f"total={t2-t0:.3f}s ",
+        f"payload_mb={payload_mb:.2f}",
+    )
+    
+    return Response(
+        content=binary_data,
+        media_type="application/octet-stream",
+        headers={
+            "Content-Disposition": "attachment; filename=lattice.bin",
+        }
+    )
+
+
+@app.get("/lattice/binary/metadata")
+def get_lattice_binary_metadata():
+    """Fetch only metadata for the binary lattice response.
+    
+    Useful for checking array dimensions without downloading full payload.
+    """
+    lattice = master_framework.get_lattice()
+    return lattice.binary_metadata()
 
 
 @app.get("/diagnostics/physical-element-types")
@@ -203,20 +387,44 @@ def get_physical_elements(
 
 @app.post("/lattice")
 def set_lattice(lattice: Lattice) -> dict:
-    """Returns a dict of the lattice properties.
-    {
-        'name': str,
-        'parameter': str,
-        'units': str,
-        'value': int | float | str,
-        'type': 'quadrupole' | 'screen',
-        'facility': str,
-        'machine_area': str,
-        'beamp': int | float
-    }
+    """Update the in-memory RestFrame lattice from schema settings.
+
+    This is the settings submission path. Large tracked arrays are stripped on
+    the client side before this route is called; the array-heavy binary path is
+    only used after tracking completes.
     """
+    # _invalidate_binary_cache()
+    t0 = perf_counter()
     master_framework.set_lattice_elements(lattice)
-    return lattice.model_dump()
+    t1 = perf_counter()
+
+    response_dict = lattice.model_dump()
+    t2 = perf_counter()
+
+    section_count = len(response_dict.get("sections") or {})
+    marker_count = sum(
+        len((section or {}).get("markers") or [])
+        for section in (response_dict.get("sections") or {}).values()
+        if isinstance(section, dict)
+    )
+    screen_count = sum(
+        len((section or {}).get("screens") or [])
+        for section in (response_dict.get("sections") or {}).values()
+        if isinstance(section, dict)
+    )
+
+    print(
+        "restframe set_lattice timings "
+        f"uuid={response_dict.get('uuid')} "
+        f"sections={section_count} "
+        f"screens={screen_count} "
+        f"markers={marker_count} "
+        f"set_elements={t1 - t0:.3f}s "
+        f"dump={t2 - t1:.3f}s "
+        f"total={t2 - t0:.3f}s"
+    )
+
+    return response_dict
 
 
 @app.get("/uuid")
@@ -316,9 +524,10 @@ def start_tracking(
     client_id: str = None,
     request_id: str = None,
 ) -> dict:
-    """Starts tracking and returns tracking_status as a dict."""
+    """Start tracking and invalidate/warm binary export state for the new run."""
     global tracking_finished_state
     tracking_finished_state = False
+    # _invalidate_binary_cache()
     flow_log(
         "G04 tracking.publish",
         "S3/6",
@@ -356,6 +565,15 @@ def start_tracking(
             "client_id": client_id,
         },
     )
+
+    # Pre-compute compressed binary payload in the background so the first
+    # /lattice/binary call after tracking can reuse the in-flight build.
+    # threading.Thread(
+    #     target=_warm_binary_cache_for_uuid,
+    #     args=(uuid,),
+    #     daemon=True,
+    # ).start()
+
     return d
 
 
