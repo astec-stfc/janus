@@ -7,17 +7,70 @@ _session = requests.Session()
 
 
 # -------------- SEED/POST requests --------------
+from time import perf_counter
+
 def add_lattice(lattice: Lattice, request_id: str = None):
+    """Submit a lattice over the legacy JSON API path.
+
+    This remains useful for settings-oriented flows, but tracked result payloads
+    should prefer :func:`add_lattice_binary` to avoid re-serializing large arrays
+    into JSON.
+    """
     url = (
         f"http://{constants.HOST_LATTICE_API}:"
         + f"{constants.PORT_COMMS}"
         + "/v1/lattice/"
     )
-    params = (
-        {"request_id": request_id} if request_id else None
-    )  # when lattice is added via integrated model loop (client-triggered)
+    params = {"request_id": request_id} if request_id else None
+
+    t0 = perf_counter()
     response = requests.post(url, json=lattice.model_dump(), params=params)
+    t1 = perf_counter()
+
+    print(
+        "add_lattice timings ",
+        f"uuid={lattice.uuid} ",
+        f"serialize_post={t1-t0:.3f}s ",
+        f"status={response.status_code}",
+    )
     response.raise_for_status()
+
+
+def add_lattice_binary(
+    binary_payload: bytes,
+    client_id: str,
+    request_id: str = None,
+) -> dict:
+    """Submit a completed lattice as raw binary transport bytes.
+
+    This is the preferred post-tracking handoff because it forwards the shared
+    binary lattice representation directly to lattice-api for one decode there.
+    """
+    url = (
+        f"http://{constants.HOST_LATTICE_API}:"
+        + f"{constants.PORT_COMMS}"
+        + "/v1/lattice/binary"
+    )
+    params = {"client_id": client_id}
+    if request_id:
+        params["request_id"] = request_id
+
+    t0 = perf_counter()
+    response = requests.post(
+        url,
+        data=binary_payload,
+        params=params,
+        headers={"Content-Type": "application/octet-stream"},
+    )
+    t1 = perf_counter()
+
+    print(
+        "add_lattice_binary timings ",
+        f"post={t1-t0:.3f}s ",
+        f"status={response.status_code}",
+    )
+    response.raise_for_status()
+    return response.json()
 
 
 
@@ -97,7 +150,28 @@ def lattice_exists(
 # ----------------- GET requests -----------------
 
 
-def get_lattice(uuid: str = None) -> Lattice:
+def get_lattice(uuid: str = None, arrays_as_lists: bool = False) -> Lattice:
+    """Fetch a lattice, preferring the binary API for array-heavy payloads.
+
+    The default keeps arrays in the binary/numpy path longer so internal
+    service callers avoid the cost of materializing large Python lists.
+    """
+    binary_url = (
+        f"http://{constants.HOST_LATTICE_API}:"
+        + f"{constants.PORT_COMMS}"
+        + "/v1/lattice/binary"
+    )
+    if uuid:
+        binary_url += f"?uuid={uuid}"
+
+    response = requests.get(binary_url, timeout=90)
+    if response.ok:
+        return Lattice.from_binary(
+            response.content,
+            arrays_as_lists=arrays_as_lists,
+        )
+
+    # Fallback for older deployments without binary endpoint support.
     url = (
         f"http://{constants.HOST_LATTICE_API}:"
         + f"{constants.PORT_COMMS}"
@@ -107,10 +181,7 @@ def get_lattice(uuid: str = None) -> Lattice:
         url += f"?uuid={uuid}"
     response = _session.get(url)
     if response.ok:
-        return Lattice.model_validate(
-            response.json(),
-            from_attributes=True,
-        )
+        return Lattice.model_validate(response.json(), from_attributes=True)
     return None
 
 

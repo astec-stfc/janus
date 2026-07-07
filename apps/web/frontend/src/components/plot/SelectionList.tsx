@@ -8,8 +8,18 @@ import {
 } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
 
+interface SelectionItem {
+  label: string;
+  value: string;
+}
+
+type SelectionListItem = string | SelectionItem;
+
+const normalizeSelectionItem = (item: SelectionListItem): SelectionItem =>
+  typeof item === "string" ? { label: item, value: item } : item;
+
 interface SelectionListProps {
-  items: string[];
+  items: SelectionListItem[];
   selectedItem: string | null;
   onSelect: (value: string) => void;
   placeholder: string;
@@ -28,23 +38,26 @@ const SelectionList = ({
       <CommandInput className="font-mono text-s" placeholder={placeholder} />
       <CommandList className="im-scrollbar flex-1 max-h-none overflow-y-auto">
         <CommandEmpty>{emptyText}</CommandEmpty>
-        {items.map((item) => (
+        {items.map((item) => {
+          const normalizedItem = normalizeSelectionItem(item);
+          return (
           <CommandItem
-            key={item}
-            value={item}
+            key={normalizedItem.value}
+            value={normalizedItem.value}
             onSelect={() => {
-              onSelect(item);
-              navigator.clipboard.writeText(item);
+              onSelect(normalizedItem.value);
+              navigator.clipboard.writeText(normalizedItem.value);
             }}
             className={cn(
               "relative group",
-              selectedItem === item && "bg-accent text-accent-foreground",
+              selectedItem === normalizedItem.value && "bg-accent text-accent-foreground",
             )}
           >
-            <span className="truncate font-mono text-s">{item}</span>
+            <span className="truncate font-mono text-s">{normalizedItem.label}</span>
             <Clipboard className="absolute right-2 size-3 opacity-0 pointer-events-none transition-opacity group-hover:opacity-40" />
           </CommandItem>
-        ))}
+          );
+        })}
       </CommandList>
     </Command>
   );

@@ -40,8 +40,11 @@ services:
     tty: true
     environment:
       - PYTHONUNBUFFERED=1
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       - ../sandbox/workspace:/home/janus-developer/workspace
+      - ../janus_common:/home/janus-developer/workspace/janus_common
     stdin_open: true
     user: "janus-developer"
     command: >-

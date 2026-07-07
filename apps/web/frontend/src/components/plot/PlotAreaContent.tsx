@@ -66,7 +66,10 @@ const PlotAreaContent = ({
   beam,
   pairs,
   selectedUuid,
-  selectedScreenName,
+  selectedBeamName,
+  namesLoading,
+  beamLoading,
+  beamLoadError,
   gridColumns,
   gridRows,
   plotType,
@@ -75,7 +78,10 @@ const PlotAreaContent = ({
   beam: Beam | null;
   pairs: [keyof Beam, keyof Beam][];
   selectedUuid: string | null;
-  selectedScreenName: string | null;
+  selectedBeamName: string | null;
+  namesLoading: boolean;
+  beamLoading: boolean;
+  beamLoadError: string | null;
   gridColumns: number;
   gridRows: number;
   plotType: PlotType;
@@ -95,8 +101,16 @@ const PlotAreaContent = ({
       />
     );
   }
-  if (selectedScreenName) return <CenteredMessage text="Loading beam data…" />;
-  if (selectedUuid) return <CenteredMessage text="Select a screen." />;
+  if (selectedUuid && namesLoading) {
+    return <CenteredMessage text="Loading screens and markers..." />;
+  }
+  if (selectedBeamName && beamLoading) {
+    return <CenteredMessage text="Loading beam data..." />;
+  }
+  if (beamLoadError) return <CenteredMessage text={beamLoadError} />;
+  if (selectedBeamName)
+    return <CenteredMessage text="No beam data available for the selected item." />;
+  if (selectedUuid) return <CenteredMessage text="Select a screen or marker." />;
   return (
     <CenteredMessage text="Select a run from the left to view phase space plots." />
   );

@@ -190,7 +190,8 @@ class SimFrame_Interface:
     def update_beam(self, name, elem):
         """We are using twiss at the START of the element, not the end (as is normal in Elegant)"""
         uuid = self.track_uuid
-        self.basename = self.runs_directory + str(uuid) + "/" + name + ".openpmd.hdf5"
+        basename = self.runs_directory + str(uuid) + "/" + name + ".openpmd.hdf5"
+        elembeam = None
         twiss = self.get_element_twiss(name)
         if twiss is None:
             zpos = self.framework.getElement(name, "start").z
@@ -239,23 +240,30 @@ class SimFrame_Interface:
             elemcentroid.update({"gamma": twiss["cp"] / 1e6 / self.rest_mass_mev})
             # self.elemcentroid.update({'q': self.elembeam.total_charge.val})
             elem.centroid = Centroid(**elemcentroid)
-
-            if hasattr(elem, "beam") and os.path.isfile(self.basename):
-                elem.beam = self.get_beam(name, force=True)
-            if hasattr(elem, "camera") and isinstance(
-                self.framework[name], laura_screen
-            ):
-                elem.camera.sigma = elem.sigma
-                elem.camera.centroid = elem.centroid
-                elem.camera.analysis.sigma = elem.sigma
-                elem.camera.analysis.centroid = elem.centroid
+            fw_elem = self.framework[name] if name in self.framework else None
+            if isinstance(elem, (Screen, Marker, PhotonMonitor)):
                 try:
-                    elembeam = (
-                        rbf.beam(filename=self.basename)
-                        if os.path.isfile(self.basename)
-                        else None
+                    elembeam = rbf.beam(filename=basename)
+                except FileNotFoundError as e:
+                    fw_type = type(fw_elem).__name__ if fw_elem is not None else "None"
+                    print(
+                        f"Could not find file {basename} for {name} "
+                        f"(schema={type(elem).__name__}, framework={fw_type}): {e}"
                     )
-                    if elembeam:
+                if elembeam is not None:
+                    elem.beam = Beam(
+                        x=list(elembeam.x.val),
+                        y=list(elembeam.y.val),
+                        z=list(elembeam.z.val),
+                        cpx=list(elembeam.cpx.val),
+                        cpy=list(elembeam.cpy.val),
+                        cpz=list(elembeam.cpz.val),
+                    )
+                    if hasattr(elem, "camera"):
+                        elem.camera.sigma = elem.sigma
+                        elem.camera.centroid = elem.centroid
+                        elem.camera.analysis.sigma = elem.sigma
+                        elem.camera.analysis.centroid = elem.centroid
                         elemanalysis = {
                             "xx": float(elembeam._beam.covariance("x", "x")),
                             "xxp": float(elembeam._beam.covariance("x", "xp")),
@@ -266,8 +274,6 @@ class SimFrame_Interface:
                             "yxp": float(elembeam._beam.covariance("y", "xp")),
                         }
                         elem.camera.analysis.covariance = Covariance(**elemanalysis)
-                except FileNotFoundError as e:
-                    print(f"Could not find file {self.basename}: {e}")
 
     # def update_magnet(self, elem):
     #     elem.KnL = [getattr()]
@@ -284,8 +290,9 @@ class SimFrame_Interface:
 
     def update_beam_and_screen(self, name, elem):
         self.update_beam(name, elem)
-        if isinstance(elem, Screen):
-            elem.camera.arraydata = self.get_screen_image(elem.name)
+        # if isinstance(elem, Screen):
+        #     elem.camera.arraydata = self.get_screen_image(elem.name)
+        self.update_wavefront(name, elem)
         # if isinstance(elem, Marker):
         #     elem.beam = self.get_beam(elem.name)
         elem.updated = False
@@ -317,11 +324,16 @@ class SimFrame_Interface:
         # Filter sections to start from _current_start_section if it's set
         for section in sections:
             section_success = self.check_section_success(section)
-            for name, elem in section.get_elements_dict().items():
-                if section_success:
-                    self.update_beam(name, elem)
-                    self.update_wavefront(name, elem)
-                else:
+            section_elements = list(section.get_elements_dict().items())
+            if section_success:
+                futures = [
+                    self.beam_threadpool.submit(self.update_beam_and_screen, name, elem)
+                    for name, elem in section_elements
+                ]
+                for future in futures:
+                    future.result()
+            else:
+                for _, elem in section_elements:
                     self._set_null_results(elem)
             section.model = self.framework[section.name].code
             try:
@@ -428,8 +440,13 @@ class SimFrame_Interface:
         if lattice.generator.enable:
             for k, v in lattice.generator.model_dump().items():
                 if k not in ["uuid", "enable"]:
+                    if k == "number_of_particles":
+                        print("Set Number of particles:", v)
+                        print("Current generator number of particles:", self.framework.generator.number_of_particles)
                     if hasattr(self.framework["generator"], k):
                         setattr(self.framework["generator"], k, v)
+                        if k == "number_of_particles":
+                            print("Updated generator number of particles:", self.framework.generator.number_of_particles)
         for sec in sections:
             if sec.name != "generator":
                 for lat_elem in sec.get_elements():

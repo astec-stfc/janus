@@ -101,10 +101,42 @@ class EPICSHelper:
 
     def _put_chunk(self, chunk: List[Tuple[str, Any]]) -> None:
         pvs, vals = zip(*chunk)
+        normalized_vals = [self._normalize_put_value(v) for v in vals]
         try:
-            self._ctx.put(list(pvs), list(vals), timeout=0.5, wait=False)
+            self._ctx.put(list(pvs), normalized_vals, timeout=0.5, wait=False)
         except Exception as e:
-            print("Bulk put error:", e)
+            first_pv = pvs[0] if pvs else None
+            first_type = type(normalized_vals[0]).__name__ if normalized_vals else None
+            print(
+                f"Bulk put error: {e!r} | first_pv={first_pv} | first_type={first_type}"
+            )
+
+    def _normalize_put_value(self, value: Any) -> Any:
+        """Normalize values for p4p put payloads.
+
+        Converts numpy-like arrays/scalars to native Python types while
+        preserving ordinary Python scalar/list values unchanged.
+        """
+        if isinstance(value, tuple):
+            return list(value)
+
+        # ndarray-like objects
+        if hasattr(value, "tolist") and not isinstance(
+            value, (str, bytes, bytearray, list, dict)
+        ):
+            try:
+                return value.tolist()
+            except Exception:
+                pass
+
+        # numpy scalar-like objects
+        if hasattr(value, "item") and not isinstance(value, (str, bytes, bytearray)):
+            try:
+                return value.item()
+            except Exception:
+                pass
+
+        return value
 
     def set_pv_updates(
         self,

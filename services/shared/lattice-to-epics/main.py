@@ -51,9 +51,11 @@ class Sender(API):
         the streamer, then write beam-summary / generator / uuid PVs.
         """
         try:
-            lattice = get_lattice(uuid=uuid)
+            t0 = time.time()
+            lattice = get_lattice(uuid=uuid, arrays_as_lists=False)
             if lattice is None:
                 return False
+            t_fetch = time.time()
 
             stream = self.epics_streamer
             stream.flush()  # clear any leftover state from a previous failed call
@@ -62,15 +64,28 @@ class Sender(API):
                 lattice.sections.values(),
             ))
             stream.flush()
+            t_sections = time.time()
 
             updates = []
             updates.extend(self.get_lattice_beam_summary(lattice=lattice))
             updates.extend(self.get_lattice_generator(lattice=lattice))
             updates.extend(self.get_lattice_uuid(lattice=lattice))
             self.epics_helper.set_pv_updates(updates)
+            t_updates = time.time()
 
             self.set_tracking_success(lattice=lattice)
             self._current_uuid = uuid
+            t_done = time.time()
+            print(
+                "lattice-to-epics set_results timings "
+                f"client={CLIENT_ID} "
+                f"uuid={uuid} "
+                f"fetch_decode={t_fetch - t0:.3f}s "
+                f"sections_write={t_sections - t_fetch:.3f}s "
+                f"summary_write={t_updates - t_sections:.3f}s "
+                f"status_write={t_done - t_updates:.3f}s "
+                f"total={t_done - t0:.3f}s"
+            )
             return True
         except requests.exceptions.JSONDecodeError as e:
             print("Could not decode lattice from restframe")
@@ -104,18 +119,13 @@ class Sender(API):
     def set_tracking_success(self, lattice: elements.Lattice) -> None:
         """Get the tracking success PV for a given lattice"""
         success = lattice.success if lattice.success is not None else False
-        if success:
-            # Tracking completed successfully
-            self.epics_helper.put_pv(
-                pvname=self.simulation_translator.status_pv.name,
-                value=0,
-            )
-        else:
-            # Error state being set for unsuccessful tracking
-            self.epics_helper.put_pv(
-                pvname=self.simulation_translator.status_pv.name,
-                value=2,
-            )
+        status_value = 0 if success else 2
+
+        # Keep the completion signal synchronous and reliable.
+        self.epics_helper.put_pv(
+            pvname=self.simulation_translator.status_pv.name,
+            value=status_value,
+        )
 
     def get_lattice_generator(self, lattice: elements.Lattice) -> List:
         if lattice.generator is None:
@@ -204,10 +214,6 @@ class Sender(API):
     def _handle_lattice_added(self, event, message):
         """Handle lattice-api confirming that tracked results were stored."""
         lattice_uuid = event["uuid"]
-        lattice = get_lattice(uuid=lattice_uuid)
-        if lattice is None and not self.epics_helper.is_epics_alive:
-            print("waiting for lattice population. Try again later")
-            return
         self._handle_results(
             lattice_uuid,
             event.get("request_id"),
@@ -218,10 +224,6 @@ class Sender(API):
     def _handle_lattice_updated(self, event, message):
         """Handle stored-run reuse by setting the results for the lattice."""
         lattice_uuid = event["uuid"]
-        lattice = get_lattice(uuid=lattice_uuid)
-        if lattice is None and not self.epics_helper.is_epics_alive:
-            print("waiting for lattice population. Try again later")
-            return
         self._handle_results(
             lattice_uuid,
             event.get("request_id"),
@@ -232,10 +234,6 @@ class Sender(API):
     def _handle_new_results(self, event, message):
         """Handle post-write completion signal using the same result path."""
         lattice_uuid = event["uuid"]
-        lattice = get_lattice(uuid=lattice_uuid)
-        if lattice is None and not self.epics_helper.is_epics_alive:
-            print("waiting for lattice population. Try again later")
-            return
         self._handle_results(
             lattice_uuid,
             event.get("request_id"),
@@ -251,10 +249,9 @@ class Sender(API):
         # If one has already applied the results, ignore the other.
         if request_id and request_id in self._completed_request_ids:
             return
-        # Reused stored runs come from lattice_updated without a request_id.
-        # If `lattice_uuid == self._current_uuid`, then the client has already
-        # had these results applied to its PVs so no need to write again.
-        if request_id is None and lattice_uuid == self._current_uuid:
+        # If this exact lattice UUID is already applied on this client, there
+        # is no need to write all result PVs again.
+        if lattice_uuid == self._current_uuid:
             return
         if self.set_results(lattice_uuid):
             if request_id:

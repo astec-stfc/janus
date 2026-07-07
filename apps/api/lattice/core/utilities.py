@@ -1,4 +1,16 @@
+"""Utilities for converting between schema lattices and lattice-api ORM models.
+
+Large beam arrays used to live as many individual ORM payload rows. The current
+transport/storage path instead packs the array-bearing portion of a lattice into
+the shared binary lattice format and stores that as a single payload row. The
+relational ORM objects still carry the scalar/structural fields used elsewhere
+in the API, while the packed payload preserves the large float arrays for lossless
+round-tripping.
+"""
+
 import os
+import numpy as np
+import zstandard as zstd
 from janus_common.schemas import elements
 from core.models import (
     Lasers,
@@ -18,10 +30,150 @@ from core.models import (
     Screens,
     BeamSummary,
     Lattice,
+    LatticeArrayPayload,
     InitialConditions,
     Generator,
     PhotonMonitors,
 )
+
+BEAM_ARRAY_FIELDS = ("x", "y", "z", "cpx", "cpy", "cpz")
+BEAM_SUMMARY_ARRAY_FIELDS = (
+    "alpha_x",
+    "beta_x",
+    "alpha_y",
+    "beta_y",
+    "energy",
+    "charge",
+    "n_particles",
+    "momentum",
+    "emittance_x",
+    "emittance_y",
+    "normalised_emittance_x",
+    "normalised_emittance_y",
+    "sigma_x",
+    "sigma_y",
+    "centroids_x",
+    "centroids_y",
+    "position",
+)
+_ZSTD_COMPRESSOR = zstd.ZstdCompressor(level=1)
+_ZSTD_DECOMPRESSOR = zstd.ZstdDecompressor()
+_PACKED_LATTICE_PAYLOAD_PATH = "__lattice_binary__"
+_PACKED_LATTICE_PAYLOAD_DTYPE = "binary"
+
+
+def _encode_float_array(values: list[float] | None) -> tuple[bytes, int]:
+    arr = np.asarray(values if values is not None else [], dtype=np.float32)
+    return _ZSTD_COMPRESSOR.compress(arr.tobytes(order="C")), int(arr.size)
+
+
+def _decode_float_array(payload: LatticeArrayPayload) -> list[float]:
+    raw = payload.payload
+    if payload.compression == "zstd":
+        raw = _ZSTD_DECOMPRESSOR.decompress(raw)
+    arr = np.frombuffer(raw, dtype=np.float32, count=payload.count)
+    return arr.tolist()
+
+
+def _append_payload(
+    payload_rows: list[LatticeArrayPayload],
+    path: str,
+    values: list[float] | None,
+) -> None:
+    if values is None:
+        return
+    encoded, count = _encode_float_array(values)
+    payload_rows.append(
+        LatticeArrayPayload(
+            path=path,
+            dtype="float32",
+            count=count,
+            compression="zstd",
+            payload=encoded,
+        )
+    )
+
+
+def _make_packed_lattice_payload(lattice: elements.Lattice) -> LatticeArrayPayload:
+    """Pack the full lattice into a single binary payload row.
+
+    This replaces the per-array payload fan-out with one row so the database
+    only stores a single large payload for the tracked arrays. The payload uses
+    the same shared binary codec as the service-to-service transport path so the
+    DB representation and HTTP representation stay aligned.
+    """
+    packed_bytes = lattice.to_binary(compress=True, compression_level=1)
+    return LatticeArrayPayload(
+        path=_PACKED_LATTICE_PAYLOAD_PATH,
+        dtype=_PACKED_LATTICE_PAYLOAD_DTYPE,
+        count=len(packed_bytes),
+        compression="binary",
+        payload=packed_bytes,
+    )
+
+
+def _set_beam_placeholder(beam: Beam | None) -> None:
+    if beam is None:
+        return
+    for field_name in BEAM_ARRAY_FIELDS:
+        setattr(beam, field_name, [0.0])
+
+
+def _extract_beam_payloads(
+    payload_rows: list[LatticeArrayPayload],
+    path_prefix: str,
+    source_beam: elements.Beam | None,
+) -> None:
+    if source_beam is None:
+        return
+    for field_name in BEAM_ARRAY_FIELDS:
+        _append_payload(
+            payload_rows,
+            f"{path_prefix}.{field_name}",
+            getattr(source_beam, field_name, None),
+        )
+
+
+def _hydrate_lattice_from_payloads(
+    lattice_obj: elements.Lattice,
+    payload_rows: list[LatticeArrayPayload],
+) -> None:
+    sections = list(lattice_obj.sections.values())
+    for payload in payload_rows:
+        decoded = _decode_float_array(payload)
+        parts = payload.path.split(".")
+
+        if len(parts) == 2 and parts[0] == "beam_summary":
+            if lattice_obj.beam_summary is not None:
+                setattr(lattice_obj.beam_summary, parts[1], decoded)
+            continue
+
+        if (
+            len(parts) != 6
+            or parts[0] != "sections"
+            or parts[2] not in {"screens", "markers"}
+            or parts[4] != "beam"
+        ):
+            continue
+
+        try:
+            section_idx = int(parts[1])
+            element_idx = int(parts[3])
+        except (TypeError, ValueError):
+            continue
+
+        if section_idx < 0 or section_idx >= len(sections):
+            continue
+
+        section = sections[section_idx]
+        element_list = section.screens if parts[2] == "screens" else section.markers
+        if not element_list or element_idx < 0 or element_idx >= len(element_list):
+            continue
+
+        element = element_list[element_idx]
+        if element.beam is None:
+            element.beam = elements.Beam()
+        setattr(element.beam, parts[5], decoded)
 
 
 def make_db_initial_conditions(section: elements.Section | None) -> InitialConditions:
@@ -277,6 +429,7 @@ def make_db_cavity(cavity: elements.Cavity):
         updated=cavity.updated,
     )
 
+
 def make_db_magnet(magnet: elements.Magnet):
     twiss, sigma, centroid = fetch_generic_element_properties(magnet)
     return Magnets(
@@ -390,14 +543,20 @@ def make_db_beam_summary(beam_summary: elements.BeamSummary):
 
 
 def convert_lattice_to_db_schema(lattice: elements.Lattice):
+    """Convert a schema lattice into ORM rows.
+
+    Scalar element data remains mapped into the relational tables, but the large
+    screen/marker beam arrays and beam-summary arrays are intentionally removed
+    from those ORM objects and preserved in one packed binary payload row.
+    """
     if not lattice.facility:
         lattice.facility = os.getenv("FACILITY", "CLARA")
     db_sections = []
-
-    for section in lattice.get_sections():
-        bpm_info = cavity_info = marker_info = magnet_info = laser_info = photon_monitor_info = (
-            screen_info
-        ) = []
+    payload_rows: list[LatticeArrayPayload] = []
+    for section_idx, section in enumerate(lattice.get_sections()):
+        bpm_info = cavity_info = marker_info = magnet_info = laser_info = (
+            photon_monitor_info
+        ) = screen_info = []
         if section.bpms:
             bpm_info = [make_db_bpm(bpm) for bpm in section.bpms]
         if section.cavities:
@@ -405,11 +564,19 @@ def convert_lattice_to_db_schema(lattice: elements.Lattice):
         if section.magnets:
             magnet_info = [make_db_magnet(magnet) for magnet in section.magnets]
         if section.markers:
-            marker_info = [make_db_marker(marker) for marker in section.markers]
+            marker_info = []
+            for marker_idx, marker in enumerate(section.markers):
+                db_marker = make_db_marker(marker)
+                marker_info.append(db_marker)
+                _set_beam_placeholder(db_marker.beam)
         if section.lasers:
             laser_info = [make_db_laser(laser) for laser in section.lasers]
         if section.screens:
-            screen_info = [make_db_screen(screen) for screen in section.screens]
+            screen_info = []
+            for screen_idx, screen in enumerate(section.screens):
+                db_screen = make_db_screen(screen)
+                screen_info.append(db_screen)
+                _set_beam_placeholder(db_screen.beam)
         if section.photonmonitors:
             photon_monitor_info = [
                 make_db_photon_monitor(photon_monitor)
@@ -434,14 +601,23 @@ def convert_lattice_to_db_schema(lattice: elements.Lattice):
                 or make_db_initial_conditions(),
             )
         )
-    beam_summary = (
-        make_db_beam_summary(lattice.beam_summary) if lattice.beam_summary else None
-    )
+    beam_summary = None
+    if lattice.beam_summary:
+        beam_summary = make_db_beam_summary(lattice.beam_summary)
+        for field_name in BEAM_SUMMARY_ARRAY_FIELDS:
+            if hasattr(beam_summary, field_name):
+                setattr(beam_summary, field_name, None)
+
+    # Store one packed payload row instead of hundreds of per-array rows. This
+    # reduces insert overhead while keeping binary reconstruction lossless.
+    payload_rows = [_make_packed_lattice_payload(lattice)]
+
     db_lattice = Lattice(
         generator=make_db_generator(lattice.generator),
         facility=lattice.facility,
         uuid=lattice.uuid,
         sections=db_sections,
+        array_payloads=payload_rows,
         beam_summary=beam_summary,
         success=lattice.success or False,
         set_initial_conditions=lattice.set_initial_conditions or "",
@@ -452,8 +628,33 @@ def convert_lattice_to_db_schema(lattice: elements.Lattice):
 
 
 def convert_db_schema_to_lattice(lattice: Lattice):
+    """Convert ORM rows back into a schema lattice.
+
+    New rows prefer the packed binary payload path. The legacy per-array payload
+    hydration path is kept as a fallback so older stored lattices still decode.
+    """
     if not lattice.facility:
         lattice.facility = os.getenv("FACILITY", "CLARA")
+
+    packed_payload = next(
+        (
+            payload
+            for payload in (lattice.array_payloads or [])
+            if payload.path == _PACKED_LATTICE_PAYLOAD_PATH
+        ),
+        None,
+    )
+    if packed_payload is not None:
+        # Preferred path for newly stored lattices: reconstruct directly from
+        # the packed shared binary representation.
+        packed_lattice = elements.Lattice.from_binary(
+            packed_payload.payload,
+            arrays_as_lists=False,
+        )
+        if not packed_lattice.facility:
+            packed_lattice.facility = lattice.facility
+        return packed_lattice
+
     beam_summary_info = None
     sections = {
         section.name: elements.Section.model_validate(
@@ -468,7 +669,7 @@ def convert_db_schema_to_lattice(lattice: Lattice):
             from_attributes=True,
         )
     uuid_ = lattice.uuid
-    return elements.Lattice(
+    lattice_obj = elements.Lattice(
         generator=elements.Generator.model_validate(
             lattice.generator,
             from_attributes=True,
@@ -481,6 +682,8 @@ def convert_db_schema_to_lattice(lattice: Lattice):
         set_initial_conditions=lattice.set_initial_conditions or "",
         client_id=lattice.client_id,
     )
+    _hydrate_lattice_from_payloads(lattice_obj, lattice.array_payloads or [])
+    return lattice_obj
 
 
 def convert_db_sigma_to_sigma(sigma: Sigma):

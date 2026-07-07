@@ -8,7 +8,7 @@ services:
         - default
       args:
         FACILITY: CLARA
-        LAURA_LATTICE_REPO: ${LAURA_LATTICE_REPO}
+        LAURA_LATTICE_REPO: git@gitlab.stfc.ac.uk:xkc85723/laura-lattices.git
     tty: true
     ports:
       - ${PORT:-6090}:${PORT:-6090}/tcp

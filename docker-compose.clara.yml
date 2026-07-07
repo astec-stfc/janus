@@ -5,11 +5,16 @@ include:
 
 services:
   restframe:
+    build:
+      args:
+        FACILITY: CLARA
+        LAURA_LATTICE_REPO: git@gitlab.stfc.ac.uk:xkc85723/laura-lattices.git
     extends:
       file: compose/server.yaml
       service: restframe
     environment:
       - FACILITY=CLARA
+      - LAURA_LATTICE_REPO=git@gitlab.stfc.ac.uk:xkc85723/laura-lattices.git
     volumes:
       - ./apps/api/restframe/CLARA:/home/web/webapp/Output/CLARA
   sandbox:

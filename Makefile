@@ -1,6 +1,6 @@
 
 
-FACILITY=jfel
+FACILITY?=jfel
 LAURA_LATTICE_REPO ?= https://github.com/astec-stfc/laura-lattices.git
 MODE ?= stack
 

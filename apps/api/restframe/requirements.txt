@@ -6,4 +6,6 @@ pyepics
 munch 
 attrs
 toml
+numpy
+zstandard
 kafka-python

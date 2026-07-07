@@ -81,6 +81,7 @@ services:
       timeout: 5s
     environment:
       - FACILITY=${FACILITY:-CLARA}
+      - LAURA_LATTICE_REPO=${LAURA_LATTICE_REPO}
       - KAFKA_PORT=29092
       - BROKER_HOST=broker
       - log_level=${log_level:-error}

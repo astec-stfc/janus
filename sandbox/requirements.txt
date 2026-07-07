@@ -6,3 +6,5 @@ ruamel.yaml
 scipy
 matplotlib
 jupyterlab
+requests
+zstandard
