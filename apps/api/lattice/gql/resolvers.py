@@ -15,7 +15,11 @@ from core.models import (
 from sqlalchemy import and_, func
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from gql.schemas import (
+    BeamSummaryData,
+    BeamSummaryParameter,
+    BeamSummaryResult,
     CavityInput,
+    Beam,
     GeneratorInput,
     LatticeResult,
     FacilityInfo,
@@ -29,8 +33,121 @@ from gql.schemas import (
     MagnetRangeInput,
     CavityRangeInput,
 )
+from core.utilities import convert_db_schema_to_lattice
 
 FLOAT_TOLERANCE = 1e-4
+
+
+def get_beam_summary(uuid: str) -> Optional[BeamSummaryResult]:
+    """Get beam summary data for a Twiss plot for the given lattice UUID."""
+    db = SessionLocal()
+    try:
+        db_lattice = (
+            db.query(DBLattice).filter(DBLattice.uuid == uuid).one_or_none()
+        )
+        if not db_lattice:
+            return None
+
+        lattice = convert_db_schema_to_lattice(db_lattice)
+        beam_summary = lattice.beam_summary
+
+        if not beam_summary:
+            return BeamSummaryResult(
+                uuid=lattice.uuid,
+                facility=lattice.facility or "",
+                beam_summary_data=None,
+            )
+
+        y_parameters = [
+            BeamSummaryParameter(name=field, label=field, unit=None, values=values)
+            for field, values in beam_summary.model_dump().items()
+            if field != "position" and isinstance(values, list) and len(values) > 0
+        ]
+
+        return BeamSummaryResult(
+            uuid=lattice.uuid,
+            facility=lattice.facility or "",
+            beam_summary_data=BeamSummaryData(
+                x_parameter=BeamSummaryParameter(
+                    name="position",
+                    label="Position",
+                    unit="m",
+                    values=beam_summary.position or [],
+                ),
+                y_parameters=y_parameters,
+            ),
+        )
+    finally:
+        db.close()
+
+
+def get_run_uuids() -> List[str]:
+    """Get all run UUIDs for the facility configured in env."""
+    db = SessionLocal()
+    try:
+        return [
+            row[0]
+            for row in db.query(DBLattice.uuid)
+            .filter(DBLattice.facility == os.getenv("FACILITY", "CLARA"))
+            .all()
+        ]
+    finally:
+        db.close()
+
+
+def get_screen_names(uuid: str) -> List[str]:
+    """Get all screen names for a lattice UUID."""
+    db = SessionLocal()
+    try:
+        lattice = db.query(DBLattice).filter(DBLattice.uuid == uuid).one_or_none()
+        if not lattice:
+            raise ValueError(f"No lattice found with uuid: {uuid}")
+        return [
+            screen.name for section in lattice.sections for screen in section.screens
+        ]
+    finally:
+        db.close()
+
+
+def get_marker_names(uuid: str) -> List[str]:
+    """Get all marker names for a lattice UUID."""
+    db = SessionLocal()
+    try:
+        lattice = db.query(DBLattice).filter(DBLattice.uuid == uuid).one_or_none()
+        if not lattice:
+            raise ValueError(f"No lattice found with uuid: {uuid}")
+        return [
+            marker.name for section in lattice.sections for marker in section.markers
+        ]
+    finally:
+        db.close()
+
+
+def get_screen_beam(uuid: str, name: str) -> Beam:
+    """Get beam data for a screen in a lattice UUID."""
+    db = SessionLocal()
+    try:
+        lattice = db.query(DBLattice).filter(DBLattice.uuid == uuid).one_or_none()
+        if not lattice:
+            raise ValueError(f"No lattice found with uuid: {uuid}")
+        for section in lattice.sections:
+            for screen in section.screens:
+                if screen.name == name:
+                    if screen.beam is None:
+                        raise ValueError(
+                            f"No beam data for screen '{name}' in lattice uuid: {uuid}"
+                        )
+                    return Beam(
+                        x=screen.beam.x,
+                        y=screen.beam.y,
+                        z=screen.beam.z,
+                        cpx=screen.beam.cpx,
+                        cpy=screen.beam.cpy,
+                        cpz=screen.beam.cpz,
+                    )
+        raise ValueError(f"No screen '{name}' found for lattice uuid: {uuid}")
+    finally:
+        db.close()
 
 
 def columns_within_tolerance(
@@ -390,7 +507,9 @@ def find_lattices(
                     conditions.append(DBCavity.type == cavity_input.type)
                 if isinstance(cavity_input.field_amplitude, (int, float)):
                     conditions.append(
-                        func.abs(DBCavity.field_amplitude - cavity_input.field_amplitude)
+                        func.abs(
+                            DBCavity.field_amplitude - cavity_input.field_amplitude
+                        )
                         < FLOAT_TOLERANCE
                     )
                 if isinstance(cavity_input.phase, (int, float)):

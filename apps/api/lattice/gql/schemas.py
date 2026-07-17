@@ -290,7 +290,75 @@ class TwissResult:
 
 
 @strawberry.type
+class BeamSummaryParameter:
+    name: str
+    label: str
+    unit: Optional[str]
+    values: List[float]
+
+
+@strawberry.type
+class BeamSummaryData:
+    x_parameter: BeamSummaryParameter
+    y_parameters: List[BeamSummaryParameter]
+
+
+@strawberry.type
+class BeamSummaryResult:
+    uuid: str
+    facility: str
+    beam_summary_data: Optional[BeamSummaryData]
+
+
+@strawberry.type
+class Beam:
+    """Beam particle coordinates at a screen"""
+
+    x: List[float]
+    y: List[float]
+    z: List[float]
+    cpx: List[float]
+    cpy: List[float]
+    cpz: List[float]
+
+
+@strawberry.type
 class Query:
+    @strawberry.field
+    def get_beam_summary(self, uuid: str) -> Optional[BeamSummaryResult]:
+        """Get beam summary data for a twiss plot for a given lattice UUID"""
+        from gql import resolvers
+
+        return resolvers.get_beam_summary(uuid)
+
+    @strawberry.field
+    def get_run_uuids(self) -> List[str]:
+        """Get all run UUIDs for the configured facility"""
+        from gql import resolvers
+
+        return resolvers.get_run_uuids()
+
+    @strawberry.field
+    def get_screen_names(self, uuid: str) -> List[str]:
+        """Get all screen names for a lattice UUID"""
+        from gql import resolvers
+
+        return resolvers.get_screen_names(uuid)
+
+    @strawberry.field
+    def get_marker_names(self, uuid: str) -> List[str]:
+        """Get all marker names for a lattice UUID"""
+        from gql import resolvers
+
+        return resolvers.get_marker_names(uuid)
+
+    @strawberry.field
+    def get_screen_beam(self, uuid: str, name: str) -> Beam:
+        """Get beam data for a screen in a lattice UUID"""
+        from gql import resolvers
+
+        return resolvers.get_screen_beam(uuid, name)
+
     @strawberry.field
     def find_lattices(
         self,

@@ -8,24 +8,25 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 import time
 import os
+import socket
 import core.models as models
 from core.database import engine
 from v1.routers import lattice_v1
+from v1.routers import events as events_router
 from gql.router import graphql_router
 from janus_common.utils import constants
+from core.kafka_bridge import KafkaBridge
+import core.singletons as singletons
+from core.singletons import event_bus
 
 models.Base.metadata.create_all(bind=engine)
-
-# Global Kafka producer
-kafka_producer = None
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
-    global kafka_producer
     try:
-        kafka_producer = KafkaProducer(
+        singletons.kafka_producer = KafkaProducer(
             # use internal kafka port to speak to internal kafka container consumers: l2r, l2e
             bootstrap_servers=f"{constants.BOOTSTRAP_SERVERS}:{constants.KAFKA_PORT}",
             value_serializer=lambda v: json.dumps(v).encode("utf-8"),
@@ -34,12 +35,24 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         print(f"Failed to initialise Kafka producer: {e}")
 
+    kafka_bridge = KafkaBridge(
+        bus=event_bus,
+        topics=("lattice_added",),
+        bootstrap_servers=f"{constants.BOOTSTRAP_SERVERS}:{constants.KAFKA_PORT}",
+        # if multiple uvicorn workers in the future, each needs to get its own group_id
+        group_id=f"lattice-api-sse-{socket.gethostname()}-{os.getpid()}",
+    )
+    await kafka_bridge.start()
+
     yield
 
     # Shutdown
-    if kafka_producer:
+    await kafka_bridge.stop()
+    print("Kafka bridge stopped")
+
+    if singletons.kafka_producer:
         try:
-            kafka_producer.close()
+            singletons.kafka_producer.close()
             print("Kafka producer closed")
         except Exception as e:
             print(f"Error closing Kafka producer: {e}")
@@ -69,6 +82,7 @@ while True:
         time.sleep(2)
 
 app_v1.include_router(lattice_v1.router)
+app_v1.include_router(events_router.router)
 
 # Include GraphQL router with a prefix
 app.include_router(graphql_router, prefix="/graphql")

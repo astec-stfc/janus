@@ -6,3 +6,4 @@ numpy
 zstandard
 strawberry-graphql[fastapi]
 kafka-python
+aiokafka

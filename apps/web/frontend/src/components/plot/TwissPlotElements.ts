@@ -1,4 +1,8 @@
 import { getCssVariable } from "@/lib/utils";
+import {
+  isPlottedElementType,
+  type PlottedElementType,
+} from "@/lib/twissPlot";
 import type { PhysicalElement } from "@/types";
 import type { Data, Shape } from "plotly.js";
 
@@ -50,7 +54,7 @@ const buildTriangle: ShapeBuilder = ({ x0, x1, y0, y1 }) => ({
   ].join(" "),
 });
 
-const ELEMENT_PLOT_CONFIG: Record<string, ElementPlotConfig> = {
+const ELEMENT_PLOT_CONFIG: Record<PlottedElementType, ElementPlotConfig> = {
   Quadrupole: {
     buildShape: buildRectangle,
     fillColorVariable: "--quadrupole-fill",
@@ -77,8 +81,6 @@ const ELEMENT_PLOT_CONFIG: Record<string, ElementPlotConfig> = {
   },
 };
 
-export const PLOTTED_ELEMENT_TYPES = Object.keys(ELEMENT_PLOT_CONFIG);
-
 const getDisplayBounds = (element: PhysicalElement, beamlineWidth: number) => {
   const physicalWidth = element.end - element.start;
   const displayWidth = Math.max(
@@ -94,14 +96,13 @@ const getDisplayBounds = (element: PhysicalElement, beamlineWidth: number) => {
 };
 
 const getElementConfig = (element: PhysicalElement) => {
-  const elementConfig = ELEMENT_PLOT_CONFIG[element.type];
-  if (!elementConfig) {
+  if (!isPlottedElementType(element.type)) {
     throw new Error(
       `No plot configuration found for element "${element.name}" of type "${element.type}".`,
     );
   }
 
-  return elementConfig;
+  return ELEMENT_PLOT_CONFIG[element.type];
 };
 
 const getElementBounds = (
