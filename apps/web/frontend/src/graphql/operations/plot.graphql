@@ -1,0 +1,31 @@
+query GetRunUuids {
+  getRunUuids
+}
+
+query GetScreenNames($uuid: String!) {
+  getScreenNames(uuid: $uuid)
+}
+
+query GetMarkerNames($uuid: String!) {
+  getMarkerNames(uuid: $uuid)
+}
+
+query GetBeamSummary($uuid: String!) {
+  getBeamSummary(uuid: $uuid) {
+    uuid
+    facility
+    beamSummaryData {
+      xParameter {
+        name
+        label
+        unit
+        values
+      }
+      yParameters {
+        name
+        label
+        values
+      }
+    }
+  }
+}

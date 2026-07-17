@@ -7,6 +7,8 @@ import type {
   LatticeResponse,
 } from "../types";
 
+export type BeamKind = "screen" | "marker";
+
 interface LatticeBinaryMetadataResponse {
   lattice_template?: {
     sections?: Record<
@@ -30,12 +32,14 @@ const decodeBeamBinary = (buffer: ArrayBuffer): Beam => {
   }
 
   const magic = String.fromCharCode(
-    view.getUint8(0),
-    view.getUint8(1),
-    view.getUint8(2),
+    // converts numeric code -> character (str)
+    view.getUint8(0), // 1st byte ... -> "J"
+    view.getUint8(1), // 2nd byte ... -> "B"
+    view.getUint8(2), // ...
     view.getUint8(3),
   );
   if (magic !== "JBM1") {
+    // JANUS Beam Format
     throw new Error(`Unsupported beam binary format: ${magic}`);
   }
 
@@ -53,6 +57,7 @@ const decodeBeamBinary = (buffer: ArrayBuffer): Beam => {
     if (offset + 4 > buffer.byteLength) {
       throw new Error("Invalid beam binary payload: truncated field header");
     }
+    // for the given field, how many floats belong to this array: (beam.<field>)
     const count = view.getUint32(offset, true);
     offset += 4;
 
@@ -61,7 +66,7 @@ const decodeBeamBinary = (buffer: ArrayBuffer): Beam => {
       continue;
     }
 
-    const bytes = count * 4;
+    const bytes = count * 4; // each float is 4 bytes
     if (offset + bytes > buffer.byteLength) {
       throw new Error("Invalid beam binary payload: truncated field data");
     }
@@ -113,43 +118,30 @@ const getMarkerNames = async (uuid: string): Promise<string[]> => {
   return fallbackResponse.data;
 };
 
-const getScreenBeam = async (uuid: string, name: string): Promise<Beam> => {
+const getBeam = async (uuid: string, name: string, kind: BeamKind): Promise<Beam> => {
   try {
-    const response = await axios.get<ArrayBuffer>(`${latticeBase}/screen/beam/binary/`, {
-      params: { uuid, name },
-      responseType: "arraybuffer",
-    });
+    const response = await axios.get<ArrayBuffer>(
+      `${latticeBase}/${kind}/beam/binary/`,
+      {
+        params: { uuid, name },
+        responseType: "arraybuffer",
+      },
+    );
     return decodeBeamBinary(response.data);
-  } catch (_error) {
-    // Fallback keeps compatibility with older servers without the binary route.
+  } catch {
+    const response = await axios.get<Beam>(`${latticeBase}/${kind}/beam/`, {
+      params: { uuid, name },
+    });
+    return response.data;
   }
-
-  const response = await axios.get<Beam>(`${latticeBase}/screen/beam/`, {
-    params: { uuid, name },
-  });
-  return response.data;
 };
 
-const getMarkerBeam = async (uuid: string, name: string): Promise<Beam> => {
-  try {
-    const response = await axios.get<ArrayBuffer>(`${latticeBase}/marker/beam/binary/`, {
-      params: { uuid, name },
-      responseType: "arraybuffer",
-    });
-    return decodeBeamBinary(response.data);
-  } catch (_error) {
-    // Fallback keeps compatibility with older servers without the binary route.
-  }
-
-  const response = await axios.get<Beam>(`${latticeBase}/marker/beam/`, {
-    params: { uuid, name },
-  });
-  return response.data;
-};
-
-const getLattice = async (uuid: string): Promise<LatticeResponse> => {
+const getLattice = async (
+  uuid: string,
+  includeArrayData = false,
+): Promise<LatticeResponse> => {
   const response = await axios.get<LatticeResponse>(`${latticeBase}/`, {
-    params: { uuid },
+    params: { uuid, include_array_data: includeArrayData },
   });
   return response.data;
 };
@@ -157,7 +149,7 @@ const getLattice = async (uuid: string): Promise<LatticeResponse> => {
 const getLatticeforTwissPlot = async (
   uuid: string,
 ): Promise<BeamSummaryPlotResponse> => {
-  const lattice = await getLattice(uuid);
+  const lattice = await getLattice(uuid, true);
   const beamSummary = lattice.beam_summary;
 
   if (!beamSummary) {
@@ -201,8 +193,7 @@ export default {
   getRunUuids,
   getScreenNames,
   getMarkerNames,
-  getScreenBeam,
-  getMarkerBeam,
+  getBeam,
   getLattice,
   getLatticeforTwissPlot,
 };

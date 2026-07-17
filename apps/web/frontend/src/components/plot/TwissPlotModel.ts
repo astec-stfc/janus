@@ -5,6 +5,7 @@ import {
   X_AXIS_SCHEMATIC,
   Y_AXIS_SCHEMATIC,
 } from "@/components/plot/TwissPlotElements";
+import { PLOTTED_TWISS_PARAMETERS } from "@/lib/twissPlot";
 import { getCssVariable } from "@/lib/utils";
 import type {
   BeamSummaryData,
@@ -18,13 +19,6 @@ const Y_AXIS_TWISS = "y";
 const PLOT_TICK_FORMAT = ".3~g";
 const TWISS_Y_AXIS_LABEL = "Twiss";
 const FULL_WIDTH_DOMAIN: [number, number] = [0, 1];
-
-const PLOTTED_TWISS_PARAMETERS = [
-  { name: "alpha_x", color: "#002ec4" },
-  { name: "alpha_y", color: "#84b1f1" },
-  { name: "beta_x", color: "#ff0000" },
-  { name: "beta_y", color: "#f69aa9" },
-] as const;
 
 const GRID_AXIS_SETTINGS = {
   showgrid: true,

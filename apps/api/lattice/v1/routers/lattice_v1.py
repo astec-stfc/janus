@@ -3,7 +3,14 @@ from typing import List
 from time import perf_counter
 import struct
 import numpy as np
-from fastapi import BackgroundTasks, HTTPException, status, Depends, APIRouter, Header, Request
+from fastapi import (
+    BackgroundTasks,
+    HTTPException,
+    status,
+    Depends,
+    APIRouter,
+    Request,
+)
 from fastapi.responses import Response
 from sqlalchemy.orm import Session
 from sqlalchemy import select
@@ -26,6 +33,7 @@ from core.utilities import (
     lattice_manager,
 )
 from janus_common.schemas.elements import Lattice, Beam
+import core.singletons as singletons
 
 router = APIRouter(prefix="/lattice", tags=["Lattice"])
 
@@ -51,19 +59,11 @@ def _encode_beam_binary(beam: Beam) -> bytes:
     return b"".join(chunks)
 
 
-def get_kafka_producer():
-    """Get the Kafka producer instance from main module."""
-    from main import kafka_producer
-
-    return kafka_producer
-
-
 def publish_lattice_ready(request_id: str, client_id: str) -> None:
     """Publish a Kafka message indicating that a new lattice is ready."""
     try:
-        producer = get_kafka_producer()
-        if producer:
-            producer.send(
+        if singletons.kafka_producer:
+            singletons.kafka_producer.send(
                 "lattice_ready",
                 value={"request_id": request_id, "client_id": client_id},
             )
@@ -78,9 +78,8 @@ def publish_lattice_added(
 ) -> None:
     """Publish a Kafka message indicating that a new lattice has been added."""
     try:
-        producer = get_kafka_producer()
-        if producer:
-            producer.send(
+        if singletons.kafka_producer:
+            singletons.kafka_producer.send(
                 "lattice_added",
                 value={
                     "request_id": request_id,  # helps track where particular request has already been handled in l2e (stops duplicate SIM_STATUS -> 1)
@@ -97,9 +96,8 @@ def publish_lattice_added(
 def publish_lattice_updated(lattice_uuid: str, client_id: str = None) -> None:
     """Publish a Kafka message indicating that a lattice has been updated."""
     try:
-        producer = get_kafka_producer()
-        if producer:
-            producer.send(
+        if singletons.kafka_producer:
+            singletons.kafka_producer.send(
                 "lattice_updated",
                 value={
                     "uuid": lattice_uuid,
@@ -125,11 +123,11 @@ def patch_lattice(
 ):
     # if two clients happen to update their lattices that happen to be identical at the same time,
     # then, without this `if` statement, both (identical) lattices will get different request_ids.
-    # gql won't detect the identical lattices because the 1st may not be stored yet. 
+    # gql won't detect the identical lattices because the 1st may not be stored yet.
     # However, in reality, this is almost always guaranteed to run since simulataneously patched identical lattices from each other
     # will always be different since client_id is stamped onto each lattice.
     # TODO: in future, consider moving gql filtering/matching from e2l to here and make lattice_v1 solely responsible
-    #       for checking existing settings -> (if so:) lattice_ready published, (if not: then) queuing request if no request is active. 
+    #       for checking existing settings -> (if so:) lattice_ready published, (if not: then) queuing request if no request is active.
     #       This will allow us to remove `_current` dependency.
     if lattice != lattice_manager.get():
         request_id = str(uuid4())
@@ -450,9 +448,9 @@ def get_lattice(
 def get_lattice_binary(uuid: str = None, db: Session = Depends(get_db)):
     """
     Fetch lattice as compressed binary format for efficient transport of large arrays.
-    
+
     Returns: application/octet-stream with metadata + compressed float32 array data
-    
+
     Format:
       [4 bytes: compression flag (0xFFFFFFFF = zstd compressed)]
       [4 bytes: metadata JSON length]
@@ -460,7 +458,7 @@ def get_lattice_binary(uuid: str = None, db: Session = Depends(get_db)):
       [variable: binary payload (array data)]
     """
     lattice_obj = None
-    
+
     if not uuid:
         if lattice_manager.get():
             lattice_obj = lattice_manager.get()
@@ -482,17 +480,17 @@ def get_lattice_binary(uuid: str = None, db: Session = Depends(get_db)):
         )
         if lattice:
             lattice_obj = convert_db_schema_to_lattice(lattice)
-    
+
     if not lattice_obj:
         raise HTTPException(
             status.HTTP_400_BAD_REQUEST,
             "No lattices in database",
         )
-    
+
     # Reuse the shared binary codec so service-to-service transport and packed
     # DB payload storage both follow the same representation.
     binary_data = lattice_obj.to_binary(compress=True, compression_level=1)
-    
+
     return Response(
         content=binary_data,
         media_type="application/octet-stream",
@@ -510,12 +508,12 @@ def get_lattice_binary(uuid: str = None, db: Session = Depends(get_db)):
 def get_lattice_binary_metadata(uuid: str = None, db: Session = Depends(get_db)):
     """
     Fetch only metadata for a lattice binary response.
-    
+
     Useful for checking array dimensions without downloading full payload. The
     metadata manifest mirrors the payload layout used by the shared binary codec.
     """
     lattice_obj = None
-    
+
     if not uuid:
         if lattice_manager.get():
             lattice_obj = lattice_manager.get()
@@ -537,13 +535,13 @@ def get_lattice_binary_metadata(uuid: str = None, db: Session = Depends(get_db))
         )
         if lattice:
             lattice_obj = convert_db_schema_to_lattice(lattice)
-    
+
     if not lattice_obj:
         raise HTTPException(
             status.HTTP_400_BAD_REQUEST,
             "No lattices in database",
         )
-    
+
     return lattice_obj.binary_metadata()
 
 

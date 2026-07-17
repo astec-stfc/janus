@@ -45,7 +45,7 @@ const DensityChart = ({
   yData,
   xLabel,
   yLabel,
-  binSize = 16,
+  binSize = 128,
 }: ChartProps) => {
   const { theme } = useTheme();
 

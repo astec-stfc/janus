@@ -1,311 +1,47 @@
-import {
-  DEFAULT_PLOT_TYPE,
-  type PlotType,
-} from "@/components/plot/PhaseSpacePlot";
 import PhaseSpaceSelector from "@/components/plot/PhaseSpaceSelector";
 import PlotAreaContent from "@/components/plot/PlotAreaContent";
+import { PlotSettings } from "@/components/plot/PlotSettings";
 import SelectionList from "@/components/plot/SelectionList";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Slider } from "@/components/ui/slider";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { Switch } from "@/components/ui/switch";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import latticeService from "@/services/lattice";
-import type { Beam } from "@/types";
-import { subtractMean } from "@/lib/utils";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-
-const GRID_SIZE_MIN = 1;
-const GRID_SIZE_MAX = 4;
-const DEFAULT_BIN_SIZE = 16;
-const BIN_SIZE_MIN = 8;
-const BIN_SIZE_MAX = 128;
-const DEFAULT_PAIRS: [keyof Beam, keyof Beam][] = [
-  ["x", "cpx"],
-  ["y", "cpy"],
-  ["z", "cpz"],
-  ["x", "y"],
-];
-
-interface BinSizeSliderProps {
-  value: number;
-  onCommit: (value: number) => void;
-  disabled: boolean;
-}
-
-interface BeamSelectionItem {
-  label: string;
-  value: string;
-  kind: "screen" | "marker";
-  name: string;
-}
-
-const getBeamSelectionValue = (kind: BeamSelectionItem["kind"], name: string) =>
-  `${kind}:${name}`;
-
-const parseBeamSelectionValue = (value: string): BeamSelectionItem | null => {
-  const [kind, ...rest] = value.split(":");
-  const name = rest.join(":");
-  if ((kind === "screen" || kind === "marker") && name) {
-    return {
-      kind,
-      name,
-      value,
-      label: `${kind}: ${name}`,
-    };
-  }
-  return null;
-};
-
-const BinSizeSlider = ({
-  value,
-  onCommit,
-  disabled = false,
-}: BinSizeSliderProps) => {
-  const [localValue, setLocalValue] = useState(value);
-  return (
-    <div className="flex w-full items-center gap-3">
-      <Slider
-        min={BIN_SIZE_MIN}
-        max={BIN_SIZE_MAX}
-        value={[localValue]}
-        disabled={disabled}
-        onValueChange={(v) => setLocalValue(v[0])}
-        onValueCommit={(v) => {
-          setLocalValue(v[0]);
-          onCommit(v[0]);
-        }}
-      />
-      <span className={disabled ? "text-muted-foreground" : undefined}>
-        {localValue}
-      </span>
-    </div>
-  );
-};
-
-const clampGridSize = (value: number) =>
-  Math.max(GRID_SIZE_MIN, Math.min(GRID_SIZE_MAX, value));
-
-const isPlotType = (value: string): value is PlotType =>
-  value === "density" || value === "scatter";
+import { useBeamSelection } from "@/hooks/useBeamSelection";
+import { usePhasePairs } from "@/hooks/usePhasePairs";
+import { usePlotData } from "@/hooks/usePlotData";
+import { usePlotSettings } from "@/hooks/usePlotSettings";
 
 const Plot = () => {
-  const [uuids, setUuids] = useState<string[]>([]);
-  const [selectedUuid, setSelectedUuid] = useState<string | null>(null);
-  const [screenNames, setScreenNames] = useState<string[]>([]);
-  const [markerNames, setMarkerNames] = useState<string[]>([]);
-  const [selectedBeam, setSelectedBeam] = useState<BeamSelectionItem | null>(null);
-  const [beam, setBeam] = useState<Beam | null>(null);
-  const [beamLoadError, setBeamLoadError] = useState<string | null>(null);
-  const [namesLoading, setNamesLoading] = useState(false);
-  const [namesLoadError, setNamesLoadError] = useState<string | null>(null);
-  const [beamLoading, setBeamLoading] = useState(false);
-  const [pairs, setPairs] = useState<[keyof Beam, keyof Beam][]>(() => [
-    ...DEFAULT_PAIRS,
-  ]);
-  const [gridColumns, setGridColumns] = useState(2);
-  const [gridRows, setGridRows] = useState(2);
-  const [plotType, setPlotType] = useState<PlotType>(DEFAULT_PLOT_TYPE);
-  const [removeZOffset, setRemoveZOffset] = useState(true);
-  const [binSize, setBinSize] = useState(DEFAULT_BIN_SIZE);
-  const namesRequestIdRef = useRef(0);
-  const beamRequestIdRef = useRef(0);
-
-  const displayBeam = useMemo<Beam | null>(() => {
-    if (!beam) return null;
-    if (!removeZOffset || !beam.z) return beam;
-    return { ...beam, z: subtractMean(beam.z) };
-  }, [beam, removeZOffset]);
-
-  const beamOptions = useMemo<BeamSelectionItem[]>(() => {
-    return [
-      ...screenNames.map((name) => ({
-        kind: "screen" as const,
-        name,
-        value: getBeamSelectionValue("screen", name),
-        label: `screen: ${name}`,
-      })),
-      ...markerNames.map((name) => ({
-        kind: "marker" as const,
-        name,
-        value: getBeamSelectionValue("marker", name),
-        label: `marker: ${name}`,
-      })),
-    ];
-  }, [markerNames, screenNames]);
-
-  useEffect(() => {
-    latticeService.getRunUuids().then(setUuids);
-  }, []);
-
-  useEffect(() => {
-    if (!selectedUuid) {
-      namesRequestIdRef.current += 1;
-      beamRequestIdRef.current += 1;
-      setSelectedBeam(null);
-      setScreenNames([]);
-      setMarkerNames([]);
-      setBeam(null);
-      setBeamLoadError(null);
-      setNamesLoadError(null);
-      setNamesLoading(false);
-      setBeamLoading(false);
-      return;
-    }
-
-    const requestId = ++namesRequestIdRef.current;
-    beamRequestIdRef.current += 1;
-    setSelectedBeam(null);
-    setScreenNames([]);
-    setMarkerNames([]);
-    setBeam(null);
-    setBeamLoadError(null);
-    setNamesLoadError(null);
-    setNamesLoading(true);
-    setBeamLoading(false);
-
-    Promise.all([
-      latticeService.getScreenNames(selectedUuid),
-      latticeService.getMarkerNames(selectedUuid),
-    ])
-      .then(([nextScreens, nextMarkers]) => {
-        if (requestId !== namesRequestIdRef.current) return;
-        setScreenNames(nextScreens);
-        setMarkerNames(nextMarkers);
-      })
-      .catch(() => {
-        if (requestId !== namesRequestIdRef.current) return;
-        setNamesLoadError("Failed to load screens and markers.");
-      })
-      .finally(() => {
-        if (requestId !== namesRequestIdRef.current) return;
-        setNamesLoading(false);
-      });
-  }, [selectedUuid]);
-
-  useEffect(() => {
-    if (!selectedUuid || !selectedBeam) {
-      setBeamLoading(false);
-      return;
-    }
-
-    const requestId = ++beamRequestIdRef.current;
-    setBeam(null);
-    setBeamLoadError(null);
-    setBeamLoading(true);
-
-    const beamLoader =
-      selectedBeam.kind === "screen"
-        ? latticeService.getScreenBeam
-        : latticeService.getMarkerBeam;
-
-    beamLoader(selectedUuid, selectedBeam.name)
-      .then((nextBeam) => {
-        if (requestId !== beamRequestIdRef.current) return;
-        setBeam(nextBeam);
-      })
-      .catch((error: unknown) => {
-        if (requestId !== beamRequestIdRef.current) return;
-        const message =
-          typeof error === "object" &&
-          error !== null &&
-          "response" in error &&
-          typeof (error as { response?: { data?: { detail?: unknown } } }).response
-            ?.data?.detail === "string"
-            ? (error as { response: { data: { detail: string } } }).response.data
-                .detail
-            : "Failed to load beam data for the selected item.";
-        setBeamLoadError(message);
-          })
-          .finally(() => {
-          if (requestId !== beamRequestIdRef.current) return;
-          setBeamLoading(false);
-      });
-  }, [selectedBeam, selectedUuid]);
-
-  const handleAddPair = useCallback(
-    (pair: [keyof Beam, keyof Beam]) => {
-      const isDuplicate = pairs.some(
-        ([a, b]) => a === pair[0] && b === pair[1],
-      );
-      if (!isDuplicate) setPairs((prev) => [...prev, pair]);
-    },
-    [pairs],
+  const settings = usePlotSettings();
+  const selection = useBeamSelection();
+  const data = usePlotData(
+    selection.selectedUuid,
+    selection.selectedBeam,
+    settings.removeZOffset,
   );
-
-  const handleRemovePair = useCallback((pair: [keyof Beam, keyof Beam]) => {
-    setPairs((prev) => prev.filter(([a, b]) => a !== pair[0] || b !== pair[1]));
-  }, []);
-
-  const handleGridColumnsChange = (value: string) => {
-    const parsed = Number.parseInt(value, 10);
-    if (Number.isNaN(parsed)) return;
-    setGridColumns(clampGridSize(parsed));
-  };
-
-  const handleGridRowsChange = (value: string) => {
-    const parsed = Number.parseInt(value, 10);
-    if (Number.isNaN(parsed)) return;
-    setGridRows(clampGridSize(parsed));
-  };
-
-  const handlePlotTypeChange = (value: string) => {
-    if (!isPlotType(value)) return;
-    setPlotType(value);
-  };
-
-  const handleBeamSelection = (value: string) => {
-    const nextSelection = parseBeamSelectionValue(value);
-    if (!nextSelection) return;
-    setSelectedBeam(nextSelection);
-  };
+  const { pairs, handleAddPair, handleRemovePair } = usePhasePairs();
 
   return (
-    /* Page root: [left panel] [right panel] */
     <div className="flex h-full">
       {/* Left panel */}
       <div className="flex w-72 shrink-0 flex-col gap-4 border-r p-4">
-        {/* UUID list box */}
         <div className="min-h-0 flex-1 rounded-lg border">
+          {/* UUID selector */}
           <SelectionList
-            items={uuids}
-            selectedItem={selectedUuid}
-            onSelect={setSelectedUuid}
+            items={data.uuids.map((uuid) => ({ label: uuid, value: uuid }))}
+            selectedItem={selection.selectedUuid}
+            onSelect={selection.handleUuidSelect}
             placeholder="Search lattice runs..."
-            emptyText="No runs found"
+            emptyText={data.uuidEmptyText}
           />
         </div>
-
-        {/* Screen list box */}
         <div className="min-h-0 flex-1 rounded-lg border">
+          {/* Screen selector */}
           <SelectionList
-            items={beamOptions}
-            selectedItem={selectedBeam?.value ?? null}
-            onSelect={handleBeamSelection}
+            items={selection.beamOptions}
+            selectedItem={selection.selectedBeam?.name ?? null}
+            onSelect={selection.handleBeamSelection}
             placeholder="Search screens and markers..."
-            emptyText={
-              selectedUuid
-                ? namesLoading
-                  ? "Loading screens and markers..."
-                  : namesLoadError ?? "No beams found."
-                : "Select a run"
-            }
+            emptyText={selection.beamEmptyText}
           />
         </div>
-
-        {/* Phase-space pair selector */}
         <div className="rounded-lg border">
           <PhaseSpaceSelector
             pairs={pairs}
@@ -313,107 +49,23 @@ const Plot = () => {
             onRemovePair={handleRemovePair}
           />
         </div>
-
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="outline" className="w-full">
-              Settings
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-96" align="start">
-            <div className="grid gap-2">
-              <div className="grid grid-cols-2 items-center gap-4">
-                <Label htmlFor="plot-type">Plot Type</Label>
-                <ToggleGroup
-                  id="plot-type"
-                  type="single"
-                  value={plotType}
-                  onValueChange={handlePlotTypeChange}
-                  className="grid h-9 grid-cols-2"
-                >
-                  <ToggleGroupItem value="density" className="h-full">
-                    Density
-                  </ToggleGroupItem>
-                  <ToggleGroupItem value="scatter" className="h-full">
-                    Scatter
-                  </ToggleGroupItem>
-                </ToggleGroup>
-              </div>
-              <div className="grid grid-cols-2 items-center gap-4">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Label htmlFor="bin-size">(Maximum) Bin Size</Label>
-                  </TooltipTrigger>
-                  <TooltipContent side="top">
-                    Algorithm decides optimal bin size up to max to best
-                    visualise distribution
-                  </TooltipContent>
-                </Tooltip>
-                <div className="flex h-9 items-center">
-                  <BinSizeSlider
-                    value={binSize}
-                    onCommit={setBinSize}
-                    disabled={plotType !== "density"}
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 items-center gap-4">
-                <Label htmlFor="grid-columns">Grid Size</Label>
-                <div className="flex h-9 items-center gap-2">
-                  <Input
-                    id="grid-columns"
-                    type="number"
-                    min={GRID_SIZE_MIN}
-                    max={GRID_SIZE_MAX}
-                    value={gridColumns}
-                    className="h-7 text-sm"
-                    onChange={(event) =>
-                      handleGridColumnsChange(event.target.value)
-                    }
-                  />
-                  <span className="text-sm">x</span>
-                  <Input
-                    id="grid-rows"
-                    type="number"
-                    min={GRID_SIZE_MIN}
-                    max={GRID_SIZE_MAX}
-                    value={gridRows}
-                    className="h-7 text-sm"
-                    onChange={(event) =>
-                      handleGridRowsChange(event.target.value)
-                    }
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 items-center gap-4">
-                <Label htmlFor="remove-z-offset">Remove Z Offset</Label>
-                <div className="flex h-9 items-center">
-                  <Switch
-                    id="remove-z-offset"
-                    checked={removeZOffset}
-                    onCheckedChange={setRemoveZOffset}
-                  />
-                </div>
-              </div>
-            </div>
-          </PopoverContent>
-        </Popover>
+        <PlotSettings settings={settings} />
       </div>
 
-      {/* Right panel window Frame: fixed size with scrollbar for inner content */}
+      {/* Right panel */}
       <ScrollArea className="im-scrollbar flex-1 [container-type:size]">
         <PlotAreaContent
-          beam={displayBeam}
+          beam={data.displayBeam}
           pairs={pairs}
-          selectedUuid={selectedUuid}
-          selectedBeamName={selectedBeam?.name ?? null}
-          namesLoading={namesLoading}
-          beamLoading={beamLoading}
-          beamLoadError={beamLoadError}
-          gridColumns={gridColumns}
-          gridRows={gridRows}
-          plotType={plotType}
-          binSize={binSize}
+          selectedUuid={selection.selectedUuid}
+          selectedBeamName={selection.selectedBeam?.name ?? null}
+          namesLoading={selection.namesLoading}
+          beamLoading={data.beamLoading}
+          beamLoadError={data.beamLoadError}
+          gridColumns={settings.gridColumns}
+          gridRows={settings.gridRows}
+          plotType={settings.plotType}
+          binSize={settings.binSize}
         />
       </ScrollArea>
     </div>
