@@ -1,4 +1,14 @@
-from sqlalchemy import String, ForeignKey, Float, Boolean, Integer, LargeBinary
+from datetime import datetime
+from sqlalchemy import (
+    DateTime,
+    String,
+    ForeignKey,
+    Float,
+    Boolean,
+    Integer,
+    LargeBinary,
+)
+
 from sqlalchemy import and_  # noqa: F401
 from sqlalchemy.orm import (
     declarative_base,
@@ -340,7 +350,6 @@ class PhotonMonitors(Element):
     __mapper_args__ = {"polymorphic_identity": "PhotonMonitor"}
 
 
-
 class Lasers(Element):
     __tablename__ = "lasers"
     id: Mapped[int] = mapped_column(
@@ -641,6 +650,10 @@ class Lattice(Base):
     )
     uuid: Mapped[str] = mapped_column(String(50), nullable=False, unique=True)
     facility: Mapped[str] = mapped_column(String(10), nullable=False)
+    timestamp: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
     success: Mapped[bool] = mapped_column(
         Boolean, nullable=False, default=True
     )  # Whether the lattice ran successfully
@@ -672,6 +685,7 @@ class LatticeArrayPayload(Base):
     Table to store large arrays (beams and beam summary) separately to avoid
     bloating the lattices table and causing performance issues with large payloads.
     """
+
     __tablename__ = "lattice_array_payload"
     id: Mapped[int] = mapped_column(
         primary_key=True,

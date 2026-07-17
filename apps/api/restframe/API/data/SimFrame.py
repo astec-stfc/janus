@@ -1,4 +1,5 @@
 from copy import deepcopy
+from datetime import datetime
 from io import BytesIO
 from math import radians, degrees, sqrt
 import os
@@ -149,9 +150,9 @@ class SimFrame_Interface:
         self.latticeclass = data.LatticeClass.model_validate(latdict)
         self.screenimage = ScreenImage(lattice_location=screen_directory)
         self.load_data_structures()
-
         self.changes = self.get_changes_dict()
         self.finished_tracking = False
+        self.tracking_timestamp = None
         self.framework_directory = None
         self.tracking_history = {}
         self._current_start_section = None
@@ -374,6 +375,7 @@ class SimFrame_Interface:
             )
         out_lattice.success = self._track_success
         out_lattice.set_initial_conditions = self.set_initial_conditions
+        out_lattice.timestamp = self.tracking_timestamp
         return out_lattice
 
     def load_data_structures(self):
@@ -881,6 +883,7 @@ class SimFrame_Interface:
                 self.changeclass.add_entry(uuid, changes_dict)
                 self.framework.progress = 100
                 self.tracking_finished = True
+                self.tracking_timestamp = datetime.now()
             else:
                 uuid, entry = self.changeclass.get_entry(changes_dict)
                 self.uuid = uuid
@@ -901,6 +904,7 @@ class SimFrame_Interface:
                 )
                 self.framework.progress = 100
                 self.tracking_finished = True
+                self.tracking_timestamp = datetime.now()
             try:
                 # this will raise a FileNotFoundError if the tracking failed
                 # to generate the beam files after a certain element
@@ -916,12 +920,14 @@ class SimFrame_Interface:
                 print(e)
                 self._track_success = False
                 self.tracking_finished = True
+                self.tracking_timestamp = datetime.now()
             except Exception as e:
                 print("TRACKING: Problem loading framework directory!")
                 print(e)
                 traceback.print_exc()
                 self._track_success = False
                 self.tracking_finished = True
+                self.tracking_timestamp = datetime.now()
             # print(self.framework_directory.twiss.keys())
             self.track_uuid = uuid
             self.track_startfile = startfile
@@ -954,11 +960,13 @@ class SimFrame_Interface:
             print("Problem with saving data structures!")
             self._track_success = False
             self.tracking_finished = True
+            self.tracking_timestamp = datetime.now()
         # if tracking_success hasn't been set, then it must have worked!
         if self._track_success is None:
             self._track_success = True
         self.tracking_history.update({uuid: self._track_success})
         self.finished_tracking = True
+        self.tracking_timestamp = datetime.now()
         print(f"Tracking worked up to: {self._current_start_section}")
 
     def set_lattice_update_flag(

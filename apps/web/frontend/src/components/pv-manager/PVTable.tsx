@@ -28,7 +28,7 @@ const COLUMNS: readonly {
   { key: "status", label: "Status", width: "w-[140px]" },
   { key: "pvName", label: "PV Name", width: "" },
   { key: "mode", label: "Mode", width: "w-[120px]" },
-  { key: "value", label: "Value", width: "w-[140px]" },
+  { key: "value", label: "Value", width: "w-[240px]" },
   { key: "label", label: "Label", width: "w-[160px]" },
   { key: "actions", label: "Actions", width: "w-[200px]" },
   { key: "remove", label: "Remove", width: "w-[72px]" },

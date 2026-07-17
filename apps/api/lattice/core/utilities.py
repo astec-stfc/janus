@@ -1,3 +1,4 @@
+from datetime import datetime
 """Utilities for converting between schema lattices and lattice-api ORM models.
 
 Large beam arrays used to live as many individual ORM payload rows. The current
@@ -615,6 +616,7 @@ def convert_lattice_to_db_schema(lattice: elements.Lattice):
     db_lattice = Lattice(
         generator=make_db_generator(lattice.generator),
         facility=lattice.facility,
+        timestamp=lattice.timestamp or datetime.now(),
         uuid=lattice.uuid,
         sections=db_sections,
         array_payloads=payload_rows,
@@ -676,6 +678,7 @@ def convert_db_schema_to_lattice(lattice: Lattice):
         ),
         facility=lattice.facility,
         sections=sections,
+        timestamp=lattice.timestamp,
         beam_summary=beam_summary_info,
         uuid=uuid_,
         success=lattice.success or False,

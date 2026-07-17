@@ -580,6 +580,11 @@ class LatticeToPV(PVTranslator):
             type=str,
             schema_attribute_path=("facility",),
         )
+        self._timestamp_metadata = PVSchemaMetadata(
+            name=f"{SIM_PREFIX}-LATTICE:TIMESTAMP",
+            type=str,
+            schema_attribute_path=("timestamp",),
+        )
         self._apply_initial_conditions_metadata = PVSchemaMetadata(
             name=f"{VM_PREFIX}-INITIAL-CONDITIONS:ENABLE",
             type=str,
@@ -597,6 +602,10 @@ class LatticeToPV(PVTranslator):
         return [self._facility_metadata.name]
 
     @cached_property
+    def timestamp_pvs(self) -> List[str]:
+        return [self._timestamp_metadata.name]
+
+    @cached_property
     def apply_initial_conditions_pvs(self) -> List[str]:
         return [self._apply_initial_conditions_metadata.name]
 
@@ -610,11 +619,16 @@ class LatticeToPV(PVTranslator):
             self.facility_pvs
             + self.apply_initial_conditions_pvs
             + self.beam_summary_pvs
+            + self.timestamp_pvs
         )
 
     @cached_property
     def facility_pv_types(self) -> Dict[str, Type]:
         return {self._facility_metadata.name: self._facility_metadata.type}
+
+    @cached_property
+    def timestamp_pv_types(self) -> Dict[str, Type]:
+        return {self._timestamp_metadata.name: self._timestamp_metadata.type}
 
     @cached_property
     def apply_initial_conditions_pv_types(self) -> Dict[str, Type]:
@@ -632,6 +646,7 @@ class LatticeToPV(PVTranslator):
             self.facility_pv_types
             | self.apply_initial_conditions_pv_types
             | self.beam_summary_pv_types
+            | self.timestamp_pv_types
         )
 
     @cached_property
@@ -643,6 +658,10 @@ class LatticeToPV(PVTranslator):
         return self._apply_initial_conditions_metadata
 
     @cached_property
+    def timestamp_pv_metadata(self) -> PVSchemaMetadata:
+        return self._timestamp_metadata
+
+    @cached_property
     def beam_summary_pv_metadata(self) -> List[PVSchemaMetadata]:
         return self._beam_summary_metadata
 
@@ -652,6 +671,7 @@ class LatticeToPV(PVTranslator):
             self.facility_metadata
             + self.apply_initial_conditions_metadata
             + self.beam_summary_metadata
+            + self.timestamp_pv_metadata
         )
 
 

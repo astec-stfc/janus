@@ -1,3 +1,4 @@
+from datetime import datetime
 from pydantic import (
     BaseModel,
     ConfigDict,
@@ -498,12 +499,32 @@ class Lattice(BaseModel):
     set_initial_conditions: str = ""
     sections: Dict[str, Section]
     uuid: str | None = None
+    timestamp: datetime | None = None
     beam_summary: BeamSummary | None = None
     success: bool | None = None
     client_id: str | None = None
 
     class Config:
         from_attributes = True
+
+    @field_validator("timestamp", mode="before")
+    def validate_timestamp(cls, value):
+        if value is None:
+            return None
+        if isinstance(value, (int, float)):
+            return datetime.fromtimestamp(value)
+        if isinstance(value, str):
+            try:
+                return datetime.fromisoformat(value)
+            except ValueError:
+                return datetime.fromtimestamp(float(value))
+        return value
+
+    @field_serializer("timestamp")
+    def serialize_timestamp(self, value: datetime | None) -> str | None:
+        if value is None:
+            return None
+        return value.isoformat()
 
     def get_elements(
         self,
