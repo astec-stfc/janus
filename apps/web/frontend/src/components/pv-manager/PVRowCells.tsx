@@ -116,7 +116,10 @@ function PVRowLayout({
         {pvName}
       </TableCell>
       <TableCell className="w-[120px] whitespace-nowrap">{mode}</TableCell>
-      <TableCell className="w-[140px] whitespace-nowrap font-mono tabular-nums">
+      <TableCell
+        className="w-[240px] whitespace-normal break-all font-mono tabular-nums"
+        title={value}
+      >
         {value}
       </TableCell>
       <TableCell className="w-[160px] whitespace-nowrap">{label}</TableCell>

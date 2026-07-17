@@ -70,6 +70,7 @@ class Sender(API):
             updates.extend(self.get_lattice_beam_summary(lattice=lattice))
             updates.extend(self.get_lattice_generator(lattice=lattice))
             updates.extend(self.get_lattice_uuid(lattice=lattice))
+            updates.extend(self.get_lattice_timestamp(lattice=lattice))
             self.epics_helper.set_pv_updates(updates)
             t_updates = time.time()
 
@@ -116,6 +117,17 @@ class Sender(API):
         updates.append((self.simulation_translator.uuid_pv.name, lattice.uuid))
         return updates
 
+    def get_lattice_timestamp(self, lattice: elements.Lattice) -> List:
+        """Get the timestamp PV for a given section"""
+        updates = []
+        updates.append(
+            (
+                self.lattice_translator.timestamp_pv_metadata.name,
+                lattice.timestamp.isoformat() if lattice.timestamp else "undefined",
+            )
+        )
+        return updates
+
     def set_tracking_success(self, lattice: elements.Lattice) -> None:
         """Get the tracking success PV for a given lattice"""
         success = lattice.success if lattice.success is not None else False
@@ -149,9 +161,11 @@ class Sender(API):
             return [
                 (
                     m.name,
-                    m.get_schema_value(lattice)
-                    if m.get_schema_value(lattice) is not None
-                    else m.value_as_type(-999),
+                    (
+                        m.get_schema_value(lattice)
+                        if m.get_schema_value(lattice) is not None
+                        else m.value_as_type(-999)
+                    ),
                 )
                 for m in beam_summary_metadata
             ]
