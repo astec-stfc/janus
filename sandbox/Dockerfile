@@ -21,15 +21,8 @@ RUN mkdir -p /laura /home/janus-developer/workspace/snapshots && \
     if [ "$FACILITY" = "clara" ]; then mkdir -p /pycatap && chown janus-developer:janus-developer /pycatap; fi && \
     chown -R janus-developer:janus-developer /laura /laura-lattices /home/janus-developer/workspace && \
     chmod -R a+rwX /home/janus-developer/workspace
-# use SSH agent forwarding (BuildKit) and ensure host key is known
-RUN --mount=type=ssh bash -lc ' \
-mkdir -p /root/.ssh && \
-ssh-keyscan gitlab.stfc.ac.uk >> /root/.ssh/known_hosts && \
-git clone --branch feature/nala git@gitlab.stfc.ac.uk:ujo48515/pycatap.git /pycatap \
-'
-WORKDIR /pycatap
-RUN "$VIRTUAL_ENV/bin/python" -m pip install -e .
-WORKDIR /
+
+RUN pip install pyepics p4p pydantic numpy ruamel.yaml scipy matplotlib jupyterlab pytest
 
 RUN chmod -R a+rX /home/web
 
