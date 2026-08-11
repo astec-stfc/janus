@@ -16,7 +16,7 @@ WORKDIR /laura
 RUN git fetch -a && git checkout main && git pull
 
 WORKDIR /simba
-RUN git fetch -a && git checkout main && git pull
+RUN git fetch -a && git checkout feature/split-genesis-line && git pull
 
 
 WORKDIR /
