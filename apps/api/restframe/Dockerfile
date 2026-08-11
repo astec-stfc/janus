@@ -13,7 +13,7 @@ RUN mkdir -p /home/web/webapp/Output/CLARA && \
     chmod -R a+rwX /home/web/webapp/Output/JFEL
 
 WORKDIR /laura
-RUN git fetch -a && git checkout fix/split-genesis-line && git pull
+RUN git fetch -a && git checkout main && git pull
 
 WORKDIR /simba
 RUN git fetch -a && git checkout feature/split-genesis-line && git pull

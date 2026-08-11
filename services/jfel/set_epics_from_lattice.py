@@ -6,7 +6,9 @@ from janus_common.schemas.elements import Cavity as CavityElement
 sys.path.append("/acronicta-catap/")
 import catapcore.config as cfg
 cfg.EPICS_TIMEOUT = 0.5
-cfg.set_config_format("LAURA", f"/laura-lattices/{os.environ['FACILITY']}")
+cfg.set_config_format(
+    "LAURA", f"/laura-lattices/{os.environ['FACILITY']}", eager_mode=True
+)
 sys.path.append(f"/acronicta-catap/facility/{os.environ['FACILITY'].lower()}")
 
 from hardware.quadrupole import QuadrupoleFactory

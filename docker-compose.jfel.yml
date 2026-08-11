@@ -27,6 +27,15 @@ services:
       service: lattice_api
     environment:
       - FACILITY=JFEL
+  hsds_backend:
+    build:
+      args:
+        FACILITY: JFEL
+    extends:
+      file: compose/server.yaml
+      service: hsds_backend
+    volumes:
+      - ./apps/api/restframe/JFEL:/data/filestore:ro
   pvws:
     extends:
       file: compose/client.yaml

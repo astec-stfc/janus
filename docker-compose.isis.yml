@@ -32,6 +32,15 @@ services:
       service: lattice_api
     environment:
       - FACILITY=ISIS
+  hsds_backend:
+    build:
+      args:
+        FACILITY: ISIS
+    extends:
+      file: compose/server.yaml
+      service: hsds_backend
+    volumes:
+      - ./apps/api/restframe/ISIS:/data/filestore:ro
   pvws:
     extends:
       file: compose/client.yaml

@@ -1,0 +1,34 @@
+# docker/docker-compose.yml
+services:
+  hsds:
+    build: ./hsds
+    ports:
+      - "5101:5101"
+    volumes:
+      - ./data/hdf5:/hsds-store
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+
+    ports:
+      - "8000:8000"
+
+    environment:
+      HSDS_URL: http://hsds:5101
+      HSDS_USERNAME: admin
+      HSDS_PASSWORD: admin
+    depends_on:
+      - hsds
+
+  importer:
+    build: ./importer
+    volumes:
+      - ./data/filestore:/data/filestore:ro
+    environment:
+      HS_ENDPOINT: http://hsds:5101
+      HS_USERNAME: admin
+      HS_PASSWORD: admin
+    depends_on:
+      - hsds

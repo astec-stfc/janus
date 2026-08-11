@@ -3,7 +3,7 @@ FROM ghcr.io/adb-xkc85723/janus-base:latest
 RUN apt-get update && apt-get install -y black flake8
 
 WORKDIR /laura
-RUN git fetch -a && git checkout fix/split-genesis-line && git pull
+RUN git fetch -a && git checkout main && git pull
 RUN pip install -e . --no-deps
 RUN pip install -r requirements_lightweight.txt
 
@@ -22,6 +22,8 @@ case "${LAURA_LATTICE_REPO}" in \
         echo "Unsupported LAURA_LATTICE_REPO format: ${LAURA_LATTICE_REPO}" && exit 1 ;; \
 esac \
 '
+WORKDIR /laura
+RUN python -m pip install -r requirements.txt
 
 WORKDIR /usr/src/app
 RUN python -m pip install --upgrade pip
@@ -29,9 +31,8 @@ COPY ./requirements.txt /usr/src/app/requirements.txt
 RUN python -m pip install -r requirements.txt
 
 WORKDIR /
-RUN git clone --branch feature/aliases https://github.com/astec-stfc/acronicta-catap.git
+RUN git clone --recursive --branch feature/aliases https://github.com/astec-stfc/acronicta-catap.git
 WORKDIR /acronicta-catap
-RUN git clone --branch feature/aliases https://github.com/astec-stfc/catapcore.git
 RUN pip install -r requirements.txt
 
 RUN python3 /acronicta-catap/scripts/generate_hardware.py --yaml_location=/laura-lattices/JFEL/YAML/ --output_location=/acronicta-catap/facility/jfel --overwrite_hardware

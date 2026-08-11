@@ -119,5 +119,37 @@ services:
       interval: 1s
       timeout: 5s
 
+  hsds:
+    build: ../apps/api/hsds/hsds
+    ports:
+      - "${HSDS_PORT:-5101}:5101"
+    volumes:
+      - ../apps/api/hsds/data/hdf5:/hsds-store
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${HSDS_PORT:-5101}/info"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  hsds_backend:
+    build:
+      context: ../apps/api/hsds/backend
+      dockerfile: Dockerfile
+    volumes:
+      - ../apps/api/restframe/${FACILITY:-CLARA}:/data/filestore:ro
+    ports:
+      - "${HSDS_BACKEND_PORT:-8001}:8000"
+    environment:
+      HSDS_URL: http://hsds:${HSDS_PORT:-5101}
+      HSDS_USERNAME: admin
+      HSDS_PASSWORD: admin
+      HS_ENDPOINT: http://hsds:${HSDS_PORT:-5101}
+      HS_USERNAME: admin
+      HS_PASSWORD: admin
+      LOG_LEVEL: warning
+    depends_on:
+      hsds:
+        condition: service_healthy
+
 volumes:
   postgres_data:

@@ -27,7 +27,7 @@ esac \
 
 RUN pip install --no-cache-dir -r /sarabi/requirements.txt
 
-RUN mkdir -p /sarabi/yaml && cp -r "/laura-lattices/${FACILITY}/YAML" /sarabi/yaml/nala
+RUN mkdir -p /sarabi/yaml && cp -r "/laura-lattices/${FACILITY}/YAML" /sarabi/yaml/${FACILITY}
 
 WORKDIR /sarabi
 RUN python3.12 render_iocs.py --settings=settings.yaml
