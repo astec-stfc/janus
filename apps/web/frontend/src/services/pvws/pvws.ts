@@ -149,6 +149,9 @@ class PVWS {
 
       // Update cached value with received changes
       Object.assign(value, jm);
+      if (value.vtype === "VString" && typeof value.text === "string") {
+        value.value = value.text;
+      }
       this.values[jm.pv] = value;
       // console.log("Update for PV " + jm.pv + ": " + JSON.stringify(value));
       this.message_handler(value);

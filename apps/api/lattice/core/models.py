@@ -1,4 +1,14 @@
-from sqlalchemy import String, ForeignKey, Float, Boolean, Integer
+from datetime import datetime
+from sqlalchemy import (
+    DateTime,
+    String,
+    ForeignKey,
+    Float,
+    Boolean,
+    Integer,
+    LargeBinary,
+)
+
 from sqlalchemy import and_  # noqa: F401
 from sqlalchemy.orm import (
     declarative_base,
@@ -252,6 +262,7 @@ class Markers(Element):
     section: Mapped["Section"] = relationship(
         foreign_keys=[section_id],
         back_populates="markers",
+        overlaps="screens",
     )
     beam_id = mapped_column(
         ForeignKey(
@@ -273,6 +284,11 @@ class Screens(Markers):
     camera_id = mapped_column(
         ForeignKey("cameras.id", ondelete="CASCADE", onupdate="CASCADE"),
         unique=True,
+    )
+    section: Mapped["Section"] = relationship(
+        foreign_keys=[Markers.section_id],
+        back_populates="screens",
+        overlaps="markers",
     )
     camera: Mapped["Cameras"] = relationship(foreign_keys=[camera_id])
     __mapper_args__ = {"polymorphic_identity": "Screen"}
@@ -332,7 +348,6 @@ class PhotonMonitors(Element):
     )
     intensity: Mapped[float] = mapped_column(Float, nullable=False)
     __mapper_args__ = {"polymorphic_identity": "PhotonMonitor"}
-
 
 
 class Lasers(Element):
@@ -564,14 +579,13 @@ class Section(Base):
         cascade="all, delete",
     )
     screens: Mapped[List[Screens]] = relationship(
-        back_populates="section", cascade="all, delete", overlaps="markers"
+        back_populates="section", cascade="all, delete", overlaps="markers,section"
     )
     markers: Mapped[List[Markers]] = relationship(
         back_populates="section",
         cascade="all, delete",
-        overlaps="screens",
+        overlaps="screens,section",
         primaryjoin="and_(Section.id==Markers.section_id, Markers.type=='Marker')",
-        viewonly=True,  # <-- Add this
     )
     bpms: Mapped[List[BPMs]] = relationship(
         back_populates="section",
@@ -636,10 +650,20 @@ class Lattice(Base):
     )
     uuid: Mapped[str] = mapped_column(String(50), nullable=False, unique=True)
     facility: Mapped[str] = mapped_column(String(10), nullable=False)
+    timestamp: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
     success: Mapped[bool] = mapped_column(
         Boolean, nullable=False, default=True
     )  # Whether the lattice ran successfully
     sections: Mapped[List["Section"]] = relationship(
+        back_populates="lattice",
+        cascade="all, delete",
+    )
+    # for large arrays (beams and beam summary), we store them in a separate table to avoid
+    # bloating the lattices table and causing performance issues with large payloads.
+    array_payloads: Mapped[List["LatticeArrayPayload"]] = relationship(
         back_populates="lattice",
         cascade="all, delete",
     )
@@ -654,3 +678,39 @@ class Lattice(Base):
         nullable=False,
     )
     client_id: Mapped[str] = mapped_column(String(50), nullable=True)
+
+
+class LatticeArrayPayload(Base):
+    """
+    Table to store large arrays (beams and beam summary) separately to avoid
+    bloating the lattices table and causing performance issues with large payloads.
+    """
+
+    __tablename__ = "lattice_array_payload"
+    id: Mapped[int] = mapped_column(
+        primary_key=True,
+        autoincrement=True,
+        nullable=False,
+    )
+    lattice_id = mapped_column(
+        ForeignKey("lattices.id", ondelete="CASCADE", onupdate="CASCADE"),
+        nullable=False,
+    )
+    lattice: Mapped["Lattice"] = relationship(
+        foreign_keys=[lattice_id],
+        back_populates="array_payloads",
+    )
+    # The path to array value in the lattice schema, e.g. "sections.<section>.screens.<screen-index>.beam.x"
+    path: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
+    # The data type of the array, e.g. "float32", "float64", etc.
+    dtype: Mapped[str] = mapped_column(String(20), nullable=False, default="float32")
+    # The number of elements in the array
+    count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    # The compression algorithm used to compress the payload, e.g. "zstd", "gzip", etc.
+    compression: Mapped[str] = mapped_column(
+        String(20),
+        nullable=False,
+        default="zstd",
+    )
+    # The compressed payload of the array, stored as a binary blob
+    payload: Mapped[bytes] = mapped_column(LargeBinary, nullable=False)

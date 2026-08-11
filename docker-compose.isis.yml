@@ -5,11 +5,16 @@ include:
 
 services:
   restframe:
+    build:
+      args:
+        FACILITY: ISIS
+        LAURA_LATTICE_REPO: git@gitlab.stfc.ac.uk:xkc85723/laura-lattices.git
     extends:
       file: compose/server.yaml
       service: restframe
     environment:
       - FACILITY=ISIS
+      - LAURA_LATTICE_REPO=git@gitlab.stfc.ac.uk:xkc85723/laura-lattices.git
     volumes:
       - ./apps/api/restframe/ISIS:/home/web/webapp/Output/ISIS
   sandbox:
@@ -27,6 +32,15 @@ services:
       service: lattice_api
     environment:
       - FACILITY=ISIS
+  hsds_backend:
+    build:
+      args:
+        FACILITY: ISIS
+    extends:
+      file: compose/server.yaml
+      service: hsds_backend
+    volumes:
+      - ./apps/api/restframe/ISIS:/data/filestore:ro
   pvws:
     extends:
       file: compose/client.yaml

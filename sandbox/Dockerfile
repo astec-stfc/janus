@@ -1,20 +1,17 @@
 FROM ghcr.io/adb-xkc85723/janus-base:latest
 
 ARG LAURA_LATTICE_REPO=git@gitlab.stfc.ac.uk:xkc85723/laura-lattices.git
+ENV VIRTUAL_ENV=/home/web/.venv
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 ARG FACILITY
 
 # Set user and entrypoint
 WORKDIR /
-RUN --mount=type=ssh bash -lc ' \
-mkdir -p /root/.ssh && \
-ssh-keyscan gitlab.stfc.ac.uk >> /root/.ssh/known_hosts && \
-git clone --branch feature/nala git@gitlab.stfc.ac.uk:ujo48515/pycatap.git \
-'
-WORKDIR /pycatap
-RUN pip install -e .
 RUN useradd -ms /bin/bash janus-developer && \
-    mkdir user_setup
-
+    mkdir user_setup && \
+    chown -R janus-developer:janus-developer "$VIRTUAL_ENV" && \
+    chmod o+rx /home/web && \
+    chmod -R a+rX "$VIRTUAL_ENV"
 RUN --mount=type=ssh bash -lc ' \
 mkdir -p /root/.ssh && \
 ssh-keyscan gitlab.stfc.ac.uk >> /root/.ssh/known_hosts && \
@@ -30,6 +27,9 @@ RUN pip install pyepics p4p pydantic numpy ruamel.yaml scipy matplotlib jupyterl
 RUN chmod -R a+rX /home/web
 
 USER janus-developer
+ADD requirements.txt .
+RUN "$VIRTUAL_ENV/bin/python" -m pip install -r requirements.txt && \
+    "$VIRTUAL_ENV/bin/python" -c "import requests"
 
 WORKDIR /home/janus-developer/workspace
 CMD ["/bin/bash"]

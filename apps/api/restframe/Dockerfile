@@ -16,7 +16,7 @@ WORKDIR /laura
 RUN git fetch -a && git checkout main && git pull
 
 WORKDIR /simba
-RUN git fetch -a && git checkout main && git pull
+RUN git fetch -a && git checkout feature/split-genesis-line && git pull
 
 
 WORKDIR /
@@ -38,5 +38,7 @@ ENV PYTHONPATH=/home/web/webapp
 ENV PYTHONUNBUFFERED=1
 
 ADD entrypoint.sh /home/web/webapp/
+ADD requirements.txt /home/web/webapp/
+RUN pip install -r requirements.txt
 
 ENTRYPOINT ["./entrypoint.sh"]

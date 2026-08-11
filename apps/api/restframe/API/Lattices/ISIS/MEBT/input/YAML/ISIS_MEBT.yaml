@@ -20,7 +20,7 @@ elements:
     negative_extent: -0.045
     positive_extent: 0.045
   ISIS-MEBT-CAV-01:
-    Structure_Type: StandingWave
+    structure_type: StandingWave
     centre: [0.0, 0.0, 0.1165]
     field_amplitude: 1820000
     field_definition: '$master_lattice_location$QWR_efielddata.dat'
@@ -79,7 +79,7 @@ elements:
     type: screen
     centre: [0, 0, 0.6]
   ISIS-MEBT-CAV-02:
-    Structure_Type: StandingWave
+    structure_type: StandingWave
     centre: [0.0, 0.0, 0.6585]
     field_amplitude: 1180000
     field_definition: '$master_lattice_location$QWR_efielddata.dat'
@@ -218,7 +218,7 @@ elements:
     type: screen
     centre: [0, 0, 1.2]
   ISIS-MEBT-CAV-03:
-    Structure_Type: StandingWave
+    structure_type: StandingWave
     centre: [0.0, 0.0, 1.2465]
     field_amplitude: 650000
     field_definition: '$master_lattice_location$QWR_efielddata.dat'
@@ -284,7 +284,7 @@ elements:
     type: screen
     centre: [0, 0, 1.7]
   ISIS-MEBT-CAV-04:
-    Structure_Type: StandingWave
+    structure_type: StandingWave
     centre: [0.0, 0.0, 1.7485]
     field_amplitude: 1610000
     field_definition: '$master_lattice_location$QWR_efielddata.dat'

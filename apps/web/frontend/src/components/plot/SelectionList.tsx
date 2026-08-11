@@ -8,8 +8,13 @@ import {
 } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
 
+interface SelectionItem {
+  label: string;
+  value: string;
+}
+
 interface SelectionListProps {
-  items: string[];
+  items: SelectionItem[];
   selectedItem: string | null;
   onSelect: (value: string) => void;
   placeholder: string;
@@ -30,18 +35,18 @@ const SelectionList = ({
         <CommandEmpty>{emptyText}</CommandEmpty>
         {items.map((item) => (
           <CommandItem
-            key={item}
-            value={item}
+            key={item.value}
+            value={item.value}
             onSelect={() => {
-              onSelect(item);
-              navigator.clipboard.writeText(item);
+              onSelect(item.value);
+              navigator.clipboard.writeText(item.value);
             }}
             className={cn(
               "relative group",
-              selectedItem === item && "bg-accent text-accent-foreground",
+              selectedItem === item.value && "bg-accent text-accent-foreground",
             )}
           >
-            <span className="truncate font-mono text-s">{item}</span>
+            <span className="truncate font-mono text-s">{item.label}</span>
             <Clipboard className="absolute right-2 size-3 opacity-0 pointer-events-none transition-opacity group-hover:opacity-40" />
           </CommandItem>
         ))}

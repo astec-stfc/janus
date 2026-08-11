@@ -17,6 +17,10 @@ export default defineConfig({
         target: process.env.LATTICE_API_URL ?? "http://lattice_api:5000",
         changeOrigin: true,
       },
+      "/graphql": {
+        target: process.env.LATTICE_API_URL ?? "http://lattice_api:5000",
+        changeOrigin: true,
+      },
       "/restframe": {
         target: process.env.RESTFRAME_URL ?? "http://restframe:8000",
         changeOrigin: true,

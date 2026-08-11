@@ -4,8 +4,8 @@ RUN apt-get update && apt-get install procps ffmpeg libsm6 libxext6 curl openssh
 
 RUN python -m pip install pydantic p4p requests --no-cache-dir
 
-ARG FACILITY
 ARG LAURA_LATTICE_REPO=git@gitlab.stfc.ac.uk:xkc85723/laura-lattices.git
+ARG FACILITY
 ENV FACILITY=$FACILITY
 ENV LAURA_LATTICE_REPO=$LAURA_LATTICE_REPO
 
@@ -27,7 +27,7 @@ esac \
 
 RUN pip install --no-cache-dir -r /sarabi/requirements.txt
 
-RUN mkdir -p /sarabi/yaml && cp -r "/laura-lattices/${FACILITY}/YAML" /sarabi/yaml/nala
+RUN mkdir -p /sarabi/yaml && cp -r "/laura-lattices/${FACILITY}/YAML" /sarabi/yaml/${FACILITY}
 
 WORKDIR /sarabi
 RUN python3.12 render_iocs.py --settings=settings.yaml

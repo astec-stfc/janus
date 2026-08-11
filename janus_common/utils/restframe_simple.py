@@ -32,12 +32,15 @@ class API:
         return resp.json()
 
     def get_lattice(self) -> Lattice:
+        binary_url = self.baseurl + "lattice/binary"
+        resp = requests.get(binary_url, timeout=90)
+        if resp.ok:
+            return Lattice.from_binary(resp.content, arrays_as_lists=False)
+
+        # Fallback for older deployments without binary endpoint support.
         url = self.baseurl + "lattice"
-        resp = requests.get(url)
-        return Lattice.model_validate(
-            resp.json(),
-            from_attributes=True,
-        )
+        resp = requests.get(url, timeout=30)
+        return Lattice.model_validate(resp.json(), from_attributes=True)
 
     def get_latest_run_uuid(self) -> str:
         url = self.baseurl + "uuid"

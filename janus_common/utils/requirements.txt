@@ -1,1 +1,4 @@
 kafka-python
+numpy
+zstandard
+requests

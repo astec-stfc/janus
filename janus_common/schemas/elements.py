@@ -1,3 +1,4 @@
+from datetime import datetime
 from pydantic import (
     BaseModel,
     ConfigDict,
@@ -7,7 +8,7 @@ from pydantic import (
     model_validator
 )
 
-from typing import List, Dict, Type, Optional, Literal
+from typing import List, Dict, Type, Optional, Literal, Any
 from enum import Enum
 from janus_common.utils.numeric import round_it
 from janus_common.utils.constants import SIGFIG
@@ -487,7 +488,8 @@ class Section(BaseModel):
     def get_elements_dict(self) -> Dict:
         elems = {}
         for elem in self.get_elements():
-            elems.update({elem.name: elem})
+            if elem.name not in elems:
+                elems.update({elem.name: elem})
         return elems
 
 
@@ -497,12 +499,32 @@ class Lattice(BaseModel):
     set_initial_conditions: str = ""
     sections: Dict[str, Section]
     uuid: str | None = None
+    timestamp: datetime | None = None
     beam_summary: BeamSummary | None = None
     success: bool | None = None
     client_id: str | None = None
 
     class Config:
         from_attributes = True
+
+    @field_validator("timestamp", mode="before")
+    def validate_timestamp(cls, value):
+        if value is None:
+            return None
+        if isinstance(value, (int, float)):
+            return datetime.fromtimestamp(value)
+        if isinstance(value, str):
+            try:
+                return datetime.fromisoformat(value)
+            except ValueError:
+                return datetime.fromtimestamp(float(value))
+        return value
+
+    @field_serializer("timestamp")
+    def serialize_timestamp(self, value: datetime | None) -> str | None:
+        if value is None:
+            return None
+        return value.isoformat()
 
     def get_elements(
         self,
@@ -539,11 +561,69 @@ class Lattice(BaseModel):
     ) -> Dict:
         elems = {}
         for elem in self.get_elements(elem_type):
-            elems.update({elem.name: elem})
+            if elem.name not in elems:
+                elems.update({elem.name: elem})
         return elems
 
     def get_sections(self) -> List[Section]:
         return [section for _, section in self.sections.items()]
+
+    def without_large_float_arrays(self) -> "Lattice":
+        """Return a deep-copied lattice with large beam arrays stripped to None."""
+        lattice = self.model_copy(deep=True)
+
+        if lattice.beam_summary is not None:
+            for field_name in lattice.beam_summary.model_fields:
+                setattr(lattice.beam_summary, field_name, None)
+
+        for section in lattice.sections.values():
+            if section.screens:
+                for screen in section.screens:
+                    if screen.beam is None:
+                        continue
+                    for field_name in screen.beam.model_fields:
+                        setattr(screen.beam, field_name, None)
+
+            if section.markers:
+                for marker in section.markers:
+                    if marker.beam is None:
+                        continue
+                    for field_name in marker.beam.model_fields:
+                        setattr(marker.beam, field_name, None)
+
+        return lattice
+
+    def to_binary(self, compress: bool = True, compression_level: int = 3) -> bytes:
+        """Serialize this lattice into the shared binary transport format.
+
+        The binary form keeps the schema structure in JSON metadata while moving
+        large float arrays into a contiguous binary payload for transport/storage.
+        """
+        from janus_common.schemas.binary_lattice_codec import lattice_to_binary
+
+        return lattice_to_binary(self, compress=compress, compression_level=compression_level)
+
+    def binary_metadata(self) -> Dict[str, Any]:
+        """Build the binary metadata manifest without materializing payload bytes."""
+        from janus_common.schemas.binary_lattice_codec import build_lattice_binary_metadata
+
+        return build_lattice_binary_metadata(self)
+
+    @classmethod
+    def from_binary(
+        cls,
+        data: bytes,
+        arrays_as_lists: bool = True,
+    ) -> "Lattice":
+        """Deserialize shared binary transport bytes back into a Lattice instance.
+
+        ``arrays_as_lists=False`` is useful on hot paths that want numpy arrays
+        during intermediate processing before Pydantic list materialization.
+        """
+        from janus_common.schemas.binary_lattice_codec import binary_to_lattice
+
+        lattice_dict = binary_to_lattice(data, arrays_as_lists=arrays_as_lists)
+        return cls.model_validate(lattice_dict)
 
 
 class SimulationState(Enum):
