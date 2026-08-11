@@ -17,6 +17,17 @@ services:
       - LAURA_LATTICE_REPO=git@gitlab.stfc.ac.uk:xkc85723/laura-lattices.git
     volumes:
       - ./apps/api/restframe/CLARA:/home/web/webapp/Output/CLARA
+
+  hsds_backend:
+    build:
+      args:
+        FACILITY: CLARA
+    extends:
+      file: compose/server.yaml
+      service: hsds_backend
+    volumes:
+      - ./apps/api/restframe/CLARA:/data/filestore:ro
+
   sandbox:
     extends:
       file: compose/client.yaml

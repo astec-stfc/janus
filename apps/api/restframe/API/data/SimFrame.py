@@ -188,9 +188,8 @@ class SimFrame_Interface:
             elem.camera.analysis.covariance = None
         return
 
-    def update_beam(self, name, elem):
+    def update_beam(self, name, elem, uuid):
         """We are using twiss at the START of the element, not the end (as is normal in Elegant)"""
-        uuid = self.track_uuid
         basename = self.runs_directory + str(uuid) + "/" + name + ".openpmd.hdf5"
         elembeam = None
         twiss = self.get_element_twiss(name)
@@ -242,7 +241,7 @@ class SimFrame_Interface:
             # self.elemcentroid.update({'q': self.elembeam.total_charge.val})
             elem.centroid = Centroid(**elemcentroid)
             fw_elem = self.framework[name] if name in self.framework else None
-            if isinstance(elem, (Screen, Marker, PhotonMonitor)):
+            if isinstance(elem, (Screen, Marker)):
                 try:
                     elembeam = rbf.beam(filename=basename)
                 except FileNotFoundError as e:
@@ -279,21 +278,21 @@ class SimFrame_Interface:
     # def update_magnet(self, elem):
     #     elem.KnL = [getattr()]
 
-    def update_wavefront(self, name, elem):
+    def update_wavefront(self, name, elem, uuid):
         if isinstance(elem, PhotonMonitor):
             try:
                 from pmd_beamphysics.wavefront.wavefront import Wavefront
-                fname = self.runs_directory + str(self.track_uuid) + "/" + name + ".fld.h5"
+                fname = self.runs_directory + str(uuid) + "/" + name + ".fld.h5"
                 wv = Wavefront.from_genesis4(fname)
                 elem.intensity = wv.energy
             except Exception as e:
                 print(f"Failed to update wavefront for {name}: {e}")
 
-    def update_beam_and_screen(self, name, elem):
-        self.update_beam(name, elem)
+    def update_beam_and_screen(self, name, elem, uuid):
+        self.update_beam(name, elem, uuid)
         # if isinstance(elem, Screen):
         #     elem.camera.arraydata = self.get_screen_image(elem.name)
-        self.update_wavefront(name, elem)
+        self.update_wavefront(name, elem, uuid)
         # if isinstance(elem, Marker):
         #     elem.beam = self.get_beam(elem.name)
         elem.updated = False
@@ -328,7 +327,7 @@ class SimFrame_Interface:
             section_elements = list(section.get_elements_dict().items())
             if section_success:
                 futures = [
-                    self.beam_threadpool.submit(self.update_beam_and_screen, name, elem)
+                    self.beam_threadpool.submit(self.update_beam_and_screen, name, elem, section.uuid)
                     for name, elem in section_elements
                 ]
                 for future in futures:
@@ -498,8 +497,8 @@ class SimFrame_Interface:
                                     if req == "field_amplitude":
                                         factor = 1
                                         if (
-                                            fw_obj.structure_Type == "TravellingWave"
-                                            and fw_obj.n_cells > 2
+                                            fw_obj.structure_type == "TravellingWave"
+                                            and fw_obj.cavity.n_cells > 2
                                         ):
                                             factor = 1 / float(
                                                 (self.get_cells(fw_obj) + 3.8)
@@ -649,7 +648,7 @@ class SimFrame_Interface:
                                     req == "field_amplitude"
                                 ):
                                     if v.__class__.__name__.lower() == "rfcavity":
-                                        if v.cavity.structure_Type == "TravellingWave":
+                                        if v.cavity.structure_type == "TravellingWave":
                                             params["field_amplitude"] = round_it(
                                                 float(
                                                     (self.get_cells(v) + 3.8)

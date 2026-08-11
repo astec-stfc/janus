@@ -11,7 +11,7 @@ WORKDIR /pycatap
 RUN pip install -e .
 
 WORKDIR /laura
-RUN git fetch -a && git checkout fix/split-genesis-line && git pull
+RUN git fetch -a && git checkout main && git pull
 RUN pip install -e . --no-deps
 RUN pip install -r requirements_lightweight.txt
 

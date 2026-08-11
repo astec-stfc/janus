@@ -32,7 +32,7 @@ COPY ASTRA $VIRTUAL_ENV/lib/python3.10/site-packages/SimCodes/ASTRA/
 
 WORKDIR /laura
 # Consolidate all git clones into single RUN block + remove .git to save space
-RUN git fetch -a && git checkout fix/split-genesis-line && git pull
+RUN git fetch -a && git checkout main && git pull
 RUN pip install --no-cache-dir -e . --no-deps
 RUN pip install --no-cache-dir -r requirements.txt
 
