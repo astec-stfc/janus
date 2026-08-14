@@ -1,5 +1,6 @@
 """GraphQL schema definitions for lattice queries"""
 
+from datetime import datetime
 from typing import Optional, List
 import strawberry
 
@@ -242,6 +243,17 @@ class LatticeResult:
 
 
 @strawberry.type
+class RunSummary:
+    """Summary information for a simulation run."""
+
+    uuid: str
+    facility: str
+    timestamp: Optional[datetime]
+    client_id: Optional[str]
+    success: bool
+
+
+@strawberry.type
 class FacilityInfo:
     """Facility information"""
 
@@ -337,6 +349,13 @@ class Query:
         from gql import resolvers
 
         return resolvers.get_run_uuids()
+
+    @strawberry.field
+    def get_runs(self) -> List[RunSummary]:
+        """Get summaries for all simulation runs."""
+        from gql import resolvers
+
+        return resolvers.get_runs()
 
     @strawberry.field
     def get_screen_names(self, uuid: str) -> List[str]:

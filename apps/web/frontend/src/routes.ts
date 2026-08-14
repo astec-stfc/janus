@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { Activity, ChartLine, Download, Home } from "lucide-react";
+import { Activity, ChartLine, Download, Home, Table2 } from "lucide-react";
 import type { ComponentType } from "react";
 
 import DownloadComponent from "@/pages/Download";
@@ -7,6 +7,7 @@ import HomeComponent from "@/pages/Home";
 import PVManagerComponent from "@/pages/PVManager";
 import PlotComponent from "@/pages/Plot";
 import PlotTwissComponent from "@/pages/PlotTwiss";
+import RunsComponent from "@/pages/Runs";
 
 export interface AppRoute {
   path: string;
@@ -29,6 +30,7 @@ export const appRoutes: AppRoute[] = [
     icon: Activity,
     component: PVManagerComponent,
   },
+  { path: "/runs", label: "Runs", icon: Table2, component: RunsComponent },
   { path: "/plot", label: "Plot", icon: ChartLine, component: PlotComponent },
   {
     path: "/plot-twiss",

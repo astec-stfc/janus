@@ -24,6 +24,7 @@ from gql.schemas import (
     LatticeResult,
     FacilityInfo,
     MagnetInput,
+    RunSummary,
     SectionInfo,
     SectionInput,
     SigmaRangeInput,
@@ -91,6 +92,29 @@ def get_run_uuids() -> List[str]:
             .filter(DBLattice.facility == os.getenv("FACILITY", "CLARA"))
             .all()
         ]
+    finally:
+        db.close()
+
+
+def get_runs() -> List[RunSummary]:
+    """Get summary data for simulation runs."""
+    db = SessionLocal()
+    try:
+        rows = (
+            db.query(
+                DBLattice.uuid,
+                DBLattice.facility,
+                DBLattice.timestamp,
+                DBLattice.client_id,
+                DBLattice.success,
+            )
+            .order_by(
+                DBLattice.timestamp.desc().nulls_last(),
+                DBLattice.id.desc(),
+            )
+            .all()
+        )
+        return [RunSummary(**row._mapping) for row in rows]
     finally:
         db.close()
 

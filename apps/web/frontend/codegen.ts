@@ -10,6 +10,13 @@ const config: CodegenConfig = {
     "src/graphql/generated/": {
       preset: "client",
       config: {
+        scalars: {
+          // tell codegen how to map gql-specific types to ts types.
+          DateTime: {
+            input: "string",
+            output: "string", // represent gql DateTime as string
+          },
+        },
         useTypeImports: true,
       },
     },
