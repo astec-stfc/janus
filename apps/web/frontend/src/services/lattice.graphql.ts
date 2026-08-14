@@ -2,14 +2,27 @@ import { graphqlClient } from "../graphql/client";
 import {
   GetBeamSummaryDocument,
   GetMarkerNamesDocument,
+  GetRunsDocument,
   GetScreenNamesDocument,
   GetRunUuidsDocument,
 } from "../graphql/generated/graphql";
-import type { BeamSummary, BeamSummaryPlotResponse } from "../types";
+import type { BeamSummary, BeamSummaryPlotResponse, RunSummary } from "../types";
 
 const getRunUuids = async (): Promise<string[]> => {
   const data = await graphqlClient.request(GetRunUuidsDocument);
   return data.getRunUuids;
+};
+
+const getRuns = async (): Promise<RunSummary[]> => {
+  const data = await graphqlClient.request(GetRunsDocument);
+
+  return data.getRuns.map((run) => ({
+    uuid: run.uuid,
+    facility: run.facility,
+    timestamp: run.timestamp,
+    client_id: run.clientId,
+    success: run.success,
+  }));
 };
 
 const getScreenNames = async (uuid: string): Promise<string[]> => {
@@ -22,7 +35,9 @@ const getMarkerNames = async (uuid: string): Promise<string[]> => {
   return data.getMarkerNames;
 };
 
-const getBeamSummary = async (uuid: string): Promise<BeamSummaryPlotResponse> => {
+const getBeamSummary = async (
+  uuid: string,
+): Promise<BeamSummaryPlotResponse> => {
   const data = await graphqlClient.request(GetBeamSummaryDocument, { uuid });
   const result = data.getBeamSummary;
 
@@ -31,7 +46,11 @@ const getBeamSummary = async (uuid: string): Promise<BeamSummaryPlotResponse> =>
   }
 
   if (!result.beamSummaryData) {
-    return { uuid: result.uuid, facility: result.facility, beamSummaryData: null };
+    return {
+      uuid: result.uuid,
+      facility: result.facility,
+      beamSummaryData: null,
+    };
   }
 
   return {
@@ -55,6 +74,7 @@ const getBeamSummary = async (uuid: string): Promise<BeamSummaryPlotResponse> =>
 
 export default {
   getRunUuids,
+  getRuns,
   getScreenNames,
   getMarkerNames,
   getBeamSummary,

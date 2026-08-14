@@ -15,9 +15,11 @@ import type { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-
  */
 type Documents = {
     "query GetRunUuids {\n  getRunUuids\n}\n\nquery GetScreenNames($uuid: String!) {\n  getScreenNames(uuid: $uuid)\n}\n\nquery GetMarkerNames($uuid: String!) {\n  getMarkerNames(uuid: $uuid)\n}\n\nquery GetBeamSummary($uuid: String!) {\n  getBeamSummary(uuid: $uuid) {\n    uuid\n    facility\n    beamSummaryData {\n      xParameter {\n        name\n        label\n        unit\n        values\n      }\n      yParameters {\n        name\n        label\n        values\n      }\n    }\n  }\n}": typeof types.GetRunUuidsDocument,
+    "query GetRuns {\n  getRuns {\n    uuid\n    facility\n    timestamp\n    clientId\n    success\n  }\n}": typeof types.GetRunsDocument,
 };
 const documents: Documents = {
     "query GetRunUuids {\n  getRunUuids\n}\n\nquery GetScreenNames($uuid: String!) {\n  getScreenNames(uuid: $uuid)\n}\n\nquery GetMarkerNames($uuid: String!) {\n  getMarkerNames(uuid: $uuid)\n}\n\nquery GetBeamSummary($uuid: String!) {\n  getBeamSummary(uuid: $uuid) {\n    uuid\n    facility\n    beamSummaryData {\n      xParameter {\n        name\n        label\n        unit\n        values\n      }\n      yParameters {\n        name\n        label\n        values\n      }\n    }\n  }\n}": types.GetRunUuidsDocument,
+    "query GetRuns {\n  getRuns {\n    uuid\n    facility\n    timestamp\n    clientId\n    success\n  }\n}": types.GetRunsDocument,
 };
 
 /**
@@ -38,6 +40,10 @@ export function graphql(source: string): unknown;
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "query GetRunUuids {\n  getRunUuids\n}\n\nquery GetScreenNames($uuid: String!) {\n  getScreenNames(uuid: $uuid)\n}\n\nquery GetMarkerNames($uuid: String!) {\n  getMarkerNames(uuid: $uuid)\n}\n\nquery GetBeamSummary($uuid: String!) {\n  getBeamSummary(uuid: $uuid) {\n    uuid\n    facility\n    beamSummaryData {\n      xParameter {\n        name\n        label\n        unit\n        values\n      }\n      yParameters {\n        name\n        label\n        values\n      }\n    }\n  }\n}"): (typeof documents)["query GetRunUuids {\n  getRunUuids\n}\n\nquery GetScreenNames($uuid: String!) {\n  getScreenNames(uuid: $uuid)\n}\n\nquery GetMarkerNames($uuid: String!) {\n  getMarkerNames(uuid: $uuid)\n}\n\nquery GetBeamSummary($uuid: String!) {\n  getBeamSummary(uuid: $uuid) {\n    uuid\n    facility\n    beamSummaryData {\n      xParameter {\n        name\n        label\n        unit\n        values\n      }\n      yParameters {\n        name\n        label\n        values\n      }\n    }\n  }\n}"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "query GetRuns {\n  getRuns {\n    uuid\n    facility\n    timestamp\n    clientId\n    success\n  }\n}"): (typeof documents)["query GetRuns {\n  getRuns {\n    uuid\n    facility\n    timestamp\n    clientId\n    success\n  }\n}"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

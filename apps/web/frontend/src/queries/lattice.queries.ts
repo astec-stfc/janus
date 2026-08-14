@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 export type { BeamKind };
 
 const RUN_UUIDS_STALE_TIME_MS = 300_000;
+const RUNS_STALE_TIME_MS = 300_000;
 const UUID_SCOPED_GC_TIME_MS = 5 * 60 * 1000;
 
 export const latticeQueryKeys = {
@@ -19,6 +20,7 @@ export const latticeQueryKeys = {
   // here is not very useful, but the remaining tanstack features are useful.
   all: ["lattice"] as const,
   runUuids: () => [...latticeQueryKeys.all, "runUuids"] as const,
+  runs: () => [...latticeQueryKeys.all, "runs"] as const,
   byUuid: (uuid: string | null) => [...latticeQueryKeys.all, uuid] as const,
   screens: (uuid: string | null) =>
     [...latticeQueryKeys.byUuid(uuid), "screens"] as const,
@@ -43,6 +45,13 @@ export const useRunUuidsQuery = () =>
     queryKey: latticeQueryKeys.runUuids(), // 2. cache under this key.
     queryFn: latticeGraphqlService.getRunUuids, // 1. fetch uuids to get data
     staleTime: RUN_UUIDS_STALE_TIME_MS,
+  });
+
+export const useRunsQuery = () =>
+  useQuery({
+    queryKey: latticeQueryKeys.runs(),
+    queryFn: latticeGraphqlService.getRuns,
+    staleTime: RUNS_STALE_TIME_MS,
   });
 
 export const useScreenNamesQuery = (uuid: string | null) =>

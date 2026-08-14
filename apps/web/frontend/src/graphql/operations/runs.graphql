@@ -1,0 +1,9 @@
+query GetRuns {
+  getRuns {
+    uuid
+    facility
+    timestamp
+    clientId
+    success
+  }
+}

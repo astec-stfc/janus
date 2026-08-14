@@ -54,6 +54,14 @@ export interface LatticeResponse {
   beam_summary: BeamSummary | null;
 }
 
+export interface RunSummary {
+  uuid: string;
+  facility: string;
+  timestamp: string | null;
+  client_id: string | null;
+  success: boolean;
+}
+
 export interface BeamSummaryParameter {
   name: keyof BeamSummary;
   label: string;
