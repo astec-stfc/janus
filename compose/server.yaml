@@ -70,7 +70,14 @@ services:
       ssh:
         - default
       args:
+        SIMBA_REPO: ${SIMBA_REPO}
+        SIMBA_VERSION: ${SIMBA_VERSION}
+        LAURA_REPO: ${LAURA_REPO}
+        LAURA_VERSION: ${LAURA_VERSION}
         LAURA_LATTICE_REPO: ${LAURA_LATTICE_REPO}
+        LAURA_LATTICES_VERSION: ${LAURA_LATTICES_VERSION}
+        ACRONICTA_CATAP_REPO: ${ACRONICTA_CATAP_REPO}
+        ACRONICTA_CATAP_VERSION: ${ACRONICTA_CATAP_VERSION}
     ports:
       - ${RESTFRAME_PORT:-8000}:${RESTFRAME_PORT:-8000}
     expose:
@@ -87,7 +94,6 @@ services:
       - log_level=${log_level:-error}
       - PYTHONUNBUFFERED=1
     volumes:
-      - ../apps/api/restframe/${FACILITY:-CLARA}:/home/web/webapp/Output/${FACILITY:-CLARA}
       - ../janus_common:/home/web/webapp/janus_common
 
   # lattice API handles the storage and transport of the Lattice objects

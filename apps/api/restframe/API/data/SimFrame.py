@@ -1032,6 +1032,10 @@ class SimFrame_Interface:
             status_dict.update({"momentum": self.get_magnet_momentum()})
         return status_dict
 
+    def get_default_layout_name(self) -> str:
+        """return default layout name"""
+        return self.framework.machine.default_path
+
     def get_screens(self) -> dict:
         """return list of screen names"""
         return {"screens": self.latticeclass.get_screens()}

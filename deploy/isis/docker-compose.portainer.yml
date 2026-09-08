@@ -1,0 +1,332 @@
+# Self-contained Janus stack for deployment from Portainer.
+#
+# Unlike the dev compose files, this file has no build sections, no includes
+# and no bind mounts into the repo — every service runs from a pre-built image
+# in the internal registry. Build and push the images first:
+#
+#   ./deploy/isis/build-and-push.sh -k /path/to/ssh/key      (or: make registry-push GHCR_KEY=...)
+#
+# Portainer does not expand ${VAR} substitutions in stack files, so every value
+# below is written out literally. Defaults mirror stack mode (.env.stack): all
+# services talk to each other by service name on the stack network. To change a
+# value (registry, tag, facility, ports, hosts) edit it directly in this file.
+#
+#   registry   svc-docker-registry.controls.isis.rl.ac.uk
+#   tag        latest
+#   facility   JFEL  (lowercase in image names, uppercase FACILITY env)
+#
+# Note for browser access: the frontend is served on port 5173 of the Docker
+# host; set the LATTICE_API_URL/RESTFRAME_URL hosts to the host's DNS name if
+# the web UI needs to reach the APIs from outside the stack network.
+
+services:
+  # kafka broker handles messaging between services
+  broker:
+    image: docker.redpanda.com/redpandadata/redpanda:latest
+    command:
+      - redpanda
+      - start
+      - --kafka-addr=internal://0.0.0.0:29092,external://0.0.0.0:9092
+      - --advertise-kafka-addr=internal://broker:29092,external://broker:9092
+      - --rpc-addr=0.0.0.0:33145
+      - --advertise-rpc-addr=broker:33145
+      - --mode=dev-container
+      - --smp=1
+      - --default-log-level=error
+    ports:
+      - "9093:9092"
+
+  # Lattice DB stores results of all lattices that have passed through the Lattice API
+  lattice_db:
+    image: postgres:13
+    ports:
+      - "5431:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=janus
+      - log_level=error
+    healthcheck:
+      test: /usr/bin/pg_isready -U postgres
+      interval: 5s
+      timeout: 10s
+      retries: 120
+
+  # RESTFRAME handles the distribution of simulations to SimFrame instances
+  restframe:
+    image: svc-docker-registry.controls.isis.rl.ac.uk/janus/restframe:latest
+    ports:
+      - 8020:8000
+    expose:
+      - 8000
+    # healthcheck:
+    #   test: wget --no-verbose -O /dev/null --tries=1 http://localhost:8000/lattice/ || exit 1
+    #   interval: 5s
+    #   timeout: 5s
+    #   retries: 10
+    #   start_period: 180s
+    environment:
+      - FACILITY=JFEL
+      - KAFKA_PORT=29092
+      - BROKER_HOST=broker
+      - log_level=error
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - restframe_output:/home/web/webapp/Output/JFEL
+
+  # HSDS object store serving the HDF5 simulation output
+  hsds:
+    image: svc-docker-registry.controls.isis.rl.ac.uk/janus/hsds:latest
+    ports:
+      - 5101:5101
+    volumes:
+      - hsds_store:/hsds-store
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5101/info"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  # HSDS backend: reads RestFrame's output and serves it through HSDS.
+  # In the dev compose files this and restframe bind-mount the same host
+  # directory; here they share the restframe_output volume instead.
+  hsds_backend:
+    image: svc-docker-registry.controls.isis.rl.ac.uk/janus/hsds-backend:latest
+    # No published port: nothing outside the stack talks to this service --
+    # hsds_backend feeds hsds, which is reached at http://hsds:5101 by service
+    # name. Host ports 8001 and 8002 are both already taken on athena (8002 by
+    # mcp-gateway_mcp-terminal), and publishing an occupied ingress port makes
+    # the entire Swarm stack deploy fail. Add a mapping back only if you need
+    # it from outside, after checking 'docker service ls' for a free port.
+    volumes:
+      - restframe_output:/data/filestore:ro
+    environment:
+      HSDS_URL: http://hsds:5101
+      HSDS_USERNAME: admin
+      HSDS_PASSWORD: admin
+      HS_ENDPOINT: http://hsds:5101
+      HS_USERNAME: admin
+      HS_PASSWORD: admin
+      LOG_LEVEL: warning
+    # Short form only: 'docker stack deploy' rejects the long form with
+    # condition:, and ignores depends_on ordering entirely under Swarm.
+    depends_on:
+      - hsds
+
+  # lattice API handles the storage and transport of the Lattice objects
+  lattice_api:
+    image: svc-docker-registry.controls.isis.rl.ac.uk/janus/lattice-api:latest
+    stdin_open: true
+    tty: true
+    expose:
+      - 5000
+    ports:
+      - "1337:5000"
+    environment:
+      - FACILITY=JFEL
+      - BROKER_HOST=broker
+      - KAFKA_PORT=29092
+      - log_level=error
+      - RESTFRAME_HOST=restframe
+      - RESTFRAME_PORT=8000
+      - PYTHONUNBUFFERED=1
+      # inlined from apps/api/lattice/.env.dev (not available in Portainer)
+      - DATABASE_URL=postgresql+psycopg2://postgres:postgres@lattice_db:5432/janus
+      - SQL_HOST=lattice_db
+      - SQL_PORT=5432
+      - DATABASE=postgres
+    depends_on:
+      - lattice_db
+      - restframe
+    healthcheck:
+      test: wget --no-verbose -O /dev/null --tries=1 http://localhost:5000/v1/ || exit 1
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+
+  # comm to restframe handles requests to restframe from the lattice API
+  lattice_to_restframe:
+    image: svc-docker-registry.controls.isis.rl.ac.uk/janus/lattice-to-restframe:latest
+    depends_on:
+      - lattice_api
+      - restframe
+    environment:
+      - PYTHONUNBUFFERED=1
+      - KAFKA_PORT=29092
+      - RESTFRAME_HOST=restframe
+      - RESTFRAME_PORT=8000
+
+  # restframe to comm handles the return of results of simulation to the lattice API
+  # One-shot seeder: POSTs the master lattice into the lattice API and exits.
+  # Restart only on failure — swarm's default (any) restart-loops it forever.
+  restframe_to_lattice:
+    image: svc-docker-registry.controls.isis.rl.ac.uk/janus/restframe-to-lattice:latest
+    deploy:
+      restart_policy:
+        condition: on-failure
+    depends_on:
+      - lattice_api
+      - restframe
+    environment:
+      - PYTHONUNBUFFERED=1
+      - KAFKA_PORT=29092
+      - RESTFRAME_HOST=restframe
+      - RESTFRAME_PORT=8000
+
+  frontend:
+    image: svc-docker-registry.controls.isis.rl.ac.uk/janus/frontend:latest
+    ports:
+      - 5173:5173
+    depends_on:
+      - pvws
+    environment:
+      - LATTICE_API_URL=http://lattice_api:5000
+      - RESTFRAME_URL=http://restframe:8000
+      - VITE_PVWS_PORT=8080
+      # hostnames the Vite dev server accepts (comma-separated, or "all");
+      # overrides the default baked in by deploy/isis/build-and-push.sh
+      - ALLOWED_HOSTS=athena.isis.rl.ac.uk
+
+  # PVWS (PV Web Socket) for accessing PVs directly via frontend
+  pvws:
+    networks:
+      - controls
+    image: svc-docker-registry.controls.isis.rl.ac.uk/janus/pvws:latest
+    ports:
+      - "8080:8080"
+    depends_on:
+      - physics_iocs
+      - ioc
+    environment:
+      - PV_THROTTLE_MS=100
+      - PV_WRITE_SUPPORT=true
+      - EPICS_PVA_NAME_SERVERS=physics_iocs:5075
+      - EPICS_CA_ADDR_LIST=ioc
+      - EPICS_CA_SERVER_PORT=6090
+
+  sandbox:
+    image: svc-docker-registry.controls.isis.rl.ac.uk/janus/sandbox:latest
+    tty: true
+    stdin_open: true
+    user: "janus-developer"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - EPICS_CA_SERVER_PORT=6090
+      - EPICS_CA_ADDR_LIST=ioc
+      - EPICS_PVA_NAME_SERVERS=physics_iocs:5075
+    volumes:
+      - sandbox_workspace:/home/janus-developer/workspace
+    command: >-
+      jupyter lab --ip=0.0.0.0 --port=8889 --no-browser
+      --ServerApp.token='' --ServerApp.password=''
+    ports:
+      - "8889:8889"
+    networks:
+      - controls
+
+  # service to update the physics IOCs when new results come through from RestFrame
+  lattice_to_epics:
+    networks:
+      - controls
+      - default
+    image: svc-docker-registry.controls.isis.rl.ac.uk/janus/lattice-to-epics:latest
+    depends_on:
+      - physics_iocs
+    environment:
+      - EPICS_PVA_AUTO_ADDR_LIST=YES
+      - EPICS_PVA_BROADCAST_PORT=5076
+      - EPICS_PVA_NAME_SERVERS=physics_iocs:5075
+      - PYTHONUNBUFFERED=1
+      - CLIENT_ID=janus-stack
+      - LATTICE_API_HOST=lattice_api
+      - LATTICE_API_PORT=5000
+      - BROKER_HOST=broker
+      - KAFKA_PORT=9092
+
+  # Soft PVA IOCs containing simulation results
+  physics_iocs:
+    networks:
+      - controls
+      - default
+    image: svc-docker-registry.controls.isis.rl.ac.uk/janus/physics-iocs:latest
+    entrypoint: /src/app/entrypoint.sh
+    environment:
+      - PYTHONUNBUFFERED=1
+      - EPICS_PVA_SERVER_PORT=5075
+      - EPICS_PVAS_SERVER_PORT=5075
+      - EPICS_PVA_BROADCAST_PORT=5076
+      - EPICS_PVAS_BROADCAST_PORT=5076
+      - EPICS_PVA_AUTO_ADDR_LIST=YES
+      - EPICS_PVA_ADDR_LIST=
+      - LATTICE_API_HOST=lattice_api
+      - LATTICE_API_PORT=5000
+    # ports:
+    #   - 6091:6091/tcp
+    #   - 6091:6091/udp
+    volumes:
+      - physics_output:/src/app/output
+
+  # Virtual accelerator IOC generated from the LAURA lattice by SARABI
+  ioc:
+    networks:
+      - controls
+    image: svc-docker-registry.controls.isis.rl.ac.uk/janus/ioc-jfel:latest
+    tty: true
+    # ports:
+    #   - 6090:6090/tcp
+    #   - 6090:6090/udp
+    #   - 6092:6092/tcp
+    #   - 6092:6092/udp
+    environment:
+      - EPICS_CA_SERVER_PORT=6090
+      - EPICS_CAS_SERVER_PORT=6090
+      - EPICS_CA_AUTO_ADDR_LIST=NO
+      - EPICS_CA_ADDR_LIST=localhost
+      - EPICS_PVA_AUTO_ADDR_LIST=YES
+      - EPICS_PVA_ADDR_LIST=
+      - EPICS_PVAS_SERVER_PORT=5075
+      - EPICS_PVA_SERVER_PORT=5075
+      - EPICS_PVA_BROADCAST_PORT=5076
+      - EPICS_PVAS_BROADCAST_PORT=5076
+
+  # managing requests from changes in facility IOCs to the lattice API
+  epics_to_lattice:
+    networks:
+      - controls
+      - default
+    image: svc-docker-registry.controls.isis.rl.ac.uk/janus/epics-to-lattice-jfel:latest
+    depends_on:
+      - physics_iocs
+      - ioc
+    environment:
+      - EPICS_CA_ADDR_LIST=ioc
+      - EPICS_CA_MAX_ARRAY_BYTES=1000000000
+      - EPICS_CA_SERVER_PORT=6090
+      - EPICS_PVA_AUTO_ADDR_LIST=YES
+      - EPICS_PVA_NAME_SERVERS=physics_iocs:5075
+      - EPICS_PVA_BROADCAST_PORT=5076
+      - PYTHONUNBUFFERED=1
+      - VIRTUAL_MODE=True
+      - FACILITY=JFEL
+      - CLIENT_ID=janus-stack
+      - LATTICE_API_HOST=lattice_api
+      - LATTICE_API_PORT=5000
+      - BROKER_HOST=broker
+      - KAFKA_PORT=9092
+      - RESTFRAME_HOST=restframe
+      - RESTFRAME_PORT=8000
+
+volumes:
+  postgres_data:
+  restframe_output:
+  physics_output:
+  sandbox_workspace:
+  hsds_store:
+
+
+networks:
+  controls:
+    external: true

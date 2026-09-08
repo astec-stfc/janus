@@ -7,14 +7,26 @@ interface PhysicalElementsResponse {
   elements: PhysicalElement[];
 }
 
+interface ElementTypesResponse {
+  facility: string;
+  total: number;
+  type_counts: Record<string, number>;
+}
+
 const baseUrl = "/restframe";
 
+const getAvailableElementTypes = async (): Promise<string[]> => {
+  const response = await axios.get<ElementTypesResponse>(
+    `${baseUrl}/diagnostics/physical-element-types`
+  );
+
+  return Object.keys(response.data.type_counts);
+};
+
 const getPhysicalElements = async (
-  layout: string,
   include: readonly string[] = [],
 ): Promise<PhysicalElement[]> => {
   const params = new URLSearchParams();
-  params.set("layout", layout);
   for (const elementType of include) params.append("include", elementType);
 
   const response = await axios.get<PhysicalElementsResponse>(
@@ -24,4 +36,4 @@ const getPhysicalElements = async (
   return response.data.elements;
 };
 
-export default { getPhysicalElements };
+export default { getPhysicalElements, getAvailableElementTypes };

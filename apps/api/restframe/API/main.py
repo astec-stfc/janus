@@ -315,27 +315,28 @@ def get_lattice_binary_metadata():
 
 @app.get("/diagnostics/physical-element-types")
 def get_physical_element_types() -> dict:
-    elements = [
-        elem
-        for elem in master_framework.framework.machine.elements.values()
-        if isinstance(elem, PhysicalBaseElement)
+    machine = master_framework.framework.machine  # LAURA model
+    layout = master_framework.get_default_layout_name()
+    utilised_elements = [
+        machine.elements[name]
+        for name in machine.elements_between(path=layout)
+        if isinstance(machine.elements[name], PhysicalBaseElement)
     ]
-    type_counts = Counter(elem.hardware_type for elem in elements)
-
+    type_counts = Counter(elem.hardware_type for elem in utilised_elements)
     return {
         "facility": master_framework.facility,
-        "total": len(elements),
+        "total": len(utilised_elements),
         "type_counts": dict(sorted(type_counts.items())),
     }
 
 
 @app.get("/diagnostics/physical-elements")
 def get_physical_elements(
-    layout: str,
     include: Annotated[list[str] | None, Query()] = None,
 ) -> dict:
     machine = master_framework.framework.machine  # LAURA model
     available_layouts = sorted(machine.lattices)
+    layout = master_framework.get_default_layout_name()
     if layout not in machine.lattices:
         raise HTTPException(
             status_code=400,
@@ -384,6 +385,10 @@ def get_physical_elements(
         ),
     }
 
+@app.get("/layout/default")
+def get_default_layout_name() -> dict:
+    """Returns the default layout name."""
+    return {"name": master_framework.get_default_layout_name()}
 
 @app.post("/lattice")
 def set_lattice(lattice: Lattice) -> dict:

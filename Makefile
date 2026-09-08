@@ -1,7 +1,7 @@
 
 
 FACILITY?=jfel
-LAURA_LATTICE_REPO ?= https://github.com/astec-stfc/laura-lattices.git
+include .versions.env
 MODE ?= stack
 
 IMAGE ?= ghcr.io/adb-xkc85723/janus-base:latest
@@ -78,11 +78,23 @@ prod-down:
 	$(MAKE) down MODE=prod
 
 up:
-	LAURA_LATTICE_REPO="$(LAURA_LATTICE_REPO)" docker compose $(if $(CLIENT),-p $(CLIENT)) \
+	LAURA_LATTICE_REPO="$(LAURA_LATTICE_REPO)" \
+	SIMBA_REPO="$(SIMBA_REPO)" SIMBA_VERSION="$(SIMBA_VERSION)" \
+	LAURA_REPO="$(LAURA_REPO)" LAURA_VERSION="$(LAURA_VERSION)" \
+	LAURA_LATTICE_REPO="$(LAURA_LATTICE_REPO)" LAURA_LATTICES_VERSION="$(LAURA_LATTICES_VERSION)" \
+	ACRONICTA_CATAP_REPO="$(ACRONICTA_CATAP_REPO)" ACRONICTA_CATAP_VERSION="$(ACRONICTA_CATAP_VERSION)" \
+	docker compose $(if $(CLIENT),-p $(CLIENT)) \
 	$(if $(ENV_FILE),--env-file $(ENV_FILE)) \
+	--env-file .versions.env \
 	-f $(COMPOSE_FILE) up --build
 
 down:
-	LAURA_LATTICE_REPO="$(LAURA_LATTICE_REPO)" docker compose $(if $(CLIENT),-p $(CLIENT)) \
+	LAURA_LATTICE_REPO="$(LAURA_LATTICE_REPO)" \
+	SIMBA_REPO="$(SIMBA_REPO)" SIMBA_VERSION="$(SIMBA_VERSION)" \
+	LAURA_REPO="$(LAURA_REPO)" LAURA_VERSION="$(LAURA_VERSION)" \
+	LAURA_LATTICE_REPO="$(LAURA_LATTICE_REPO)" LAURA_LATTICES_VERSION="$(LAURA_LATTICES_VERSION)" \
+	ACRONICTA_CATAP_REPO="$(ACRONICTA_CATAP_REPO)" ACRONICTA_CATAP_VERSION="$(ACRONICTA_CATAP_VERSION)" \
+	docker compose $(if $(CLIENT),-p $(CLIENT)) \
 	$(if $(ENV_FILE),--env-file $(ENV_FILE)) \
+	--env-file .versions.env \
 	-f $(COMPOSE_FILE) down --volumes $(REMOVE_ORPHANS)

@@ -1,20 +1,15 @@
 import type { BeamSummary, BeamSummaryData, PhysicalElement } from "@/types";
+// import { getAvailableElementTypes} from "@/services/restframe";
+import { ELEMENT_PLOT_CONFIG } from "@/components/plot/TwissPlotElements";
 
-export const TWISS_PLOT_LAYOUT = "CLARA";
+// Supported element types are those that have a corresponding entry in ELEMENT_PLOT_CONFIG
+export type SupportedPlottedElementType = keyof typeof ELEMENT_PLOT_CONFIG;
 
-export const PLOTTED_ELEMENT_TYPES = [
-  "Quadrupole",
-  "Screen",
-  "Dipole",
-  "RFCavity",
-] as const;
-
-export type PlottedElementType = (typeof PLOTTED_ELEMENT_TYPES)[number];
-
-export const isPlottedElementType = (
+export const isSupportedElementType = (
   elementType: string,
-): elementType is PlottedElementType =>
-  PLOTTED_ELEMENT_TYPES.includes(elementType as PlottedElementType);
+): elementType is SupportedPlottedElementType =>
+  Object.hasOwn(ELEMENT_PLOT_CONFIG, elementType);
+
 
 export const PLOTTED_TWISS_PARAMETERS = [
   { name: "alpha_x", color: "#002ec4" },
