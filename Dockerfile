@@ -101,7 +101,7 @@ ssh-keyscan gitlab.stfc.ac.uk >> /root/.ssh/known_hosts && \
 git clone --branch rm-gpt-opal-for-gh git@gitlab.stfc.ac.uk:xkc85723/simcodes.git \
 '
 
-RUN git clone --branch main https://github.com/astec-stfc/laura.git
+RUN git clone --branch ${LAURA_VERSION} https://github.com/astec-stfc/laura.git
 
 # Install all requirements in one block (with .git still present for version detection)
 RUN pip install --no-cache-dir -r /simcodes/requirements.txt && \

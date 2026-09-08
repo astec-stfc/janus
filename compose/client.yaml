@@ -37,6 +37,7 @@ services:
         - default
       args:
         LAURA_LATTICE_REPO: ${LAURA_LATTICE_REPO}
+        LAURA_LATTICES_VERSION: ${LAURA_LATTICES_VERSION}
     tty: true
     environment:
       - PYTHONUNBUFFERED=1

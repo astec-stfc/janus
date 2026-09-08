@@ -55,15 +55,6 @@ class EPICSToLattice:
             not in ["FEA", "FEH", "FED", "C2V", "SP1", "SP2", "SP3"]
             and k not in self.exclude
         }
-        self.cavity_aliases = {
-            "GUN": "CLA-HRG1-GUN-CAV-01",
-            "L01": "CLA-L01-LIN-CAV-01",
-            "L02": "CLA-L02-LIN-CAV-01",
-            "L03": "CLA-L03-LIN-CAV-01",
-            "4HC": "CLA-L4H-LIN-CAV-01",
-            "L04": "CLA-L04-LIN-CAV-01",
-            "TDC1": "CLA-S07-DIA-TDC-01",
-        }
         self._ctx = Context("pva")
         self.simulation_translator = SimulationToPV()
         self.lattice_translator = LatticeToPV()
@@ -179,6 +170,22 @@ class EPICSToLattice:
                             )
                             dipole.KnL[0] = round_it(epics_k_value, SIGFIG)
 
+    @staticmethod
+    def _has_valid_cavity_calibration(epics_cavity: Cavity) -> bool:
+        try:
+            props = epics_cavity.properties
+            power_calibration = getattr(props, "power_calibration", None)
+            gradient_calibration = getattr(props, "gradient_calibration", None)
+            if power_calibration is None or gradient_calibration is None:
+                return False
+            if len(power_calibration) == 0 or len(gradient_calibration) == 0:
+                return False
+            if len(power_calibration) != len(gradient_calibration):
+                return False
+        except (AttributeError, TypeError):
+            return False
+        return True
+
     def set_cavity_from_epics(
         self,
         elems: Dict[str, CavityElement],
@@ -197,12 +204,19 @@ class EPICSToLattice:
                     if "GUN" in epics_cavity.name or "HRG" in epics_cavity.name:
                         # cavity.field_amplitude = 92.5*1e6
                         continue
-                    if not round_it(cavity.field_amplitude, SIGFIG - 1) == round_it(
-                        epics_cavity.accelerating_voltage * 1e6, SIGFIG - 1
-                    ):
-                        accvol = round_it(
-                            epics_cavity.accelerating_voltage * 1e6, SIGFIG - 1
+                    if not self._has_valid_cavity_calibration(epics_cavity):
+                        print(
+                            f"Skipping cavity {name}: missing or invalid calibration curves."
                         )
+                        continue
+                    acc_voltage = getattr(epics_cavity, "accelerating_voltage", None)
+                    if acc_voltage is None:
+                        print(f"Skipping cavity {name}: missing accelerating voltage.")
+                        continue
+                    if not round_it(cavity.field_amplitude, SIGFIG - 1) == round_it(
+                        acc_voltage * 1e6, SIGFIG - 1
+                    ):
+                        accvol = round_it(acc_voltage * 1e6, SIGFIG - 1)
                         print(f"Acc. Voltage difference for {name}")
                         print(f"Old: {cavity.field_amplitude}, New: {accvol}")
                         cavity.field_amplitude = accvol

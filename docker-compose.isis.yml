@@ -8,13 +8,15 @@ services:
     build:
       args:
         FACILITY: ISIS
-        LAURA_LATTICE_REPO: git@gitlab.stfc.ac.uk:xkc85723/laura-lattices.git
+        LAURA_LATTICE_REPO: ${LAURA_LATTICE_REPO}
+        LAURA_LATTICES_VERSION: ${LAURA_LATTICES_VERSION}
     extends:
       file: compose/server.yaml
       service: restframe
     environment:
       - FACILITY=ISIS
-      - LAURA_LATTICE_REPO=git@gitlab.stfc.ac.uk:xkc85723/laura-lattices.git
+      - LAURA_LATTICE_REPO=${LAURA_LATTICE_REPO}
+      - LAURA_LATTICES_VERSION=${LAURA_LATTICES_VERSION}
     volumes:
       - ./apps/api/restframe/ISIS:/home/web/webapp/Output/ISIS
   sandbox:

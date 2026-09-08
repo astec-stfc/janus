@@ -9,6 +9,9 @@ services:
       args:
         FACILITY: JFEL
         LAURA_LATTICE_REPO: ${LAURA_LATTICE_REPO}
+        LAURA_LATTICES_VERSION: ${LAURA_LATTICES_VERSION}
+        SARABI_REPO: ${SARABI_REPO}
+        SARABI_VERSION: ${SARABI_VERSION}
     tty: true
     ports:
       - ${PORT:-6090}:${PORT:-6090}/tcp

@@ -84,15 +84,67 @@
   --chart-axis: #171717;
   --chart-grid-major: rgba(23, 23, 23, 0.16);
   --chart-grid-minor: rgba(23, 23, 23, 0.1);
-  --beamline-colour: #000000;
+  --beamline-colour: #535151;
+
   --quadrupole-fill: rgba(220, 38, 38, 0.75);
   --quadrupole-line: rgba(185, 28, 28, 1);
-  --screen-fill: rgba(34, 197, 94, 0.75);
-  --screen-line: rgba(21, 128, 61, 1);
+
   --dipole-fill: rgba(37, 99, 235, 0.75);
   --dipole-line: rgba(29, 78, 216, 1);
+
+  --sextupole-fill: rgba(168, 85, 247, 0.75);
+  --sextupole-line: rgba(126, 34, 206, 1);
+
+  --solenoid-fill: rgba(14, 165, 233, 0.75);
+  --solenoid-line: rgba(3, 105, 161, 1);
+
+  --corrector-fill: rgba(249, 115, 22, 0.75);
+  --corrector-line: rgba(194, 65, 12, 1);
+
+  --screen-fill: rgba(34, 197, 94, 0.75);
+  --screen-line: rgba(21, 128, 61, 1);
+
+  --bpm-fill: rgba(250, 204, 21, 0.75);
+  --bpm-line: rgba(161, 98, 7, 1);
+
+  --bam-fill: rgba(251, 191, 36, 0.75);
+  --bam-line: rgba(180, 83, 9, 1);
+
+  --blm-fill: rgba(245, 158, 11, 0.75);
+  --blm-line: rgba(180, 83, 9, 1);
+
+  --ict-fill: rgba(99, 102, 241, 0.75);
+  --ict-line: rgba(67, 56, 202, 1);
+
+  --wcm-fill: rgba(129, 140, 248, 0.75);
+  --wcm-line: rgba(79, 70, 229, 1);
+
   --rfcavity-fill: rgba(34, 197, 94, 0.75);
   --rfcavity-line: rgba(21, 128, 61, 1);
+
+  --rfdeflector-fill: rgba(16, 185, 129, 0.75);
+  --rfdeflector-line: rgba(4, 120, 87, 1);
+
+  --collimator-fill: rgba(120, 113, 108, 0.75);
+  --collimator-line: rgba(68, 64, 60, 1);
+
+  --shutter-fill: rgba(107, 114, 128, 0.75);
+  --shutter-line: rgba(55, 65, 81, 1);
+
+  --aperture-fill: rgb(63, 60, 60);
+  --aperture-line: rgb(27, 26, 26);
+
+  --plasma-fill: rgba(236, 72, 153, 0.75);
+  --plasma-line: rgba(190, 24, 93, 1);
+
+  --marker-fill: rgba(14, 148, 47, 0.75);
+  --marker-line: rgba(12, 100, 34, 0.75);
+
+  --wiggler-fill: rgba(6, 182, 212, 0.75);
+  --wiggler-line: rgba(8, 145, 178, 1);
+
+  --photon-monitor-fill: rgba(250, 204, 21, 0.85);
+  --photon-monitor-line: rgba(161, 98, 7, 1);
 }
 
 .dark {
@@ -132,15 +184,6 @@
   --chart-axis: rgb(198, 198, 198);
   --chart-grid-major: rgba(250, 250, 250, 0.1);
   --chart-grid-minor: rgba(250, 250, 250, 0.03);
-  --beamline-colour: #ffffff;
-  --quadrupole-fill: rgba(220, 38, 38, 0.75);
-  --quadrupole-line: rgba(185, 28, 28, 1);
-  --screen-fill: rgba(34, 197, 94, 0.75);
-  --screen-line: rgba(21, 128, 61, 1);
-  --dipole-fill: rgba(37, 99, 235, 0.75);
-  --dipole-line: rgba(29, 78, 216, 1);
-  --rfcavity-fill: rgba(34, 197, 94, 0.75);
-  --rfcavity-line: rgba(21, 128, 61, 1);
 }
 
 @layer base {

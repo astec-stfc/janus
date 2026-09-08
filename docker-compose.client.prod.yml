@@ -7,6 +7,14 @@ services:
       context: ./services/jfel/
       ssh:
         - default
+      args:
+        FACILITY: JFEL
+        LAURA_LATTICE_REPO: ${LAURA_LATTICE_REPO}
+        LAURA_LATTICES_VERSION: ${LAURA_LATTICES_VERSION}
+        LAURA_REPO: ${LAURA_REPO}
+        LAURA_VERSION: ${LAURA_VERSION}
+        ACRONICTA_CATAP_REPO: ${ACRONICTA_CATAP_REPO}
+        ACRONICTA_CATAP_VERSION: ${ACRONICTA_CATAP_VERSION}
     depends_on:
       - physics_iocs
     # extra_hosts:

@@ -49,15 +49,15 @@ class LatticeToEPICS:
             not in ["FEA", "FEH", "FED", "C2V", "SP1", "SP2", "SP3"]
             and k not in self.exclude
         }
-        self.cavity_aliases = {
-            "GUN": "CLA-HRG1-GUN-CAV-01",
-            "L01": "CLA-L01-LIN-CAV-01",
-            "L02": "CLA-L02-LIN-CAV-01",
-            "L03": "CLA-L03-LIN-CAV-01",
-            "4HC": "CLA-L4H-LIN-CAV-01",
-            "L04": "CLA-L04-LIN-CAV-01",
-            "TDC1": "CLA-S07-DIA-TDC-01",
-        }
+        # self.cavity_aliases = {
+        #     "GUN": "CLA-HRG1-GUN-CAV-01",
+        #     "L01": "CLA-L01-LIN-CAV-01",
+        #     "L02": "CLA-L02-LIN-CAV-01",
+        #     "L03": "CLA-L03-LIN-CAV-01",
+        #     "4HC": "CLA-L4H-LIN-CAV-01",
+        #     "L04": "CLA-L04-LIN-CAV-01",
+        #     "TDC1": "CLA-S07-DIA-TDC-01",
+        # }
         self._ctx = Context("pva")
         self.epics_helper = EPICSHelper(ctx=self._ctx)
 
@@ -117,16 +117,39 @@ class LatticeToEPICS:
             epics_cavity = self.cavity_factory.get_cavity(name)
             if epics_cavity:
                 epics_cavity.set_off_crest_phase = round_it(cavity.phase, SIGFIG)
-                if epics_cavity.name == "GUN":
+                if epics_cavity.name == "CLA-HRG1-GUN-CAV-01":
                     # TODO: fixed gun power for now, need to change once we have calibration curves.
                     epics_cavity.set_power = 7
                     continue
             if epics_cavity and epics_cavity.properties.has_gradient_calibrations:
-                power = (
-                    self._convert_field_amplitude_to_power(
-                        epics_cavity, cavity.field_amplitude / 1e6  # / cavity.length,
-                    )
-                    * 1e6
+                power_calibration = getattr(
+                    epics_cavity.properties, "power_calibration", None
                 )
-                epics_cavity.set_power = round_it(power / 1e6, SIGFIG)
+                gradient_calibration = getattr(
+                    epics_cavity.properties, "gradient_calibration", None
+                )
+                if (
+                    power_calibration is None
+                    or gradient_calibration is None
+                    or len(power_calibration) == 0
+                    or len(gradient_calibration) == 0
+                    or len(power_calibration) != len(gradient_calibration)
+                ):
+                    print(
+                        f"Skipping cavity {name}: missing or invalid calibration curves."
+                    )
+                    continue
+                try:
+                    power = (
+                        self._convert_field_amplitude_to_power(
+                            epics_cavity, cavity.field_amplitude / 1e6  # / cavity.length,
+                        )
+                        * 1e6
+                    )
+                    epics_cavity.set_power = round_it(power / 1e6, SIGFIG)
+                except ValueError as exc:
+                    print(
+                        f"Skipping cavity {name}: calibration interpolation failed: {exc}"
+                    )
+                    continue
         print("Cavities initialised")

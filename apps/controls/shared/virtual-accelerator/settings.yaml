@@ -1,0 +1,7 @@
+output_directory: "./generated_iocs/@FACILITY@"
+templates_directory: "./templates"
+schema_file: "./schemas/laura.json"
+devices_directory: "./yaml/@FACILITY@"
+ignore_device_types:
+  - "FEBELaser"
+  - "PILaser"
