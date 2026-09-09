@@ -11,14 +11,11 @@ export interface NotificationProps {
   type: NotificationType;
 }
 
-export interface Beam {
-  x: number[] | null;
-  y: number[] | null;
-  z: number[] | null;
-  cpx: number[] | null;
-  cpy: number[] | null;
-  cpz: number[] | null;
-}
+export const BEAM_ARRAY_FIELDS = ["x", "y", "z", "cpx", "cpy", "cpz"] as const;
+
+export type BeamArrayField = (typeof BEAM_ARRAY_FIELDS)[number];
+
+export type Beam = Record<BeamArrayField, number[] | null>;
 
 export interface BeamSummary {
   position: number[];
@@ -53,6 +50,23 @@ export interface LatticeResponse {
   facility: string;
   beam_summary: BeamSummary | null;
 }
+
+export type DomainPathTuple = [domain: string, path: string];
+
+export type HSDSDatasetPath<Name extends string = string> = Record<
+  Name,
+  DomainPathTuple
+>;
+
+// DatasetPaths represents any mapping type whose values are of type DomainPathTuple, such as `BeamDatasetPath`.
+// Read this type as: "Keep the keys from DatasetPaths, but replace each path tuple with Value."
+// Value defaults to number[] for decoded datasets; callers can supply another type for an earlier data stage.
+export type HSDSDataset<
+  DatasetPaths extends HSDSDatasetPath,
+  Value = number[],
+> = Record<keyof DatasetPaths, Value>;
+
+export type BeamDatasetPath = HSDSDatasetPath<BeamArrayField>;
 
 export interface RunSummary {
   uuid: string;

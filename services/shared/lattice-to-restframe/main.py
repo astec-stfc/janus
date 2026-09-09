@@ -8,8 +8,9 @@ storage service performs the decode.
 
 from time import perf_counter
 import time
+import warnings
 from janus_common.utils.kafka_restframe import API
-from janus_common.utils.comms_handler import add_lattice_binary, get_lattice_request
+from janus_common.utils.comms_handler import get_lattice_request, add_lattice
 from janus_common.utils.flow_log import flow_log
 
 
@@ -52,13 +53,14 @@ class Sender(API):
 
         self.lattice = get_lattice_request(request_id=request_id)
         if self.lattice is None:
-            raise RuntimeError(
+            warnings.warn(
                 f"No pending lattice request found for request_id: {request_id}"
             )
-
-        t0 = perf_counter()
+            return
+        self.lattice.client_id = client_id
+        # t0 = perf_counter()
         self.modify_lattice(self.lattice)
-        t1 = perf_counter()
+        # t1 = perf_counter()
 
         self.run_restframe(wait=False, client_id=client_id, request_id=request_id)
         while not self.tracking_complete():
@@ -66,26 +68,16 @@ class Sender(API):
             # contend with result serialization work right after tracking.
             time.sleep(0.05)
 
-        t2 = perf_counter()
-        # Keep the post-tracking handoff in binary form to avoid a decode ->
-        # model_dump -> large JSON POST loop between services.
-        result_lattice_binary = self.get_lattice_binary(compress=True)
-        t3 = perf_counter()
+        # t2 = perf_counter()
+        # # Keep the post-tracking handoff in binary form to avoid a decode ->
+        # # model_dump -> large JSON POST loop between services.
+        # result_lattice_binary = self.get_lattice_binary(compress=True)
+        # t3 = perf_counter()
+        result_lattice = self.get_lattice()
 
-        store_result = add_lattice_binary(
-            binary_payload=result_lattice_binary,
-            client_id=client_id,
+        store_result = add_lattice(
+            lattice=result_lattice,
             request_id=request_id,
-        )
-        t4 = perf_counter()
-
-        print(
-            "lattice-to-restframe timings ",
-            f"uuid={store_result.get('uuid')} ",
-            f"modify_lattice={t1-t0:.3f}s ",
-            f"wait_for_tracking={t2-t1:.3f}s ",
-            f"get_lattice_binary={t3-t2:.3f}s ",
-            f"add_lattice_post={t4-t3:.3f}s ",
         )
 
         self.producer.send(

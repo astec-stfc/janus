@@ -8,7 +8,7 @@ from pydantic import (
     model_validator
 )
 
-from typing import List, Dict, Type, Optional, Literal, Any
+from typing import List, Dict, Tuple, Type, Optional, Literal
 from enum import Enum
 from janus_common.utils.numeric import round_it
 from janus_common.utils.constants import SIGFIG
@@ -108,12 +108,12 @@ class Covariance(BaseModel):
 
 
 class Beam(BaseModel):
-    x: List[float] | None = None
-    y: List[float] | None = None
-    z: List[float] | None = None
-    cpx: List[float] | None = None
-    cpy: List[float] | None = None
-    cpz: List[float] | None = None
+    x: Tuple[str, str] | None = None
+    y: Tuple[str, str] | None = None
+    z: Tuple[str, str] | None = None
+    cpx: Tuple[str, str] | None = None
+    cpy: Tuple[str, str] | None = None
+    cpz: Tuple[str, str] | None = None
 
     class Config:
         from_attributes = True
@@ -419,31 +419,31 @@ class Laser(Element):  # RESTFrame <-- EPICS
 
 
 class BeamSummary(BaseModel):
-    alpha_x: List[float] | None = None
-    beta_x: List[float] | None = None
-    alpha_y: List[float] | None = None
-    beta_y: List[float] | None = None
-    energy: List[float] | None = None  # Assume eV
-    charge: List[float] | None = None
-    n_particles: List[float] | None = None  # Assume number of particles
-    momentum: List[float] | None = None
-    emittance_x: List[float] | None = None
-    emittance_y: List[float] | None = None
-    normalised_emittance_x: List[float] | None = None
-    normalised_emittance_y: List[float] | None = None
-    sigma_x: List[float] | None = None
-    sigma_y: List[float] | None = None
-    sigma_t: List[float] | None = None
-    centroids_x: List[float] | None = None
-    centroids_y: List[float] | None = None
-    centroids_t: List[float] | None = None
-    position: List[float] | None = None  # Also called s/z/timestep
-    cov_xx: List[float] | None = None  # Covariance xx
-    cov_xxp: List[float] | None = None  # Covariance xxp
-    cov_yy: List[float] | None = None  # Covariance yy
-    cov_yyp: List[float] | None = None  # Covariance yyp
-    cov_xy: List[float] | None = None  # Covariance xy
-    cov_xyp: List[float] | None = None  # Covariance xyp
+    alpha_x: Tuple[str, str] | None = None
+    beta_x: Tuple[str, str] | None = None
+    alpha_y: Tuple[str, str] | None = None
+    beta_y: Tuple[str, str] | None = None
+    energy: Tuple[str, str] | None = None  # Assume eV
+    # charge: Tuple[str, str] | None = None
+    # n_particles: Tuple[str, str] | None = None  # Assume number of particles
+    momentum: Tuple[str, str] | None = None
+    emittance_x: Tuple[str, str] | None = None
+    emittance_y: Tuple[str, str] | None = None
+    normalised_emittance_x: Tuple[str, str] | None = None
+    normalised_emittance_y: Tuple[str, str] | None = None
+    sigma_x: Tuple[str, str] | None = None
+    sigma_y: Tuple[str, str] | None = None
+    sigma_t: Tuple[str, str] | None = None
+    centroids_x: Tuple[str, str] | None = None
+    centroids_y: Tuple[str, str] | None = None
+    centroids_t: Tuple[str, str] | None = None
+    position: Tuple[str, str] | None = None  # Also called s/z/timestep
+    # cov_xx: Tuple[str, str] | None = None  # Covariance xx
+    # cov_xxp: Tuple[str, str] | None = None  # Covariance xxp
+    # cov_yy: Tuple[str, str] | None = None  # Covariance yy
+    # cov_yyp: Tuple[str, str] | None = None  # Covariance yyp
+    # cov_xy: Tuple[str, str] | None = None  # Covariance xy
+    # cov_xyp: Tuple[str, str] | None = None  # Covariance xyp
 
 
 class Section(BaseModel):
@@ -458,7 +458,7 @@ class Section(BaseModel):
     lasers: List[Laser] | None = None
     markers: List[Marker] | None = None
     photonmonitors: List[PhotonMonitor] | None = None
-    beam_summary: BeamSummary | None = None
+    # beam_summary: BeamSummary | None = None
 
     class Config:
         from_attributes = True
@@ -592,38 +592,6 @@ class Lattice(BaseModel):
                         setattr(marker.beam, field_name, None)
 
         return lattice
-
-    def to_binary(self, compress: bool = True, compression_level: int = 3) -> bytes:
-        """Serialize this lattice into the shared binary transport format.
-
-        The binary form keeps the schema structure in JSON metadata while moving
-        large float arrays into a contiguous binary payload for transport/storage.
-        """
-        from janus_common.schemas.binary_lattice_codec import lattice_to_binary
-
-        return lattice_to_binary(self, compress=compress, compression_level=compression_level)
-
-    def binary_metadata(self) -> Dict[str, Any]:
-        """Build the binary metadata manifest without materializing payload bytes."""
-        from janus_common.schemas.binary_lattice_codec import build_lattice_binary_metadata
-
-        return build_lattice_binary_metadata(self)
-
-    @classmethod
-    def from_binary(
-        cls,
-        data: bytes,
-        arrays_as_lists: bool = True,
-    ) -> "Lattice":
-        """Deserialize shared binary transport bytes back into a Lattice instance.
-
-        ``arrays_as_lists=False`` is useful on hot paths that want numpy arrays
-        during intermediate processing before Pydantic list materialization.
-        """
-        from janus_common.schemas.binary_lattice_codec import binary_to_lattice
-
-        lattice_dict = binary_to_lattice(data, arrays_as_lists=arrays_as_lists)
-        return cls.model_validate(lattice_dict)
 
 
 class SimulationState(Enum):

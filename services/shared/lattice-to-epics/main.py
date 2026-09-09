@@ -18,7 +18,7 @@ import requests
 from janus_common.utils.kafka_restframe import API
 from janus_common.utils.comms_handler import get_lattice
 from janus_common.utils.flow_log import flow_log
-
+from janus_common.utils.hsds import decode_arrays_batch
 
 CLIENT_ID = os.getenv("CLIENT_ID")
 if not CLIENT_ID:
@@ -52,17 +52,19 @@ class Sender(API):
         """
         try:
             t0 = time.time()
-            lattice = get_lattice(uuid=uuid, arrays_as_lists=False)
+            lattice = get_lattice(uuid=uuid)
             if lattice is None:
                 return False
             t_fetch = time.time()
 
             stream = self.epics_streamer
             stream.flush()  # clear any leftover state from a previous failed call
-            list(self._section_executor.map(
-                lambda s: self.get_section_results_fast(s, stream),
-                lattice.sections.values(),
-            ))
+            list(
+                self._section_executor.map(
+                    lambda s: self.get_section_results_fast(s, stream),
+                    lattice.sections.values(),
+                )
+            )
             stream.flush()
             t_sections = time.time()
 
@@ -93,15 +95,30 @@ class Sender(API):
             print(e)
             return False
 
-    def get_section_results_fast(self, section: elements.Section, stream: EPICSStreamer) -> None:
+    def get_section_results_fast(
+        self, section: elements.Section, stream: EPICSStreamer
+    ) -> None:
         """Push all PV updates for a section directly into the streamer."""
-        for element in section.get_elements():
+        elements_list = list(section.get_elements())
+
+        array_requests = {}
+        for element in elements_list:
             translator = self._element_translators.get(element.name)
             if translator is None:
                 translator = ElementToPV(element)
                 self._element_translators[element.name] = translator
+            for m in translator.beam_pv_metadata:
+                domain_path_tuple = m.get_schema_value(element)
+                if domain_path_tuple is not None:
+                    array_requests[m.name] = domain_path_tuple
+        decoded = decode_arrays_batch(array_requests)
+
+        for element in elements_list:
+            translator = self._element_translators[element.name]
             for m in translator.element_pv_metadata:
                 v = m.get_schema_value(element)
+                if m in translator.beam_pv_metadata:
+                    v = decoded[m.name] if v is not None else None
                 stream.push(m.name, v if v is not None else m.value_as_type(-999))
         translator = self._section_translators.get(section.name)
         if translator is None:
@@ -156,20 +173,27 @@ class Sender(API):
 
     def get_lattice_beam_summary(self, lattice: elements.Lattice) -> List:
         """Get the beam summary PVs for a given section"""
-        if lattice.beam_summary is not None:
-            beam_summary_metadata = self.lattice_translator.beam_summary_pv_metadata
-            return [
-                (
-                    m.name,
-                    (
-                        m.get_schema_value(lattice)
-                        if m.get_schema_value(lattice) is not None
-                        else m.value_as_type(-999)
-                    ),
-                )
-                for m in beam_summary_metadata
-            ]
-        return []
+        if lattice.beam_summary is None:
+            return []
+
+        beam_summary_metadata = self.lattice_translator.beam_summary_pv_metadata
+
+        array_requests = {
+            m.name: m.get_schema_value(lattice)
+            for m in beam_summary_metadata
+            if m.get_schema_value(lattice) is not None
+        }
+        decoded = decode_arrays_batch(array_requests)
+
+        return [
+            (
+                m.name,
+                decoded[m.name]
+                if m.get_schema_value(lattice) is not None
+                else m.value_as_type(-999),
+            )
+            for m in beam_summary_metadata
+        ]
 
     def on_msg(self, event, message):
         """Route messages based on topic"""

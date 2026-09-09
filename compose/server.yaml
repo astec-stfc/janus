@@ -144,7 +144,7 @@ services:
     volumes:
       - ../apps/api/restframe/${FACILITY:-CLARA}:/data/filestore:ro
     ports:
-      - "${HSDS_BACKEND_PORT:-8001}:8000"
+      - "${HSDS_BACKEND_PORT:-8001}:${HSDS_BACKEND_PORT:-8001}"
     environment:
       HSDS_URL: http://hsds:${HSDS_PORT:-5101}
       HSDS_USERNAME: admin

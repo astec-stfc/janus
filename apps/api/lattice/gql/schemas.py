@@ -1,7 +1,7 @@
 """GraphQL schema definitions for lattice queries"""
 
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional, List, Tuple
 import strawberry
 
 
@@ -306,7 +306,7 @@ class BeamSummaryParameter:
     name: str
     label: str
     unit: Optional[str]
-    values: List[float]
+    domain_path_tuple: Tuple[str, str]
 
 
 @strawberry.type
@@ -324,14 +324,14 @@ class BeamSummaryResult:
 
 @strawberry.type
 class Beam:
-    """Beam particle coordinates at a screen"""
+    """Domain/Path pair to beam data in hsds service"""
 
-    x: List[float]
-    y: List[float]
-    z: List[float]
-    cpx: List[float]
-    cpy: List[float]
-    cpz: List[float]
+    x: Tuple[str, str]
+    y: Tuple[str, str]
+    z: Tuple[str, str]
+    cpx: Tuple[str, str]
+    cpy: Tuple[str, str]
+    cpz: Tuple[str, str]
 
 
 @strawberry.type

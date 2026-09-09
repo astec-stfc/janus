@@ -6,7 +6,6 @@ from sqlalchemy import (
     Float,
     Boolean,
     Integer,
-    LargeBinary,
 )
 
 from sqlalchemy import and_  # noqa: F401
@@ -138,23 +137,23 @@ class Beam(Base):
     marker: Mapped["Markers"] = relationship(
         back_populates="beam", cascade="all, delete"
     )
-    x: Mapped[list[float]] = mapped_column(
-        ARRAY(Float, zero_indexes=True), nullable=False
+    x: Mapped[tuple[str, str]] = mapped_column(
+        ARRAY(String, zero_indexes=True), nullable=False
     )
-    y: Mapped[list[float]] = mapped_column(
-        ARRAY(Float, zero_indexes=True), nullable=False
+    y: Mapped[tuple[str, str]] = mapped_column(
+        ARRAY(String, zero_indexes=True), nullable=False
     )
-    z: Mapped[list[float]] = mapped_column(
-        ARRAY(Float, zero_indexes=True), nullable=False
+    z: Mapped[tuple[str, str]] = mapped_column(
+        ARRAY(String, zero_indexes=True), nullable=False
     )
-    cpx: Mapped[list[float]] = mapped_column(
-        ARRAY(Float, zero_indexes=True), nullable=False
+    cpx: Mapped[tuple[str, str]] = mapped_column(
+        ARRAY(String, zero_indexes=True), nullable=False
     )
-    cpy: Mapped[list[float]] = mapped_column(
-        ARRAY(Float, zero_indexes=True), nullable=False
+    cpy: Mapped[tuple[str, str]] = mapped_column(
+        ARRAY(String, zero_indexes=True), nullable=False
     )
-    cpz: Mapped[list[float]] = mapped_column(
-        ARRAY(Float, zero_indexes=True), nullable=False
+    cpz: Mapped[tuple[str, str]] = mapped_column(
+        ARRAY(String, zero_indexes=True), nullable=False
     )
 
 
@@ -399,98 +398,77 @@ class BeamSummary(Base):
         foreign_keys=[lattice_id],
         back_populates="beam_summary",
     )
-    alpha_x: Mapped[List[float]] = mapped_column(
-        ARRAY(Float, zero_indexes=True),
-        nullable=True,
+    alpha_x: Mapped[tuple[str, str]] = mapped_column(
+        ARRAY(String, zero_indexes=True), nullable=False
     )
-    beta_x: Mapped[List[float]] = mapped_column(
-        ARRAY(Float, zero_indexes=True),
-        nullable=True,
+
+    beta_x: Mapped[tuple[str, str]] = mapped_column(
+        ARRAY(String, zero_indexes=True), nullable=False
     )
-    alpha_y: Mapped[List[float]] = mapped_column(
-        ARRAY(Float, zero_indexes=True),
-        nullable=True,
+
+    alpha_y: Mapped[tuple[str, str]] = mapped_column(
+        ARRAY(String, zero_indexes=True), nullable=False
     )
-    beta_y: Mapped[List[float]] = mapped_column(
-        ARRAY(Float, zero_indexes=True),
-        nullable=True,
+    beta_y: Mapped[tuple[str, str]] = mapped_column(
+        ARRAY(String, zero_indexes=True), nullable=False
     )
-    energy: Mapped[List[float]] = mapped_column(
-        ARRAY(Float, zero_indexes=True),
-        nullable=True,
+    energy: Mapped[tuple[str, str]] = mapped_column(
+        ARRAY(String, zero_indexes=True), nullable=False
     )  # Assume eV
-    charge: Mapped[List[float]] = mapped_column(
-        ARRAY(Float, zero_indexes=True),
-        nullable=True,
+    # charge: Mapped[tuple[str, str]] = mapped_column(
+    #     ARRAY(String, zero_indexes=True), nullable=False
+    # )
+    # n_particles: Mapped[tuple[str, str]] = mapped_column(
+    #     ARRAY(String, zero_indexes=True), nullable=False
+    # )  # Assume number of particles
+    momentum: Mapped[tuple[str, str]] = mapped_column(
+        ARRAY(String, zero_indexes=True), nullable=False
     )
-    n_particles: Mapped[List[float]] = mapped_column(
-        ARRAY(Float, zero_indexes=True),
-        nullable=True,
-    )  # Assume number of particles
-    momentum: Mapped[List[float]] = mapped_column(
-        ARRAY(Float, zero_indexes=True),
-        nullable=True,
+    emittance_x: Mapped[tuple[str, str]] = mapped_column(
+        ARRAY(String, zero_indexes=True), nullable=False
     )
-    emittance_x: Mapped[List[float]] = mapped_column(
-        ARRAY(Float, zero_indexes=True),
-        nullable=True,
+    emittance_y: Mapped[tuple[str, str]] = mapped_column(
+        ARRAY(String, zero_indexes=True), nullable=False
     )
-    emittance_y: Mapped[List[float]] = mapped_column(
-        ARRAY(Float, zero_indexes=True),
-        nullable=True,
+    normalised_emittance_x: Mapped[tuple[str, str]] = mapped_column(
+        ARRAY(String, zero_indexes=True), nullable=False
     )
-    normalised_emittance_x: Mapped[List[float]] = mapped_column(
-        ARRAY(Float, zero_indexes=True),
-        nullable=True,
+    normalised_emittance_y: Mapped[tuple[str, str]] = mapped_column(
+        ARRAY(String, zero_indexes=True), nullable=False
     )
-    normalised_emittance_y: Mapped[List[float]] = mapped_column(
-        ARRAY(Float, zero_indexes=True),
-        nullable=True,
+    sigma_x: Mapped[tuple[str, str]] = mapped_column(
+        ARRAY(String, zero_indexes=True), nullable=False
     )
-    sigma_x: Mapped[List[float]] = mapped_column(
-        ARRAY(Float, zero_indexes=True),
-        nullable=True,
+    sigma_y: Mapped[tuple[str, str]] = mapped_column(
+        ARRAY(String, zero_indexes=True), nullable=False
     )
-    sigma_y: Mapped[List[float]] = mapped_column(
-        ARRAY(Float, zero_indexes=True),
-        nullable=True,
+    centroids_x: Mapped[tuple[str, str]] = mapped_column(
+        ARRAY(String, zero_indexes=True), nullable=False
     )
-    centroids_x: Mapped[List[float]] = mapped_column(
-        ARRAY(Float, zero_indexes=True),
-        nullable=True,
+    centroids_y: Mapped[tuple[str, str]] = mapped_column(
+        ARRAY(String, zero_indexes=True), nullable=False
     )
-    centroids_y: Mapped[List[float]] = mapped_column(
-        ARRAY(Float, zero_indexes=True),
-        nullable=True,
-    )
-    position: Mapped[List[float]] = mapped_column(
-        ARRAY(Float, zero_indexes=True),
-        nullable=True,
-    )  # Also called s/z/timestep
-    cov_xx: Mapped[List[float]] = mapped_column(
-        ARRAY(Float, zero_indexes=True),
-        nullable=True,
-    )
-    cov_xxp: Mapped[List[float]] = mapped_column(
-        ARRAY(Float, zero_indexes=True),
-        nullable=True,
-    )
-    cov_yy: Mapped[List[float]] = mapped_column(
-        ARRAY(Float, zero_indexes=True),
-        nullable=True,
-    )
-    cov_yyp: Mapped[List[float]] = mapped_column(
-        ARRAY(Float, zero_indexes=True),
-        nullable=True,
-    )
-    cov_xy: Mapped[List[float]] = mapped_column(
-        ARRAY(Float, zero_indexes=True),
-        nullable=True,
-    )
-    cov_xyp: Mapped[List[float]] = mapped_column(
-        ARRAY(Float, zero_indexes=True),
-        nullable=True,
-    )
+    position: Mapped[tuple[str, str]] = mapped_column(
+        ARRAY(String, zero_indexes=True), nullable=False
+    ) # Also called s/z/timestep
+    # cov_xx: Mapped[tuple[str, str]] = mapped_column(
+    #     ARRAY(String, zero_indexes=True), nullable=False
+    # )
+    # cov_xxp: Mapped[tuple[str, str]] = mapped_column(
+    #     ARRAY(String, zero_indexes=True), nullable=False
+    # )
+    # cov_yy: Mapped[tuple[str, str]] = mapped_column(
+    #     ARRAY(String, zero_indexes=True), nullable=False
+    # )
+    # cov_yyp: Mapped[tuple[str, str]] = mapped_column(
+    #     ARRAY(String, zero_indexes=True), nullable=False
+    # )
+    # cov_xy: Mapped[tuple[str, str]] = mapped_column(
+    #     ARRAY(String, zero_indexes=True), nullable=False
+    # )
+    # cov_xyp: Mapped[tuple[str, str]] = mapped_column(
+    #     ARRAY(String, zero_indexes=True), nullable=False
+    # )
 
 
 class Generator(Base):
@@ -661,12 +639,12 @@ class Lattice(Base):
         back_populates="lattice",
         cascade="all, delete",
     )
-    # for large arrays (beams and beam summary), we store them in a separate table to avoid
-    # bloating the lattices table and causing performance issues with large payloads.
-    array_payloads: Mapped[List["LatticeArrayPayload"]] = relationship(
-        back_populates="lattice",
-        cascade="all, delete",
-    )
+    # # for large arrays (beams and beam summary), we store them in a separate table to avoid
+    # # bloating the lattices table and causing performance issues with large payloads.
+    # array_payloads: Mapped[List["LatticeArrayPayload"]] = relationship(
+    #     back_populates="lattice",
+    #     cascade="all, delete",
+    # )
     beam_summary: Mapped[BeamSummary] = relationship(
         back_populates="lattice", cascade="all, delete"
     )
@@ -678,39 +656,3 @@ class Lattice(Base):
         nullable=False,
     )
     client_id: Mapped[str] = mapped_column(String(50), nullable=True)
-
-
-class LatticeArrayPayload(Base):
-    """
-    Table to store large arrays (beams and beam summary) separately to avoid
-    bloating the lattices table and causing performance issues with large payloads.
-    """
-
-    __tablename__ = "lattice_array_payload"
-    id: Mapped[int] = mapped_column(
-        primary_key=True,
-        autoincrement=True,
-        nullable=False,
-    )
-    lattice_id = mapped_column(
-        ForeignKey("lattices.id", ondelete="CASCADE", onupdate="CASCADE"),
-        nullable=False,
-    )
-    lattice: Mapped["Lattice"] = relationship(
-        foreign_keys=[lattice_id],
-        back_populates="array_payloads",
-    )
-    # The path to array value in the lattice schema, e.g. "sections.<section>.screens.<screen-index>.beam.x"
-    path: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
-    # The data type of the array, e.g. "float32", "float64", etc.
-    dtype: Mapped[str] = mapped_column(String(20), nullable=False, default="float32")
-    # The number of elements in the array
-    count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
-    # The compression algorithm used to compress the payload, e.g. "zstd", "gzip", etc.
-    compression: Mapped[str] = mapped_column(
-        String(20),
-        nullable=False,
-        default="zstd",
-    )
-    # The compressed payload of the array, stored as a binary blob
-    payload: Mapped[bytes] = mapped_column(LargeBinary, nullable=False)

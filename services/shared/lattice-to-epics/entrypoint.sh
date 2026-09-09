@@ -16,6 +16,7 @@ while true; do
         break
     fi
 done
+until $(curl -X GET --output /dev/null --silent --head --fail http://${HSDS_BACKEND_HOST:-hsds_backend}:${HSDS_BACKEND_PORT:-8001}/health); do sleep 0.1; done
 
 until </dev/tcp/${BROKER_HOST:-broker}/${KAFKA_PORT:-9092}; do
   sleep 0.1

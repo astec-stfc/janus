@@ -1,7 +1,9 @@
 # backend/app/services/hsds.py
 
 import os
-from typing import Any
+import base64
+from collections import defaultdict
+
 import h5pyd
 from app.models.exceptions import (
     DomainNotFoundError,
@@ -9,6 +11,7 @@ from app.models.exceptions import (
     DatasetNotFoundError,
     AttributeNotFoundError,
 )
+from typing import Any
 
 HSDS_URL = os.getenv("HSDS_URL", "http://hsds:5101")
 
@@ -124,7 +127,9 @@ class HSDSClient:
                 "attrs": self._serialize_attrs(ds.attrs),
             }
 
-    def _get_vector_bytes(self, dataset: h5pyd.Dataset, slice_start: int = None, slice_end: int = None) -> bytes:
+    def _get_vector_bytes(
+        self, dataset: h5pyd.Dataset, slice_start: int = None, slice_end: int = None
+    ) -> bytes:
         if not self._is_vector(dataset):
             raise ValueError("Dataset is not a vector")
         if slice_start is None:
@@ -133,7 +138,9 @@ class HSDSClient:
             slice_end = dataset.shape[0]
         return dataset[slice_start:slice_end].tobytes()
 
-    def _get_matrix_bytes(self, dataset: h5pyd.Dataset, slice_start: int = None, slice_end: int = None) -> bytes:
+    def _get_matrix_bytes(
+        self, dataset: h5pyd.Dataset, slice_start: int = None, slice_end: int = None
+    ) -> bytes:
         if not self._is_matrix(dataset):
             raise ValueError("Dataset is not a matrix")
         if slice_start is None:
@@ -168,6 +175,38 @@ class HSDSClient:
                 return self._get_matrix_bytes(obj, slice_start, slice_end)
             else:
                 raise ValueError("Dataset is not a scalar, vector, or matrix")
+
+    def get_dataset_values_batch(
+        self, requests: dict[str, tuple[str, str]]
+    ) -> dict[str, str]:
+        """Fetch named dataset values, opening each shared domain once."""
+        results: dict[str, str] = {}
+
+        by_domain: defaultdict[str, list[tuple[str, str]]] = defaultdict(list)
+        for name, (domain, path) in requests.items():
+            by_domain[domain].append((name, path))
+
+        for domain, named_requests in by_domain.items():
+            with self._open(domain) as f:
+                for name, path in named_requests:
+                    if path not in f or not isinstance(f[path], h5pyd.Dataset):
+                        raise DatasetNotFoundError(
+                            f"Dataset '{path}' not found in domain '{domain}'"
+                        )
+
+                    dataset = f[path]
+                    if self._is_vector(dataset):
+                        data = self._get_vector_bytes(dataset)
+                    elif self._is_matrix(dataset):
+                        data = self._get_matrix_bytes(dataset)
+                    else:
+                        raise ValueError(
+                            f"Dataset '{path}' in domain '{domain}' is not an array"
+                        )
+
+                    results[name] = base64.b64encode(data).decode("ascii")
+
+        return results
 
     def get_attributes(
         self,

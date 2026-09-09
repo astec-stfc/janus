@@ -6,11 +6,14 @@ import subprocess
 import os
 import logging
 import sys
+import time
 import threading
 from concurrent.futures import ThreadPoolExecutor
 
 _created_folders = set()
 _folder_lock = threading.Lock()
+_importing_domains = set()
+_importing_lock = threading.Lock()
 
 ROOT = Path("/data/filestore")
 
@@ -22,6 +25,13 @@ logging.basicConfig(
 )
 
 HDF_EXTENSIONS = {".h5", ".hdf5", ".openpmd.hdf5"}
+
+# HSDS (config.yml `max_task_count`) rejects requests with 503 once too many
+# tasks are in flight, so hsload uploads must be throttled rather than run
+# with high parallelism.
+IMPORT_WORKERS = int(os.getenv("HSDS_IMPORT_WORKERS", "2"))
+LOAD_MAX_RETRIES = int(os.getenv("HSDS_LOAD_MAX_RETRIES", "5"))
+LOAD_RETRY_BACKOFF = float(os.getenv("HSDS_LOAD_RETRY_BACKOFF", "2"))
 
 
 def build_domain(file_path: Path) -> str:
@@ -52,15 +62,29 @@ def load_file(file_path: Path, domain: str) -> bool:
 
     logging.info("Importing %s -> %s", file_path, domain)
 
-    result = subprocess.run(
-        [
-            "hsload",
-            str(file_path),
-            domain,
-        ]
-    )
+    # HSDS returns 503 when its task queue is saturated; retry with backoff
+    # rather than dropping the import.
+    for attempt in range(1, LOAD_MAX_RETRIES + 1):
+        result = subprocess.run(
+            [
+                "hsload",
+                str(file_path),
+                domain,
+            ]
+        )
+        if result.returncode == 0:
+            return True
 
-    return result.returncode == 0
+        if attempt < LOAD_MAX_RETRIES:
+            sleep_time = LOAD_RETRY_BACKOFF * attempt
+            logging.warning(
+                "hsload failed for %s -> %s (attempt %d/%d), retrying in %.1fs",
+                file_path, domain, attempt, LOAD_MAX_RETRIES, sleep_time,
+            )
+            time.sleep(sleep_time)
+
+    logging.error("hsload failed for %s -> %s after %d attempts", file_path, domain, LOAD_MAX_RETRIES)
+    return False
 
 
 def ensure_parent_exists(domain: str):
@@ -91,19 +115,30 @@ def find_hdf_files():
 
 def import_file(file_path):
     domain = build_domain(file_path)
-    logging.info(f"Importing {file_path} -> {domain}")
-    if domain_exists(domain):
-        logging.info("Skipping existing domain %s", domain)
-        return
 
-    ensure_parent_exists(domain)
+    with _importing_lock:
+        if domain in _importing_domains:
+            logging.info("Import already in progress for domain %s, skipping", domain)
+            return
+        _importing_domains.add(domain)
 
-    load_file(file_path, domain)
+    try:
+        logging.info(f"Importing {file_path} -> {domain}")
+        if domain_exists(domain):
+            logging.info("Skipping existing domain %s", domain)
+            return
+
+        ensure_parent_exists(domain)
+
+        load_file(file_path, domain)
+    finally:
+        with _importing_lock:
+            _importing_domains.discard(domain)
 
 
 def full_scan():
     files = list(find_hdf_files())
-    with ThreadPoolExecutor(max_workers=8) as pool:
+    with ThreadPoolExecutor(max_workers=IMPORT_WORKERS) as pool:
         pool.map(import_file, files)
 
 

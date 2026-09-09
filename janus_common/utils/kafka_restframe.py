@@ -44,26 +44,10 @@ class API(KafkaAPI):
         return resp.json()
 
     def get_lattice(self) -> Lattice:
-        """Fetch a RestFrame lattice and decode the shared binary transport format."""
-        binary_url = self.baseurl + "lattice/binary"
-        resp = requests.get(binary_url, timeout=90)
-        if resp.ok:
-            return Lattice.from_binary(resp.content, arrays_as_lists=False)
-
-        # Fallback for older deployments without binary endpoint support.
+        """Fetch a RestFrame lattice."""
         url = self.baseurl + "lattice"
         resp = requests.get(url, timeout=30)
         return Lattice.model_validate(resp.json(), from_attributes=True)
-
-    def get_lattice_binary(self, compress: bool = True) -> bytes:
-        """Fetch raw RestFrame binary lattice bytes for pass-through transport."""
-        binary_url = self.baseurl + "lattice/binary"
-        resp = requests.get(
-            binary_url,
-            params={"compress": str(compress).lower()},
-        )
-        resp.raise_for_status()
-        return resp.content
 
     def get_latest_run_uuid(self) -> str:
         url = self.baseurl + "uuid"

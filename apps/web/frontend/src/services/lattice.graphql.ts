@@ -6,7 +6,14 @@ import {
   GetScreenNamesDocument,
   GetRunUuidsDocument,
 } from "../graphql/generated/graphql";
-import type { BeamSummary, BeamSummaryPlotResponse, RunSummary } from "../types";
+import type {
+  BeamSummary,
+  BeamSummaryPlotResponse,
+  DomainPathTuple,
+  HSDSDatasetPath,
+  RunSummary,
+} from "../types";
+import { fetchVectorDatasetBatch } from "./hsds.rest";
 
 const getRunUuids = async (): Promise<string[]> => {
   const data = await graphqlClient.request(GetRunUuidsDocument);
@@ -53,20 +60,29 @@ const getBeamSummary = async (
     };
   }
 
+  const { xParameter, yParameters } = result.beamSummaryData;
+  const datasetPaths: HSDSDatasetPath = Object.fromEntries(
+    [xParameter, ...yParameters].map(({ name, domainPathTuple }) => [
+      name,
+      domainPathTuple as DomainPathTuple,
+    ]),
+  );
+  const datasets = await fetchVectorDatasetBatch(datasetPaths);
+
   return {
     uuid: result.uuid,
     facility: result.facility,
     beamSummaryData: {
       xParameter: {
-        name: result.beamSummaryData.xParameter.name as keyof BeamSummary,
-        label: result.beamSummaryData.xParameter.label,
-        unit: result.beamSummaryData.xParameter.unit ?? undefined,
-        values: result.beamSummaryData.xParameter.values,
+        name: xParameter.name as keyof BeamSummary,
+        label: xParameter.label,
+        unit: xParameter.unit ?? undefined,
+        values: datasets[xParameter.name],
       },
-      yParameters: result.beamSummaryData.yParameters.map((p) => ({
-        name: p.name as keyof BeamSummary,
-        label: p.label,
-        values: p.values,
+      yParameters: yParameters.map((parameter) => ({
+        name: parameter.name as keyof BeamSummary,
+        label: parameter.label,
+        values: datasets[parameter.name],
       })),
     },
   };

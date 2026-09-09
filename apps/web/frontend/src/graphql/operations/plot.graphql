@@ -19,12 +19,12 @@ query GetBeamSummary($uuid: String!) {
         name
         label
         unit
-        values
+        domainPathTuple
       }
       yParameters {
         name
         label
-        values
+        domainPathTuple
       }
     }
   }

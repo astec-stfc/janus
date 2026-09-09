@@ -11,6 +11,7 @@ services:
     environment:
       - LATTICE_API_URL=http://${LATTICE_API_HOST:-host.docker.internal}:${LATTICE_API_PORT:-1337}
       - RESTFRAME_URL=http://${RESTFRAME_HOST:-host.docker.internal}:${RESTFRAME_PORT:-8000}
+      - HSDS_BACKEND_URL=http://${HSDS_BACKEND_HOST:-host.docker.internal}:${HSDS_BACKEND_PORT:-8001}
       - VITE_PVWS_PORT=${PVWS_PORT:-8080}
     volumes:
       - ../apps/web/frontend:/app # allows for hot reload
@@ -61,6 +62,7 @@ services:
       - "host.docker.internal:host-gateway"
     depends_on:
       - physics_iocs
+      - hsds_backend
     environment:
       - EPICS_PVA_AUTO_ADDR_LIST=YES
       - EPICS_PVA_BROADCAST_PORT=${PVA_PORT:-6092}  # this is required to allow pvget to work in sandbox. It also doesn't have to be different to 
@@ -71,6 +73,8 @@ services:
       - LATTICE_API_PORT=${LATTICE_API_PORT:-1337}
       - BROKER_HOST=${BOOTSTRAP_SERVERS:-host.docker.internal}
       - KAFKA_PORT=${KAFKA_PORT:-9092}
+      - HSDS_BACKEND_HOST=${HSDS_BACKEND_HOST:-host.docker.internal}
+      - HSDS_BACKEND_PORT=${HSDS_BACKEND_PORT:-8001}
 
     volumes:
       - ../janus_common:/usr/src/app/janus_common
