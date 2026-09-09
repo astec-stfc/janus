@@ -1,4 +1,6 @@
-from fastapi import FastAPI, Response
+from fastapi import FastAPI, HTTPException, Response
+from pydantic import BaseModel, Field
+from typing import Dict, Tuple
 from app.services.hsds import HSDSClient
 from app.models.exceptions import (
     DomainNotFoundError,
@@ -8,6 +10,11 @@ from app.models.exceptions import (
 )
 from threading import Thread
 from app.services.watcher import start_watcher
+
+
+class DatasetBatchRequest(BaseModel):
+    requests: Dict[str, Tuple[str, str]] = Field(..., min_length=1)
+
 
 app = FastAPI(
     title="HDF Portal",
@@ -97,6 +104,18 @@ def get_dataset_values(
         return value
     except DatasetNotFoundError as e:
         return {"error": str(e)}
+
+@app.post(
+    "/dataset/values/batch",
+    response_model=Dict[str, str],
+)
+def get_dataset_values_batch(payload: DatasetBatchRequest):
+    try:
+        return hsds.get_dataset_values_batch(payload.requests)
+    except (DomainNotFoundError, DatasetNotFoundError) as e:
+        raise HTTPException(status_code=404, detail=str(e)) from e
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e)) from e
 
 
 @app.get("/attributes/")

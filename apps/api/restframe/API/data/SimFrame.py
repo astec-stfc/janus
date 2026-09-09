@@ -252,12 +252,21 @@ class SimFrame_Interface:
                     )
                 if elembeam is not None:
                     elem.beam = Beam(
-                        x=list(elembeam.x.val),
-                        y=list(elembeam.y.val),
-                        z=list(elembeam.z.val),
-                        cpx=list(elembeam.cpx.val),
-                        cpy=list(elembeam.cpy.val),
-                        cpz=list(elembeam.cpz.val),
+                        x=(f"/{uuid}/{name}", f"/particles/{self.particle}/position/x"),
+                        y=(f"/{uuid}/{name}", f"/particles/{self.particle}/position/y"),
+                        z=(f"/{uuid}/{name}", f"/particles/{self.particle}/position/z"),
+                        cpx=(
+                            f"/{uuid}/{name}",
+                            f"/particles/{self.particle}/momentum/x",
+                        ),
+                        cpy=(
+                            f"/{uuid}/{name}",
+                            f"/particles/{self.particle}/momentum/y",
+                        ),
+                        cpz=(
+                            f"/{uuid}/{name}",
+                            f"/particles/{self.particle}/momentum/z",
+                        ),
                     )
                     if hasattr(elem, "camera"):
                         elem.camera.sigma = elem.sigma
@@ -282,6 +291,7 @@ class SimFrame_Interface:
         if isinstance(elem, PhotonMonitor):
             try:
                 from pmd_beamphysics.wavefront.wavefront import Wavefront
+
                 fname = self.runs_directory + str(uuid) + "/" + name + ".fld.h5"
                 wv = Wavefront.from_genesis4(fname)
                 elem.intensity = wv.energy
@@ -327,7 +337,9 @@ class SimFrame_Interface:
             section_elements = list(section.get_elements_dict().items())
             if section_success:
                 futures = [
-                    self.beam_threadpool.submit(self.update_beam_and_screen, name, elem, section.uuid)
+                    self.beam_threadpool.submit(
+                        self.update_beam_and_screen, name, elem, section.uuid
+                    )
                     for name, elem in section_elements
                 ]
                 for future in futures:
@@ -354,23 +366,23 @@ class SimFrame_Interface:
             out_lattice.beam_summary = self.get_beam_summary()
         else:
             out_lattice.beam_summary = BeamSummary(
-                alpha_x=[],
-                alpha_y=[],
-                beta_x=[],
-                beta_y=[],
-                energy=[],
-                momentum=[],
-                emittance_x=[],
-                emittance_y=[],
-                normalised_emittance_x=[],
-                normalised_emittance_y=[],
-                sigma_x=[],
-                sigma_y=[],
-                sigma_t=[],
-                centroids_x=[],
-                centroids_y=[],
-                centroids_t=[],
-                position=[],
+                alpha_x=("", ""),
+                alpha_y=("", ""),
+                beta_x=("", ""),
+                beta_y=("", ""),
+                energy=("", ""),
+                momentum=("", ""),
+                emittance_x=("", ""),
+                emittance_y=("", ""),
+                normalised_emittance_x=("", ""),
+                normalised_emittance_y=("", ""),
+                sigma_x=("", ""),
+                sigma_y=("", ""),
+                sigma_t=("", ""),
+                centroids_x=("", ""),
+                centroids_y=("", ""),
+                centroids_t=("", ""),
+                position=("", ""),
             )
         out_lattice.success = self._track_success
         out_lattice.set_initial_conditions = self.set_initial_conditions
@@ -443,11 +455,17 @@ class SimFrame_Interface:
                 if k not in ["uuid", "enable"]:
                     if k == "number_of_particles":
                         print("Set Number of particles:", v)
-                        print("Current generator number of particles:", self.framework.generator.number_of_particles)
+                        print(
+                            "Current generator number of particles:",
+                            self.framework.generator.number_of_particles,
+                        )
                     if hasattr(self.framework["generator"], k):
                         setattr(self.framework["generator"], k, v)
                         if k == "number_of_particles":
-                            print("Updated generator number of particles:", self.framework.generator.number_of_particles)
+                            print(
+                                "Updated generator number of particles:",
+                                self.framework.generator.number_of_particles,
+                            )
         for sec in sections:
             if sec.name != "generator":
                 for lat_elem in sec.get_elements():
@@ -539,27 +557,34 @@ class SimFrame_Interface:
     def get_beam_summary(self):
         """set the beam summary for a section"""
         bs = BeamSummary()
-        if (
-            hasattr(self, "framework_directory")
-            and self.framework_directory is not None
+        print(f"Checking for {os.path.join(self.runs_directory, str(self.track_uuid), 'Twiss_Summary.hdf5')}")
+        print(f"Exists: {os.path.exists(os.path.join(self.runs_directory, str(self.track_uuid), 'Twiss_Summary.hdf5'))}")
+        if os.path.exists(
+            os.path.join(self.runs_directory, str(self.track_uuid), "Twiss_Summary.hdf5")
         ):
-            bs.alpha_x = list(self.framework_directory.twiss.alpha_x.val)
-            bs.alpha_y = list(self.framework_directory.twiss.alpha_y.val)
-            bs.beta_x = list(self.framework_directory.twiss.beta_x.val)
-            bs.beta_y = list(self.framework_directory.twiss.beta_y.val)
-            bs.energy = list(self.framework_directory.twiss.kinetic_energy.val)
-            bs.momentum = list(self.framework_directory.twiss.cp.val)
-            bs.emittance_x = list(self.framework_directory.twiss.ex.val)
-            bs.emittance_y = list(self.framework_directory.twiss.ey.val)
-            bs.normalised_emittance_x = list(self.framework_directory.twiss.enx.val)
-            bs.normalised_emittance_y = list(self.framework_directory.twiss.eny.val)
-            bs.sigma_x = list(self.framework_directory.twiss.sigma_x.val)
-            bs.sigma_y = list(self.framework_directory.twiss.sigma_y.val)
-            bs.sigma_t = list(self.framework_directory.twiss.sigma_t.val)
-            bs.centroids_x = list(self.framework_directory.twiss.mean_x.val)
-            bs.centroids_y = list(self.framework_directory.twiss.mean_y.val)
-            bs.centroids_t = list(self.framework_directory.twiss.t.val)
-            bs.position = list(self.framework_directory.twiss.z.val)
+            bs.alpha_x = (f"/{self.track_uuid}/Twiss_Summary", "/twiss/alpha_x")
+            bs.alpha_y = (f"/{self.track_uuid}/Twiss_Summary", "/twiss/alpha_y")
+            bs.beta_x = (f"/{self.track_uuid}/Twiss_Summary", "/twiss/beta_x")
+            bs.beta_y = (f"/{self.track_uuid}/Twiss_Summary", "/twiss/beta_y")
+            bs.energy = (f"/{self.track_uuid}/Twiss_Summary", "/twiss/kinetic_energy")
+            bs.momentum = (f"/{self.track_uuid}/Twiss_Summary", "/twiss/cp")
+            bs.emittance_x = (f"/{self.track_uuid}/Twiss_Summary", "/twiss/ex")
+            bs.emittance_y = (f"/{self.track_uuid}/Twiss_Summary", "/twiss/ey")
+            bs.normalised_emittance_x = (
+                f"/{self.track_uuid}/Twiss_Summary",
+                "/twiss/enx",
+            )
+            bs.normalised_emittance_y = (
+                f"/{self.track_uuid}/Twiss_Summary",
+                "/twiss/eny",
+            )
+            bs.sigma_x = (f"/{self.track_uuid}/Twiss_Summary", "/twiss/sigma_x")
+            bs.sigma_y = (f"/{self.track_uuid}/Twiss_Summary", "/twiss/sigma_y")
+            bs.sigma_t = (f"/{self.track_uuid}/Twiss_Summary", "/twiss/sigma_t")
+            bs.centroids_x = (f"/{self.track_uuid}/Twiss_Summary", "/twiss/mean_x")
+            bs.centroids_y = (f"/{self.track_uuid}/Twiss_Summary", "/twiss/mean_y")
+            bs.centroids_t = (f"/{self.track_uuid}/Twiss_Summary", "/twiss/t")
+            bs.position = (f"/{self.track_uuid}/Twiss_Summary", "/twiss/z")
         return bs
 
     def get_lattice_elements(self, lattice: Union[str, None] = None):

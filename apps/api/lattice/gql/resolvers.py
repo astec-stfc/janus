@@ -43,9 +43,7 @@ def get_beam_summary(uuid: str) -> Optional[BeamSummaryResult]:
     """Get beam summary data for a Twiss plot for the given lattice UUID."""
     db = SessionLocal()
     try:
-        db_lattice = (
-            db.query(DBLattice).filter(DBLattice.uuid == uuid).one_or_none()
-        )
+        db_lattice = db.query(DBLattice).filter(DBLattice.uuid == uuid).one_or_none()
         if not db_lattice:
             return None
 
@@ -60,9 +58,14 @@ def get_beam_summary(uuid: str) -> Optional[BeamSummaryResult]:
             )
 
         y_parameters = [
-            BeamSummaryParameter(name=field, label=field, unit=None, values=values)
+            BeamSummaryParameter(
+                name=field,
+                label=field,
+                unit=None,
+                domain_path_tuple=values,
+            )
             for field, values in beam_summary.model_dump().items()
-            if field != "position" and isinstance(values, list) and len(values) > 0
+            if field != "position" and values is not None
         ]
 
         return BeamSummaryResult(
@@ -73,7 +76,7 @@ def get_beam_summary(uuid: str) -> Optional[BeamSummaryResult]:
                     name="position",
                     label="Position",
                     unit="m",
-                    values=beam_summary.position or [],
+                    domain_path_tuple=beam_summary.position,
                 ),
                 y_parameters=y_parameters,
             ),

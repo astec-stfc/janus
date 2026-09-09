@@ -35,6 +35,11 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path: string) => path.replace(/^\/restframe/, ""),
       },
+      "/hsds": {
+        target: process.env.HSDS_BACKEND_URL ?? "http://hsds_backend:8001/",
+        changeOrigin: true,
+        rewrite: (path: string) => path.replace(/^\/hsds/, ""),
+      },
     },
   },
 });
