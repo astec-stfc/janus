@@ -1,17 +1,16 @@
-JANUS - CLARA to Lattice
-========================
+# CLARA to Lattice
 
-The `clara` service is responsible for sending changes in the EPICS control system to the [Lattice API](../../apps/api/lattice/) using the [schema](../../janus_common/schemas/) classes.
+The `clara` service is responsible for sending changes in the EPICS control system to the [Lattice API](../apps/lattice-api.md) using the [schema](../common-schemas.md) classes.
 
-The [clara](../../services/clara/) service utilises the `pyCATAP` middle-layer to easily retrieve the values of PVs for the systems listed below and compare with the [Lattice API](../../apps/api/lattice/) entries.
+The [clara](https://github.com/astec-stfc/janus/blob/develop/services/clara/) service utilises the `pyCATAP` middle-layer to easily retrieve the values of PVs for the systems listed below and compare with the [Lattice API](../apps/lattice-api.md) entries.
 
-The EPICS settings are checked against entries in the [Lattice API](../../apps/api/lattice/) database. If there are no matching lattices, the settings are sent for tracking.
+The EPICS settings are checked against entries in the [Lattice API](../apps/lattice-api.md) database. If there are no matching lattices, the settings are sent for tracking.
 
-However, if a matching lattice is found, the uuid is sent via the kafka topic `lattice_updated` which is received by the `lattice-to-epics` message (see [shared services](../services/shared.md) for more details).
+However, if a matching lattice is found, the uuid is sent via the kafka topic `lattice_updated` which is received by the `lattice-to-epics` message (see [shared services](shared.md) for more details).
 
 #### CLARA to Lattice Diagram
 
-```mermaid
+<div class="mermaid">
 flowchart LR
     API[Lattice API]
     Kafka["Kafka Broker"]
@@ -34,9 +33,7 @@ flowchart LR
     API --> |Settings Exist| Kafka
     Kafka --> |New Settings| RESTFrame
     Kafka --> |Settings Exist| L2E
-
-
-```
+</div>
 ### Control Parameters
 
 The parameters that are checked for changes are:

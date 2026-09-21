@@ -1,18 +1,17 @@
-JANUS - RESTFrame API
-=====================
+# RESTFrame API
 
 
-The [RESTFrame API](../../apps/api/restframe/) is a REST API implemented using [FastAPI](https://fastapi.tiangolo.com/).
+The [RESTFrame API](https://github.com/astec-stfc/janus/blob/develop/apps/api/restframe/) is a REST API implemented using [FastAPI](https://fastapi.tiangolo.com/).
 
 
-The [RESTFrame API](../../apps/api/restframe/) provides endpoints for configuring, triggering, and querying a [SIMBA](https://github.com/astec-stfc/simba) instance within JANUS. It acts as the central interface for simulation workflows, including using beam-based surrogate models (using [Poly-lithic](https://github.com/ISISNeutronMuon/poly-lithic)).
+The RESTFrame API provides endpoints for configuring, triggering, and querying a [SIMBA](https://github.com/astec-stfc/simba) instance within JANUS. It acts as the central interface for simulation workflows, including using beam-based surrogate models (using [Poly-lithic](https://github.com/ISISNeutronMuon/poly-lithic)).
 
 You can access the FastAPI docs page when JANUS is running [here](http://localhost:5000/docs).
 
 ### Core Responsibilities
 
 - Tracking simulations via `SIMBA`  
-- Converting between `SIMBA` output and [Lattie schema](../../janus_common/schemas/elements.py) types 
+- Converting between `SIMBA` output and [Lattice schema](../common-schemas.md) types 
 - Managing simulation output relationships:
     - only tracking from the section that has changed
     - determining whether output already exists

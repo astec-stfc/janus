@@ -1,0 +1,11 @@
+/* Keep the header banner showing the site name instead of switching to the page heading on scroll */
+.md-header__title .md-header__topic {
+  opacity: 1 !important;
+  transform: none !important;
+  pointer-events: auto !important;
+  z-index: 0 !important;
+}
+
+.md-header__title .md-header__topic + .md-header__topic {
+  display: none !important;
+}

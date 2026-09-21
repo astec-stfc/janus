@@ -1,6 +1,6 @@
 ## Shared Schemas
 
-The [schemas](../janus_common/schemas/elements.py) module defines the core data models used across the JANUS system.  
+The [schemas](https://github.com/astec-stfc/janus/blob/develop/janus_common/schemas/elements.py) module defines the core data models used across the JANUS system.  
 These schemas provide a consistent interface for exchanging lattice, beam, and control system data between APIs, services, simulation frameworks, and control systems.
 
 All models are built using **Pydantic**, ensuring:
@@ -144,7 +144,6 @@ Examples include:
 
 ### Design Principles
 
-- **Single source of truth** for all JANUS data models  
 - **Physics-aware validation** to prevent invalid configurations  
 - **Extensible structure** for future elements and diagnostics  
 - **Interoperability** across services and control systems  

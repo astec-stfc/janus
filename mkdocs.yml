@@ -1,0 +1,72 @@
+site_name: JANUS Documentation
+site_description: Documentation for the Joint Accelerator Network for Unified Simulation
+repo_url: https://github.com/astec-stfc/janus
+repo_name: astec-stfc/janus
+edit_uri: edit/develop/docs/
+
+docs_dir: docs
+
+nav:
+  - Home: README.md
+  - Getting Started:
+      - System Overview: janus.md
+      - Sandbox: sandbox.md
+  - Applications:
+      - Web Frontend: apps/frontend.md
+      - Lattice API: apps/lattice-api.md
+      - HSDS Backend: apps/hsds-backend.md
+      - RESTFrame API: apps/restframe-api.md
+  - Control Systems:
+      - Accelerator Controls: apps/controls/accelerator.md
+      - Simulation Control System: apps/controls/shared.md
+  - Services and Components:
+      - Common Schemas: common-schemas.md
+      - Common PV Utilities: common-pv.md
+      - Shared Services: services/shared.md
+      - CLARA Services: services/clara.md
+      - JFEL Services: services/jfel.md
+      - Base Image: base-image.md
+  - Integration:
+      - Kafka Messaging: kafka.md
+
+theme:
+  name: material
+  logo: assets/janus-logo.png
+  favicon: assets/janus-logo.png
+  features:
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.highlight
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  font: false
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - pymdownx.details
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tilde
+
+plugins:
+  - search
+
+extra_javascript:
+  - https://unpkg.com/mermaid@11/dist/mermaid.min.js
+  - javascripts/mermaid-toc.js
+
+extra_css:
+  - stylesheets/extra.css
