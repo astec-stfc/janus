@@ -12,7 +12,7 @@ pages:
   script:
     - pip install -r requirements-docs.txt
     - mkdocs build --site-dir public
-    - scp -r -o "UserKnownHostsFile=$KNOWN_HOSTS" -i"$SSH_PRIVATE_KEY" public/* janus@projects.astec.ac.uk:/var/www/html/janus
+    - scp -r -o "UserKnownHostsFile=$KNOWN_HOSTS" -i"$SSH_PRIVATE_KEY" public/* pycatap@projects.astec.ac.uk:/var/www/html/janus
   artifacts:
     paths:
       - public
