@@ -2,7 +2,20 @@
 
 JANUS is a suite of Docker containers that allow users to interact with simulations of accelerator components, interact with virtual IOCs for EPICS components, or trigger simulations using EPICS PVs.
 
-See [`docs/janus.md`](docs/janus.md) for a full system overview including architecture diagrams.
+See the [JANUS documentation](docs/README.md) for guides covering the system architecture, sandbox, web frontend, APIs, HSDS beam data, and control systems.
+
+For the full system overview and architecture diagrams, see [docs/janus.md](docs/janus.md).
+
+### Documentation site
+
+The documentation site is built with [MkDocs Material](https://squidfunk.github.io/mkdocs-material/). To preview it locally:
+
+```bash
+python -m pip install -r requirements-docs.txt
+mkdocs serve
+```
+
+Open `http://127.0.0.1:8000` in a browser. The site is published automatically by the GitHub Pages workflow and can also be published by the GitLab Pages job on the default branch.
 
 ## Setup
 

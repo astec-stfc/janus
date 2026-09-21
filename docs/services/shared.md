@@ -1,19 +1,18 @@
-JANUS - Shared Services
-========================
+# Shared Services
 
-The following services pass [schema](../../janus_common/schemas/) information between JANUS [APIs](../../apps/api) and [Control Systems](../../apps/controls/).
+The following services pass [schema](../common-schemas.md) information between the JANUS [Lattice API](../apps/lattice-api.md)/[RESTFrame API](../apps/restframe-api.md) and [Control Systems](../apps/controls/shared.md).
 They are designed to be facility agnostic and do not require any conversion between simulation and controls information.
 
 These services are:
 
-- [lattice-to-restframe](../../services/shared/lattice-to-restframe/) submits lattice data for tracking
-- [restframe-to-lattice](../../services/shared/restframe-to-lattice/) submits lattice data for storage
-- [lattice-to-epics](../../services/shared/lattice-to-epics/) forwards lattice data to control system PVs
+- [lattice-to-restframe](https://github.com/astec-stfc/janus/blob/develop/services/shared/lattice-to-restframe/) submits lattice data for tracking
+- [restframe-to-lattice](https://github.com/astec-stfc/janus/blob/develop/services/shared/restframe-to-lattice/) submits lattice data for storage
+- [lattice-to-epics](https://github.com/astec-stfc/janus/blob/develop/services/shared/lattice-to-epics/) forwards lattice data to control system PVs
 
 Kafka Topic Subscriptions
 ==========================
 
-The shared services subscribe to message topics that are produced by the [APIs](../../apps/api). Once a message with a given topic is consumed, each service performs the corresponding actions.
+The shared services subscribe to message topics that are produced by the [Lattice and RESTFrame APIs](../apps/lattice-api.md). Once a message with a given topic is consumed, each service performs the corresponding actions.
 
 #### `lattice-to-restframe`
 
@@ -21,7 +20,7 @@ The shared services subscribe to message topics that are produced by the [APIs](
 - Subscribed to:
   - `lattice_ready`
 - Actions:
-  - `lattice_ready`: Get most recent lattice from [Lattice API](../../apps/api/lattice/), send it to [RESTFrame](../../apps/api/restframe/). Start tracking!
+  - `lattice_ready`: Get most recent lattice from [Lattice API](../apps/lattice-api.md), send it to [RESTFrame](../apps/restframe-api.md). Start tracking!
 
 #### `restframe-to-lattice`
 
@@ -29,7 +28,7 @@ The shared services subscribe to message topics that are produced by the [APIs](
 - Subscribed to:
   - `tracking_finished`
 - Actions:
-  - `tracking_finished`: Get lattice from [RESTFrame](../../apps/api/restframe/) and compare with uuids from [Lattice API](../../apps/api/lattice/), if we have a new uuid, then submit the lattice to the database.
+  - `tracking_finished`: Get lattice from [RESTFrame](../apps/restframe-api.md) and compare with uuids from [Lattice API](../apps/lattice-api.md), if we have a new uuid, then submit the lattice to the database.
 
 #### `lattice-to-epics`
 
@@ -43,7 +42,7 @@ The shared services subscribe to message topics that are produced by the [APIs](
 
 #### Messaging Diagram:
 
-```mermaid
+<div class="mermaid">
 flowchart LR
     API[Lattice API]
     Kafka["Kafka Broker"]
@@ -68,6 +67,5 @@ flowchart LR
     lattice-to-restframe --> start-tracking
 
     style update-database fill:none,stroke:none
-    restframe-to-lattice --> update-database 
-
-```
+    restframe-to-lattice --> update-database
+  </div>
