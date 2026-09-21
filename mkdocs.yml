@@ -1,5 +1,6 @@
 site_name: JANUS Documentation
 site_description: Documentation for the Joint Accelerator Network for Unified Simulation
+site_url: https://projects.astec.ac.uk/janus/
 repo_url: https://github.com/astec-stfc/janus
 repo_name: astec-stfc/janus
 edit_uri: edit/develop/docs/

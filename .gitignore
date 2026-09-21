@@ -220,6 +220,7 @@ apps/api/restframe/Output/
 
 # Sandbox
 *.png
+!docs/assets/janus-logo.png
 *:Zone.Identifier
 *.ipynb
 sandbox/workspace/snapshots/

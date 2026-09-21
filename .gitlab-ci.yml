@@ -12,7 +12,9 @@ pages:
   script:
     - pip install -r requirements-docs.txt
     - mkdocs build --site-dir public
-    - scp -r -o "UserKnownHostsFile=$KNOWN_HOSTS" public/. janus@projects.astec.ac.uk:/var/www/html/janus/
+    - ssh -o "UserKnownHostsFile=$KNOWN_HOSTS" janus@projects.astec.ac.uk "mkdir -p /var/www/html/janus"
+    - tar -C public -cf - . | ssh -o "UserKnownHostsFile=$KNOWN_HOSTS" janus@projects.astec.ac.uk "tar -C /var/www/html/janus -xf -"
+    - ssh -o "UserKnownHostsFile=$KNOWN_HOSTS" janus@projects.astec.ac.uk "test -s /var/www/html/janus/assets/janus-logo.png"
   artifacts:
     paths:
       - public
