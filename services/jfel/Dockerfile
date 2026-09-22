@@ -2,10 +2,10 @@ FROM ghcr.io/adb-xkc85723/janus-base:latest
 
 
 ARG LAURA_VERSION=v1.0.0
-ARG LAURA_LATTICES_VERSION=v0.1.0
-ARG LAURA_LATTICE_REPO=git@gitlab.stfc.ac.uk:xkc85723/laura-lattices.git
-ARG ACRONICTA_CATAP_REPO=https://github.coom/astec-stfc/acronicta-catap.git
-ARG ACRONICTA_CATAP_VERSION=v0.1.0
+ARG LAURA_LATTICES_VERSION=v0.1.2
+ARG LAURA_LATTICE_REPO=https://github.com/astec-stfc/laura-lattices.git
+ARG ACRONICTA_CATAP_REPO=https://github.com/astec-stfc/acronicta-catap.git
+ARG ACRONICTA_CATAP_VERSION=v0.1.1
 
 RUN apt-get update && apt-get install -y black flake8
 

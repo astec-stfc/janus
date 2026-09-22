@@ -199,6 +199,11 @@ ctx.get("SIM-JFEL-S02-DIA-SCR-05:TWISS:Nemit_x")
 
 The JFEL lattice is cloned automatically from the repository specified by `LAURA_LATTICE_REPO` (default: [astec-stfc/laura-lattices](https://github.com/astec-stfc/laura-lattices.git)) at build time.
 
+Once the stack is running locally, a list of PV names to interrogate and manipulate in the JFEL lattice can be found at `janus > apps > controls > output > JFEL > pvs.yaml`.
+
+### Frontend
+As an alternative to the sandbox, run data can be visualised using the [web front end](http://localhost:5173/) once the stack is up. Likewise, PV values can be queried and changed in the site's PV Manager tab to trigger new simulations. It should be noted however that this only tests whether changes in EPICS cause simulations to be run and saved in HSDS rather than testing whether the full loop to update output PVs in EPICS completes. 
+
 ## Running JANUS
 
 If you require any support for setting up or running JANUS, please raise an issue [here](https://github.com/astec-stfc/janus/issues).

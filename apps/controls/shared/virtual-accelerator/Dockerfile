@@ -4,8 +4,8 @@ RUN apt-get update && apt-get install procps ffmpeg libsm6 libxext6 curl openssh
 
 RUN python -m pip install pydantic p4p requests --no-cache-dir
 
-ARG LAURA_LATTICE_REPO=git@gitlab.stfc.ac.uk:xkc85723/laura-lattices.git
-ARG LAURA_LATTICES_VERSION=v0.1.0
+ARG LAURA_LATTICE_REPO=https://github.com/astec-stfc/laura-lattices.git
+ARG LAURA_LATTICES_VERSION=v0.1.2
 ARG LAURA_REPO=https://github.com/astec-stfc/laura.git
 ARG LAURA_VERSION=v1.0.0
 ARG SARABI_REPO=https://github.com/astec-stfc/sarabi.git
