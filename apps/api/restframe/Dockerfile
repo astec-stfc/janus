@@ -5,9 +5,9 @@ ARG SIMBA_VERSION=v0.4.0
 ARG LAURA_REPO=https://github.com/astec-stfc/laura.git
 ARG LAURA_VERSION=v1.0.0
 ARG LAURA_LATTICE_REPO=https://github.com/astec-stfc/laura-lattices.git
-ARG LAURA_LATTICES_VERSION=v0.1.0
+ARG LAURA_LATTICES_VERSION=v0.1.2
 ARG ACRONICTA_CATAP_REPO=https://github.com/astec-stfc/acronicta-catap.git
-ARG ACRONICTA_CATAP_VERSION=v0.1.0
+ARG ACRONICTA_CATAP_VERSION=v0.1.1
 
 ADD API /home/web/webapp
 

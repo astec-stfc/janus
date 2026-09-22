@@ -1,8 +1,8 @@
 FROM ghcr.io/adb-xkc85723/janus-base:latest
 
 ARG LAURA_VERSION=v1.0.0
-ARG LAURA_LATTICES_VERSION=v0.1.0
-ARG LAURA_LATTICE_REPO=git@gitlab.stfc.ac.uk:xkc85723/laura-lattices.git
+ARG LAURA_LATTICES_VERSION=v0.1.2
+ARG LAURA_LATTICE_REPO=https://github.com/astec-stfc/laura-lattices.git
 # use SSH agent forwarding (BuildKit) and ensure host key is known
 RUN --mount=type=ssh bash -lc ' \
 mkdir -p /root/.ssh && \

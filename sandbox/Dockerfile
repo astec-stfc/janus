@@ -1,7 +1,7 @@
 FROM ghcr.io/adb-xkc85723/janus-base:latest
 
-ARG LAURA_LATTICE_REPO=git@gitlab.stfc.ac.uk:xkc85723/laura-lattices.git
-ARG LAURA_LATTICES_VERSION=v0.1.0
+ARG LAURA_LATTICE_REPO=https://github.com/astec-stfc/laura-lattices.git
+ARG LAURA_LATTICES_VERSION=v0.1.2
 ENV VIRTUAL_ENV=/home/web/.venv
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 ARG FACILITY
@@ -18,18 +18,7 @@ mkdir -p /root/.ssh && \
 ssh-keyscan gitlab.stfc.ac.uk >> /root/.ssh/known_hosts && \
 git clone --branch ${LAURA_LATTICES_VERSION} ${LAURA_LATTICE_REPO} /laura-lattices \
 '
-RUN mkdir -p /laura /home/janus-developer/workspace/snapshots && \
-    if [ "$FACILITY" = "clara" ]; then mkdir -p /pycatap && chown janus-developer:janus-developer /pycatap; fi && \
-    chown -R janus-developer:janus-developer /laura /laura-lattices /home/janus-developer/workspace && \
-    chmod -R a+rwX /home/janus-developer/workspace
-# use SSH agent forwarding (BuildKit) and ensure host key is known
-RUN --mount=type=ssh bash -lc ' \
-mkdir -p /root/.ssh && \
-ssh-keyscan gitlab.stfc.ac.uk >> /root/.ssh/known_hosts && \
-git clone --branch feature/nala git@gitlab.stfc.ac.uk:ujo48515/pycatap.git /pycatap \
-'
-WORKDIR /pycatap
-RUN "$VIRTUAL_ENV/bin/python" -m pip install -e .
+
 WORKDIR /
 
 RUN chmod -R a+rX /home/web
