@@ -2,7 +2,7 @@
 
 JANUS is a suite of Docker containers that allow users to interact with simulations of accelerator components, interact with virtual IOCs for EPICS components, or trigger simulations using EPICS PVs.
 
-See the [JANUS documentation](docs/README.md) for guides covering the system architecture, sandbox, web frontend, APIs, HSDS beam data, and control systems.
+See the [JANUS documentation](https://astec-stfc.github.io/janus/) for guides covering the system architecture, sandbox, web frontend, APIs, HSDS beam data, and control systems.
 
 For the full system overview and architecture diagrams, see [docs/janus.md](docs/janus.md).
 
