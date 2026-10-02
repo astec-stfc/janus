@@ -9,7 +9,8 @@ from app.models.exceptions import (
     AttributeNotFoundError,
 )
 from threading import Thread
-from app.services.watcher import start_watcher
+from app.services.consumer import start_sync
+from app.services.sync import folder_upload_status, ROOT
 
 
 class DatasetBatchRequest(BaseModel):
@@ -27,7 +28,7 @@ hsds = HSDSClient()
 async def startup():
 
     thread = Thread(
-        target=start_watcher,
+        target=start_sync,
         daemon=True,
     )
     thread.start()
@@ -53,6 +54,16 @@ def get_domain(domain: str):
 @app.get("/domain/exists/")
 def domain_exists(domain: str):
     return hsds.domain_exists(domain)
+
+
+@app.get("/folder/upload-status/")
+def get_folder_upload_status(path: str = ""):
+    folder = (ROOT / path).resolve()
+    if ROOT.resolve() not in folder.parents and folder != ROOT.resolve():
+        raise HTTPException(status_code=400, detail="Path must be inside the watched filestore")
+    if not folder.is_dir():
+        raise HTTPException(status_code=404, detail="Folder not found")
+    return folder_upload_status(folder)
 
 
 @app.get("/group/root/")

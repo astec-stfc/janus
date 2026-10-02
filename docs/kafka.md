@@ -11,13 +11,16 @@ The `Lattice` and `RESTFrame` APIs publish messages on the following topics:
 - `RESTFrame`
   - `tracking_started` - `SIMBA` tracking has started
   - `tracking finished` - `SIMBA` tracking has completed
+- `HSDS Backend`
+  - `hdf_folder_uploaded` - every HDF5 file in a filestore folder has been uploaded to `HSDS`. Payload: `uuid`, `client_id` and `request_id` (copied from the triggering `tracking_finished`), `folder` (relative to the filestore), `domain_folder`, `domains`, `file_count`, `timestamp`
 
 The `Services` are responsbile for consuming those messages and acting accordingly.
 
 `Services` subscriptions:
 - `lattice-to-restframe`: `lattice_ready`
 - `restframe-to-lattice`: `tracking_finished`
-- `lattice-to-epics`: `lattice_updated`, `lattice_added`, `tracking_finished`
+- `lattice-to-epics`: `lattice_updated`, `lattice_added`, `new_results`, `tracking_started`, `hdf_folder_uploaded`. Results of a new run (`lattice_added`/`new_results`) are only written to EPICS once the matching `hdf_folder_uploaded` arrives (matched on `request_id`, else `uuid`), or after `HSDS_UPLOAD_WAIT_SECONDS` (default 900) with whatever beam arrays are available.
+- `hsds_backend`: `tracking_finished` (uploads the run's folder to `HSDS`, then publishes `hdf_folder_uploaded`)
 
 <div class="mermaid">
 flowchart LR

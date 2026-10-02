@@ -36,6 +36,12 @@ services:
       service: hsds_backend
     volumes:
       - ./apps/api/restframe/JFEL:/data/filestore:ro
+  hsds:
+    extends:
+      file: compose/server.yaml
+      service: hsds
+    volumes:
+      - ./apps/api/restframe/JFEL:/hsds-store/hsdstest/_filestore:ro
   pvws:
     extends:
       file: compose/client.yaml

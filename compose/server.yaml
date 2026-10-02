@@ -131,6 +131,9 @@ services:
       - "${HSDS_PORT:-5101}:5101"
     volumes:
       - ../apps/api/hsds/data/hdf5:/hsds-store
+      # linked domains (hsload --link) read dataset chunks straight from
+      # RESTFrame's output; must match HSDS_LINK_ROOT in hsds_backend
+      - ../apps/api/restframe/${FACILITY:-CLARA}:/hsds-store/hsdstest/_filestore:ro
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:${HSDS_PORT:-5101}/info"]
       interval: 5s
@@ -153,9 +156,13 @@ services:
       HS_USERNAME: admin
       HS_PASSWORD: admin
       LOG_LEVEL: warning
+      BROKER_HOST: broker
+      KAFKA_PORT: 29092
     depends_on:
       hsds:
         condition: service_healthy
+      broker:
+        condition: service_started
 
 volumes:
   postgres_data:

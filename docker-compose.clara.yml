@@ -30,6 +30,12 @@ services:
       service: hsds_backend
     volumes:
       - ./apps/api/restframe/CLARA:/data/filestore:ro
+  hsds:
+    extends:
+      file: compose/server.yaml
+      service: hsds
+    volumes:
+      - ./apps/api/restframe/CLARA:/hsds-store/hsdstest/_filestore:ro
 
   sandbox:
     extends:

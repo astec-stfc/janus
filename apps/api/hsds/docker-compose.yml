@@ -19,6 +19,9 @@ services:
       HSDS_URL: http://hsds:5101
       HSDS_USERNAME: admin
       HSDS_PASSWORD: admin
+      HS_ENDPOINT: http://hsds:5101
+      HS_USERNAME: admin
+      HS_PASSWORD: admin
     depends_on:
       - hsds
 
