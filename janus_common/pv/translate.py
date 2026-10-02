@@ -700,11 +700,16 @@ class SimulationToPV(PVTranslator):
             name=f"SIMULATION:UUID",
             type=str,
         )
+        self._use_beam = PVMetadata(
+            name=f"SIMULATION:USE_BEAM",
+            type=bool,
+        )
         self._simulation_metadata = [
             self._status,
             self._mode,
             self._trigger,
             self._uuid,
+            self._use_beam,
         ]
 
     @cached_property
@@ -734,3 +739,7 @@ class SimulationToPV(PVTranslator):
     @cached_property
     def uuid_pv(self) -> PVMetadata:
         return self._uuid
+
+    @cached_property
+    def use_beam_pv(self) -> PVMetadata:
+        return self._use_beam

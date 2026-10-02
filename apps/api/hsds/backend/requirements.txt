@@ -5,4 +5,4 @@ h5pyd
 pydantic
 sqlalchemy
 h5py
-watchdog
+kafka-python

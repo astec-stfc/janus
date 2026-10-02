@@ -557,8 +557,6 @@ class SimFrame_Interface:
     def get_beam_summary(self):
         """set the beam summary for a section"""
         bs = BeamSummary()
-        print(f"Checking for {os.path.join(self.runs_directory, str(self.track_uuid), 'Twiss_Summary.hdf5')}")
-        print(f"Exists: {os.path.exists(os.path.join(self.runs_directory, str(self.track_uuid), 'Twiss_Summary.hdf5'))}")
         if os.path.exists(
             os.path.join(self.runs_directory, str(self.track_uuid), "Twiss_Summary.hdf5")
         ):

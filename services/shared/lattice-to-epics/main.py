@@ -1,6 +1,7 @@
 import os
 import sys
 import logging
+import threading
 import time
 from typing import List
 from concurrent.futures import ThreadPoolExecutor
@@ -18,12 +19,18 @@ import requests
 from janus_common.utils.kafka_restframe import API
 from janus_common.utils.comms_handler import get_lattice
 from janus_common.utils.flow_log import flow_log
-from janus_common.utils.hsds import decode_arrays_batch
+from janus_common.utils.hsds import decode_arrays_parallel
 
 CLIENT_ID = os.getenv("CLIENT_ID")
 if not CLIENT_ID:
     print("ERROR: CLIENT_ID is not set. Set a unique name: export CLIENT_ID=yourname")
     sys.exit(1)
+
+# New runs' beam arrays live in HSDS domains that hsds_backend uploads after
+# tracking_finished, which can take minutes. If hdf_folder_uploaded hasn't
+# arrived after this long (e.g. the upload failed), apply the results anyway
+# with whatever arrays are available rather than leaving the run pending.
+UPLOAD_WAIT_SECONDS = float(os.getenv("HSDS_UPLOAD_WAIT_SECONDS", "900"))
 
 
 class Sender(API):
@@ -44,6 +51,14 @@ class Sender(API):
         self._element_translators = {}
         self._section_translators = {}
         self._section_executor = ThreadPoolExecutor(max_workers=8)
+        # results waiting for their HSDS upload, keyed by request_id (or uuid
+        # when there is none) -> (uuid, request_id, topic, timestamp, timer)
+        self._awaiting_upload = {}
+        # request_ids / uuids whose hdf_folder_uploaded has already arrived,
+        # in case it beats lattice_added / new_results
+        self._uploaded_keys = set()
+        # the upload-wait timer applies results from its own thread
+        self._results_lock = threading.RLock()
 
     def set_results(self, uuid: str = None) -> bool:
         """
@@ -100,7 +115,7 @@ class Sender(API):
     ) -> None:
         """Push all PV updates for a section directly into the streamer."""
         elements_list = list(section.get_elements())
-
+        use_beams = self.epics_helper.get_pv(self.simulation_translator.use_beam_pv.name)
         array_requests = {}
         for element in elements_list:
             translator = self._element_translators.get(element.name)
@@ -111,14 +126,17 @@ class Sender(API):
                 domain_path_tuple = m.get_schema_value(element)
                 if domain_path_tuple is not None:
                     array_requests[m.name] = domain_path_tuple
-        decoded = decode_arrays_batch(array_requests)
-
+        # only access beam from hsds if we are using beams.
+        decoded = decode_arrays_parallel(array_requests) if use_beams else {}
         for element in elements_list:
             translator = self._element_translators[element.name]
             for m in translator.element_pv_metadata:
                 v = m.get_schema_value(element)
                 if m in translator.beam_pv_metadata:
-                    v = decoded[m.name] if v is not None else None
+                    if m.name not in decoded:
+                        v = None
+                    else:
+                        v = decoded[m.name] if v is not None else None
                 stream.push(m.name, v if v is not None else m.value_as_type(-999))
         translator = self._section_translators.get(section.name)
         if translator is None:
@@ -183,14 +201,14 @@ class Sender(API):
             for m in beam_summary_metadata
             if m.get_schema_value(lattice) is not None
         }
-        decoded = decode_arrays_batch(array_requests)
-
+        decoded = decode_arrays_parallel(array_requests)
+        if not decoded:
+            return []
+        # the batch may be partial if some domains are missing
         return [
             (
                 m.name,
-                decoded[m.name]
-                if m.get_schema_value(lattice) is not None
-                else m.value_as_type(-999),
+                decoded[m.name] if m.name in decoded else m.value_as_type(-999),
             )
             for m in beam_summary_metadata
         ]
@@ -208,6 +226,7 @@ class Sender(API):
             "lattice_added": self._handle_lattice_added,
             "lattice_updated": self._handle_lattice_updated,
             "new_results": self._handle_new_results,
+            "hdf_folder_uploaded": self._handle_folder_uploaded,
         }
 
         handler = handlers.get(message.topic)
@@ -252,7 +271,7 @@ class Sender(API):
     def _handle_lattice_added(self, event, message):
         """Handle lattice-api confirming that tracked results were stored."""
         lattice_uuid = event["uuid"]
-        self._handle_results(
+        self._handle_results_after_upload(
             lattice_uuid,
             event.get("request_id"),
             message.topic,
@@ -272,17 +291,76 @@ class Sender(API):
     def _handle_new_results(self, event, message):
         """Handle post-write completion signal using the same result path."""
         lattice_uuid = event["uuid"]
-        self._handle_results(
+        self._handle_results_after_upload(
             lattice_uuid,
             event.get("request_id"),
             message.topic,
             message.timestamp,
         )
 
+    def _handle_results_after_upload(
+        self, lattice_uuid: str, request_id: str, topic: str, timestamp: int
+    ):
+        """Apply a new run's results once hsds_backend has uploaded its files.
+
+        Reading the beam arrays straight away races the upload, and a missing
+        domain leaves those PVs without data.
+        """
+        key = request_id or lattice_uuid
+        with self._results_lock:
+            if key in self._uploaded_keys or lattice_uuid in self._uploaded_keys:
+                self._handle_results(lattice_uuid, request_id, topic, timestamp)
+                return
+            if key in self._awaiting_upload:
+                # lattice_added and new_results both arrive for a new run
+                return
+            timer = threading.Timer(UPLOAD_WAIT_SECONDS, self._upload_wait_expired, [key])
+            timer.daemon = True
+            self._awaiting_upload[key] = (lattice_uuid, request_id, topic, timestamp, timer)
+            timer.start()
+        print(
+            f"[..] client: {CLIENT_ID} | results for '{lattice_uuid}' waiting for HSDS upload"
+        )
+
+    def _handle_folder_uploaded(self, event, message):
+        """Apply results that were waiting for this run's HSDS upload."""
+        keys = {k for k in (event.get("request_id"), event.get("uuid")) if k}
+        with self._results_lock:
+            self._uploaded_keys.update(keys)
+            pending = None
+            for key in keys:
+                pending = self._awaiting_upload.pop(key, None)
+                if pending:
+                    break
+            if pending is None:
+                # results not seen yet; _uploaded_keys lets them apply on arrival
+                return
+            lattice_uuid, request_id, topic, timestamp, timer = pending
+            timer.cancel()
+            self._handle_results(lattice_uuid, request_id, topic, timestamp)
+
+    def _upload_wait_expired(self, key):
+        with self._results_lock:
+            pending = self._awaiting_upload.pop(key, None)
+            if pending is None:
+                return
+            lattice_uuid, request_id, topic, timestamp, _ = pending
+            print(
+                f"[!!] client: {CLIENT_ID} | no hdf_folder_uploaded for '{lattice_uuid}' "
+                f"after {UPLOAD_WAIT_SECONDS:.0f}s, applying results with available data"
+            )
+            self._handle_results(lattice_uuid, request_id, topic, timestamp)
+
     def _handle_results(
         self, lattice_uuid: str, request_id: str, topic: str, timestamp: int
     ):
         """Apply completed results once, even though two completion topics may arrive."""
+        with self._results_lock:
+            self._apply_results_once(lattice_uuid, request_id, topic, timestamp)
+
+    def _apply_results_once(
+        self, lattice_uuid: str, request_id: str, topic: str, timestamp: int
+    ):
         # New simulations send both lattice_added and new_results for the same request.
         # If one has already applied the results, ignore the other.
         if request_id and request_id in self._completed_request_ids:
@@ -316,6 +394,12 @@ if __name__ == "__main__":
     sender = Sender()
     sender.initialise()
     sender.subscribe(
-        ["lattice_added", "tracking_started", "lattice_updated", "new_results"]
+        [
+            "lattice_added",
+            "tracking_started",
+            "lattice_updated",
+            "new_results",
+            "hdf_folder_uploaded",
+        ]
     )
     sender.forever_loop()

@@ -2,6 +2,7 @@
 
 import os
 import base64
+import logging
 from collections import defaultdict
 
 import h5pyd
@@ -14,6 +15,8 @@ from app.models.exceptions import (
 from typing import Any
 
 HSDS_URL = os.getenv("HSDS_URL", "http://hsds:5101")
+
+logger = logging.getLogger(__name__)
 
 
 class HSDSClient:
@@ -179,7 +182,12 @@ class HSDSClient:
     def get_dataset_values_batch(
         self, requests: dict[str, tuple[str, str]]
     ) -> dict[str, str]:
-        """Fetch named dataset values, opening each shared domain once."""
+        """Fetch named dataset values, opening each shared domain once.
+
+        Requests that can't be served (missing domain or dataset, or not an
+        array) are left out of the result rather than failing the whole
+        batch, so one missing file doesn't blank every other array.
+        """
         results: dict[str, str] = {}
 
         by_domain: defaultdict[str, list[tuple[str, str]]] = defaultdict(list)
@@ -187,12 +195,26 @@ class HSDSClient:
             by_domain[domain].append((name, path))
 
         for domain, named_requests in by_domain.items():
-            with self._open(domain) as f:
+            try:
+                f = self._open(domain)
+            except DomainNotFoundError:
+                logger.warning(
+                    "Batch: domain '%s' not found, skipping %s",
+                    domain,
+                    [name for name, _ in named_requests],
+                )
+                continue
+
+            with f:
                 for name, path in named_requests:
                     if path not in f or not isinstance(f[path], h5pyd.Dataset):
-                        raise DatasetNotFoundError(
-                            f"Dataset '{path}' not found in domain '{domain}'"
+                        logger.warning(
+                            "Batch: dataset '%s' not found in domain '%s', skipping %s",
+                            path,
+                            domain,
+                            name,
                         )
+                        continue
 
                     dataset = f[path]
                     if self._is_vector(dataset):
@@ -200,9 +222,13 @@ class HSDSClient:
                     elif self._is_matrix(dataset):
                         data = self._get_matrix_bytes(dataset)
                     else:
-                        raise ValueError(
-                            f"Dataset '{path}' in domain '{domain}' is not an array"
+                        logger.warning(
+                            "Batch: dataset '%s' in domain '%s' is not an array, skipping %s",
+                            path,
+                            domain,
+                            name,
                         )
+                        continue
 
                     results[name] = base64.b64encode(data).decode("ascii")
 
